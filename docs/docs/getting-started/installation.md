@@ -109,9 +109,9 @@ marketing/                   static marketing site
 docs/                        Docusaurus documentation site
 ```
 
-Generated snapshots, reports, and explorer caches are excluded by `.gitignore` in a fresh
-checkout. The reference repository keeps the generated Jottacloud report and snapshot for
-demonstration purposes; treat your own as private data.
+Generated snapshots, reports, and explorer caches are excluded by `.gitignore`. A
+hand-written summary of the reference run is kept in `report/SUMMARY.md`; treat your own
+snapshots and reports as private data.
 
 ## Verify the checkout
 

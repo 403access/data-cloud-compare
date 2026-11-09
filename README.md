@@ -94,8 +94,8 @@ docs/                            Docusaurus documentation site
 ## Notes
 
 - Generated snapshots (`archive.json`, `google_drive.json`), the index database, reports,
-  and explorer caches are git-ignored. The reference checkout may include a generated report
-  for demonstration; treat your own data as private.
+  and explorer caches are git-ignored. The reference run is summarised in
+  [`report/SUMMARY.md`](report/SUMMARY.md); treat your own data as private.
 - The reference comparison was performed against an index snapshot dated 2026-08-25.
 - "Missing" means absent from the index after all matching passes, not proof of deletion.
   See [What "missing" means](docs/docs/concepts/matching.md#what-missing-means).

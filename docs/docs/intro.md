@@ -74,7 +74,8 @@ serves cached data over a loopback-only HTTP server.
 
 ## An example run
 
-The repository contains a completed comparison against a Jottacloud Archive:
+A reference comparison against a Jottacloud Archive (summarised in `report/SUMMARY.md`)
+produced these numbers:
 
 | Metric | Result |
 | --- | ---: |
