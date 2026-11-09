@@ -92,6 +92,12 @@ explains what to run. Jottacloud keeps working independently.
 - **Search**: type in a pane's search field. By default it searches
   everywhere; switch the dropdown to `This folder` to search only the current
   subtree. `Cmd/Ctrl+F` focuses the active pane's search. `Esc` clears it.
+- **Filter by status**: use the `Filter` button next to the search scope to tick
+  any number of statuses (`Same`, `Missing`, `Partial`, etc.). The choices match
+  the pane: the local side offers `In Jottacloud`, `Local only`, `Type differs`,
+  and so on. Clicking a status chip in the bottom margin toggles that status in
+  the filter; `Clear all` in the menu resets it. Filtering applies to the current
+  folder and to search results, and stays active while you navigate.
 - **Reveal counterpart**: select a row and press `Enter` on a file, or use the
   bottom bar. It jumps the other pane to the matching item — the other path
   for a moved file, the same path for an exact match. `Partial` folders jump to

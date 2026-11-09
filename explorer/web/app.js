@@ -165,6 +165,12 @@ const CHIP_ORDER = [
   'moved_match', 'local_only', 'unmatched', 'exact',
 ];
 
+const STATUS_FILTER_ORDER = {
+  remote: ['exact', 'moved', 'possible', 'partial', 'missing'],
+  local: ['exact', 'moved', 'moved_match', 'possible', 'partial', 'missing',
+    'type_mismatch', 'local_only', 'unmatched'],
+};
+
 function statusLabel(entry, side) {
   if (side === 'remote') {
     return STATUS_LABEL_REMOTE[entry.status] || entry.status || '—';
@@ -271,6 +277,7 @@ class Pane {
     this.dir = 'asc';
     this.query = '';
     this.scope = 'all';
+    this.statusFilters = new Set();
     this.searchMode = false;
     this.truncated = false;
     this.exists = true;
@@ -288,6 +295,9 @@ class Pane {
     this.crumbsEl = root.querySelector('[data-role="crumbs"]');
     this.searchInput = root.querySelector('[data-role="search"]');
     this.scopeSelect = root.querySelector('[data-role="scope"]');
+    this.filterBtn = root.querySelector('[data-role="filter-toggle"]');
+    this.filterLabel = root.querySelector('[data-role="filter-label"]');
+    this.filterMenu = root.querySelector('[data-role="filter-menu"]');
     this.clearBtn = root.querySelector('[data-role="clear"]');
     this.badgeEl = root.querySelector('[data-role="badge"]');
     this.summaryEl = root.querySelector('[data-role="summary"]');
@@ -300,6 +310,7 @@ class Pane {
 
     this.bind();
     this.updateSortIndicators();
+    this.buildStatusFilter();
 
     this.list.addEventListener('scroll', () => this.scheduleRender());
     window.addEventListener('resize', () => this.scheduleRender());
@@ -315,8 +326,14 @@ class Pane {
       : (currentProvider().root_label || 'Archive');
   }
 
-  currentEntries() {
+  baseEntries() {
     return this.searchMode ? this.results : this.entries;
+  }
+
+  currentEntries() {
+    const base = this.baseEntries();
+    if (!this.statusFilters.size) return base;
+    return base.filter(e => this.statusFilters.has(e.status));
   }
 
   selectedEntry() {
@@ -377,7 +394,147 @@ class Pane {
       this.scope = this.scopeSelect.value;
       if (this.searchMode && this.query) this.runSearch(this.query);
     });
+    this.filterBtn.addEventListener('click', ev => {
+      ev.stopPropagation();
+      const opening = this.filterMenu.hidden;
+      this.setFilterMenuOpen(opening);
+      if (opening && ev.detail === 0) {
+        const first = this.filterMenu.querySelector('input');
+        if (first) first.focus();
+      }
+    });
+    this.filterBtn.addEventListener('keydown', ev => {
+      if (ev.key === 'Escape' && !this.filterMenu.hidden) {
+        ev.preventDefault();
+        this.setFilterMenuOpen(false);
+      }
+    });
+    this.filterMenu.addEventListener('click', ev => ev.stopPropagation());
+    this.filterMenu.addEventListener('keydown', ev => {
+      if (ev.key === 'Escape') {
+        ev.preventDefault();
+        this.setFilterMenuOpen(false);
+        this.filterBtn.focus();
+      }
+    });
+    document.addEventListener('click', () => this.setFilterMenuOpen(false));
     this.clearBtn.addEventListener('click', () => this.clearSearch());
+  }
+
+  /* ------------------------------------------------------------ filtering */
+
+  statusFilterOptions() {
+    const order = STATUS_FILTER_ORDER[this.side] || STATUS_FILTER_ORDER.remote;
+    return order.map(status => ({
+      value: status,
+      label: statusLabel({ status }, this.side),
+    }));
+  }
+
+  activeStatusFilters() {
+    const order = STATUS_FILTER_ORDER[this.side] || STATUS_FILTER_ORDER.remote;
+    return order.filter(status => this.statusFilters.has(status));
+  }
+
+  statusFilterLabel() {
+    return this.activeStatusFilters()
+      .map(status => statusLabel({ status }, this.side))
+      .join(', ');
+  }
+
+  updateFilterButton() {
+    const active = this.activeStatusFilters();
+    this.filterLabel.textContent = active.length === 0
+      ? 'Filter'
+      : active.length === 1 ? active[0] : `Filter · ${active.length}`;
+    this.filterBtn.classList.toggle('active', active.length > 0);
+    this.filterBtn.title = active.length
+      ? `Filtering by: ${active.join(', ')}`
+      : 'Filter by status';
+  }
+
+  setFilterMenuOpen(open) {
+    this.filterMenu.hidden = !open;
+    this.filterBtn.setAttribute('aria-expanded', String(open));
+    this.filterBtn.classList.toggle('open', open);
+    if (open) {
+      Object.values(panes).forEach(pane => {
+        if (pane && pane !== this) pane.setFilterMenuOpen(false);
+      });
+    }
+  }
+
+  buildStatusFilter() {
+    const options = this.statusFilterOptions();
+    const valid = new Set(options.map(option => option.value));
+    this.statusFilters.forEach(status => {
+      if (!valid.has(status)) this.statusFilters.delete(status);
+    });
+
+    const head = document.createElement('div');
+    head.className = 'filter-menu-head';
+    const caption = document.createElement('span');
+    caption.textContent = 'Show only';
+    const clear = document.createElement('button');
+    clear.type = 'button';
+    clear.className = 'filter-clear';
+    clear.textContent = 'Clear all';
+    clear.addEventListener('click', () => this.clearStatusFilters());
+    head.append(caption, clear);
+
+    const rows = options.map(option => {
+      const row = document.createElement('label');
+      row.className = 'filter-option';
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.value = option.value;
+      input.checked = this.statusFilters.has(option.value);
+      input.addEventListener('change', () => {
+        if (input.checked) this.statusFilters.add(option.value);
+        else this.statusFilters.delete(option.value);
+        this.onStatusFilterChange();
+      });
+      const dot = document.createElement('span');
+      dot.className = `filter-dot st-${option.value}`;
+      const text = document.createElement('span');
+      text.textContent = option.label;
+      row.append(input, dot, text);
+      return row;
+    });
+
+    this.filterMenu.replaceChildren(head, ...rows);
+    this.updateFilterButton();
+  }
+
+  syncStatusFilterInputs() {
+    this.filterMenu.querySelectorAll('input[type="checkbox"]').forEach(input => {
+      input.checked = this.statusFilters.has(input.value);
+    });
+  }
+
+  onStatusFilterChange() {
+    if (this.selected && !this.currentEntries().some(e => e.path === this.selected)) {
+      this.selected = null;
+    }
+    this.updateFilterButton();
+    this.renderAll(true);
+    this.updateBadge();
+    this.updateFooter();
+    updateSelectionBar();
+  }
+
+  toggleStatusFilter(status) {
+    if (this.statusFilters.has(status)) this.statusFilters.delete(status);
+    else this.statusFilters.add(status);
+    this.syncStatusFilterInputs();
+    this.onStatusFilterChange();
+  }
+
+  clearStatusFilters() {
+    if (!this.statusFilters.size) return;
+    this.statusFilters.clear();
+    this.syncStatusFilterInputs();
+    this.onStatusFilterChange();
   }
 
   /* ---------------------------------------------------------- navigation */
@@ -707,6 +864,8 @@ class Pane {
           (this.side === 'local'
             ? 'the local index.'
             : `the ${currentProvider().label} snapshot.`);
+      } else if (this.statusFilters.size && this.baseEntries().length) {
+        text = 'No items match the selected status filters.';
       } else if (this.searchMode) {
         text = this.truncated
           ? `Showing the first results for “${this.query}”. Type more to narrow it down.`
@@ -746,20 +905,30 @@ class Pane {
 
   updateBadge() {
     const entries = this.currentEntries();
+    const total = this.baseEntries().length;
+    const suffix = this.statusFilters.size ? ` of ${fmtNum(total)}` : '';
     if (this.searchMode) {
       this.badgeEl.innerHTML =
-        `<b>${fmtNum(entries.length)}${this.truncated ? '+' : ''}</b> results`;
+        `<b>${fmtNum(entries.length)}${this.truncated ? '+' : ''}</b>${suffix} results`;
       return;
     }
-    this.badgeEl.innerHTML = `<b>${fmtNum(entries.length)}</b> items`;
+    this.badgeEl.innerHTML =
+      `<b>${fmtNum(entries.length)}${this.truncated ? '+' : ''}</b>${suffix} items`;
   }
 
   updateFooter() {
     const entries = this.currentEntries();
+    const base = this.baseEntries();
     if (this.searchMode) {
+      this.summaryEl.textContent = this.statusFilters.size
+        ? `${fmtNum(entries.length)} of ${fmtNum(base.length)} results · ` +
+          `${this.statusFilterLabel()}`
+        : `${fmtNum(entries.length)}${this.truncated ? '+' : ''} results` +
+          (this.truncated ? ' · refine to narrow down' : '');
+    } else if (this.statusFilters.size) {
       this.summaryEl.textContent =
-        `${fmtNum(entries.length)}${this.truncated ? '+' : ''} results` +
-        (this.truncated ? ' · refine to narrow down' : '');
+        `Showing ${fmtNum(entries.length)} of ${fmtNum(base.length)} items · ` +
+        `${this.statusFilterLabel()}`;
     } else {
       const s = this.stats || {};
       this.summaryEl.textContent =
@@ -768,17 +937,23 @@ class Pane {
     }
 
     const counts = {};
-    entries.forEach(e => { counts[e.status] = (counts[e.status] || 0) + 1; });
+    base.forEach(e => { counts[e.status] = (counts[e.status] || 0) + 1; });
     this.chipsEl.replaceChildren();
     CHIP_ORDER.forEach(status => {
       if (!counts[status]) return;
       if (status === 'exact') return; // the uninteresting default
-      const chip = document.createElement('span');
-      chip.className = `mini-chip st-${status}`;
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = `mini-chip st-${status}` +
+        (this.statusFilters.has(status) ? ' active' : '');
+      chip.title = this.statusFilters.has(status)
+        ? 'Remove this status from the filter'
+        : `Add ${statusLabel({ status }, this.side)} to the filter`;
       chip.innerHTML = '<span class="dot"></span>';
       const text = document.createElement('span');
       text.textContent = `${statusLabel({ status }, this.side)} ${fmtNum(counts[status])}`;
       chip.append(text);
+      chip.addEventListener('click', () => this.toggleStatusFilter(status));
       this.chipsEl.append(chip);
     });
   }
@@ -1087,6 +1262,10 @@ function updateProviderChrome() {
     panes.remote.root.style.setProperty('--remote-brand',
       provider.accent || '#5e5ce6');
   }
+
+  // "In Jottacloud" / "Not in Jottacloud" (and the Google Drive equivalents)
+  // depend on the current provider, so rebuild the status filters.
+  Object.values(panes).forEach(pane => pane.buildStatusFilter());
 
   document.querySelectorAll('#provider-switch [data-provider]').forEach(btn => {
     const info = providerCatalog.byKey[btn.dataset.provider];
