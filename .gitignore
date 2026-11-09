@@ -4,6 +4,7 @@
 # Large provider snapshots and the local index
 /archive.json
 /google_drive.json
+/snapshots/
 /file_indexer.db
 /file_indexer.db-shm
 /file_indexer.db-wal

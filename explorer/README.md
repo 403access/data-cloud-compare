@@ -54,25 +54,49 @@ scripts/fetch_google_drive.sh # list the drive, then compare with the local DB
 python3 explorer/server.py --open
 ```
 
-The script writes `google_drive.json` and `report/google_drive/`, then the
-explorer shows a **Google Drive** button in the top bar. If the remote has a
-different name:
+Each run is stored as a versioned snapshot:
+
+```
+snapshots/google_drive/
+  20261109T232100Z/
+    google_drive.json
+    manifest.json
+    report/
+  LATEST                      # name of the newest snapshot
+```
+
+The script writes a new timestamped version, points `LATEST` at it, and keeps
+the five newest versions (`GDRIVE_KEEP=0` keeps all of them). The explorer
+always resolves `LATEST`, so it shows the most recent snapshot automatically;
+older versions stay on disk for history. Restart the explorer after a fetch so
+it rebuilds its cache from the new version.
+
+If you change `GDRIVE_SNAPSHOTS`, start the explorer with the same value so it
+looks in that directory.
+
+If the remote has a different name:
 
 ```bash
 GDRIVE_REMOTE=my-drive scripts/fetch_google_drive.sh
 ```
 
-Optional: list a subfolder instead of the whole drive, or use a non-default
-rclone config:
+Optional: list a subfolder instead of the whole drive, use a non-default
+rclone config, or change the version root / retention:
 
 ```bash
 GDRIVE_PATH=Backup \
+GDRIVE_SNAPSHOTS=/Volumes/archive/gdrive-snapshots \
+GDRIVE_KEEP=10 \
 RCLONE_CONFIG=/path/to/rclone.conf \
   scripts/fetch_google_drive.sh
 ```
 
 Set `SKIP_COMPARE=1` to only refresh the snapshot. Re-run the script whenever
 you want a fresh Google Drive comparison.
+
+The legacy flat paths (`google_drive.json` and `report/google_drive`) are still
+used when no versioned snapshot exists. To force that mode, set either
+`GDRIVE_ARCHIVE` or `GDRIVE_REPORT` explicitly.
 
 If Google Drive has not been fetched yet, its button is dimmed and the tooltip
 explains what to run. Jottacloud keeps working independently.
@@ -157,6 +181,8 @@ scripts/
   compare.py         snapshot vs local DB comparison + report
   fetch_google_drive.sh
                      rclone Google Drive snapshot + comparison
+snapshots/
+  google_drive/<version>/  versioned snapshots, manifests and reports
 ```
 
 No Python packages are required; only the standard library, `file_indexer.db`,
