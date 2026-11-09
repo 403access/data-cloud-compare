@@ -124,6 +124,16 @@ function fmtDate(ts) {
   try { return DATE.format(new Date(ts * 1000)); } catch { return '—'; }
 }
 
+function entryType(entry) {
+  if (entry.type) return entry.type;
+  if (entry.is_dir) return 'Folder';
+  const name = entry.name || baseOf(entry.path);
+  const dot = name.lastIndexOf('.');
+  return dot > 0 && dot < name.length - 1
+    ? name.slice(dot + 1).toUpperCase()
+    : 'File';
+}
+
 function plural(n, one, many) {
   return `${fmtNum(n)} ${n === 1 ? one : (many || one + 's')}`;
 }
@@ -217,10 +227,40 @@ function counterpartTarget(entry, side) {
 
 /* ------------------------------------------------------------------- state */
 
+const COLUMN_DEFS = [
+  { id: 'name', label: 'Name', hint: 'File or folder name', width: 'minmax(0, 1fr)', required: true },
+  { id: 'type', label: 'Type', hint: 'Folder or file extension', width: 'var(--col-type)' },
+  { id: 'status', label: 'Status', hint: 'Comparison result', width: 'var(--col-status)' },
+  { id: 'size', label: 'Size', hint: 'Bytes or direct item count', width: 'var(--col-size)' },
+  { id: 'modified', label: 'Modified', hint: 'Last modified date', width: 'var(--col-mod)' },
+];
+
+const COLUMN_STORAGE_KEY = 'explorer-columns';
+const DEFAULT_COLUMNS = COLUMN_DEFS.map(col => col.id);
+
+function readVisibleColumns() {
+  let saved = null;
+  try {
+    saved = JSON.parse(localStorage.getItem(COLUMN_STORAGE_KEY) || 'null');
+  } catch { /* ignore */ }
+  if (!Array.isArray(saved)) return new Set(DEFAULT_COLUMNS);
+  const valid = new Set(DEFAULT_COLUMNS);
+  const chosen = new Set(saved.filter(id => valid.has(id)));
+  chosen.add('name');
+  return chosen;
+}
+
+function saveVisibleColumns() {
+  try {
+    localStorage.setItem(COLUMN_STORAGE_KEY, JSON.stringify([...state.columns]));
+  } catch { /* ignore */ }
+}
+
 const state = {
   active: 'local',
   hidden: false,
   provider: 'jottacloud',
+  columns: readVisibleColumns(),
 };
 
 const providerCatalog = {
@@ -233,6 +273,230 @@ function currentProvider() {
 }
 
 const panes = {};
+
+function columnTemplate() {
+  return COLUMN_DEFS
+    .filter(col => state.columns.has(col.id))
+    .map(col => col.width)
+    .join(' ');
+}
+
+function setColumnVisibility(id, visible) {
+  const def = COLUMN_DEFS.find(col => col.id === id);
+  if (!def || def.required) return;
+  if (visible) state.columns.add(id);
+  else state.columns.delete(id);
+  saveVisibleColumns();
+  syncColumnsPanel();
+  Object.values(panes).forEach(pane => pane.applyColumns());
+}
+
+function resetColumns() {
+  state.columns = new Set(DEFAULT_COLUMNS);
+  saveVisibleColumns();
+  syncColumnsPanel();
+  Object.values(panes).forEach(pane => pane.applyColumns());
+}
+
+function buildColumnsPanel() {
+  const options = document.getElementById('columns-options');
+  if (!options) return;
+  const rows = COLUMN_DEFS.map(col => {
+    const row = document.createElement('label');
+    row.className = 'columns-option';
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.dataset.column = col.id;
+    input.checked = state.columns.has(col.id);
+    input.disabled = Boolean(col.required);
+    input.addEventListener('change', () => {
+      setColumnVisibility(col.id, input.checked);
+    });
+    const text = document.createElement('span');
+    text.className = 'columns-option-text';
+    const title = document.createElement('span');
+    title.className = 'columns-option-title';
+    title.textContent = col.label;
+    const hint = document.createElement('span');
+    hint.className = 'columns-option-hint';
+    hint.textContent = col.required ? 'Always shown' : col.hint;
+    text.append(title, hint);
+    row.append(input, text);
+    return row;
+  });
+  options.replaceChildren(...rows);
+}
+
+function syncColumnsPanel() {
+  document.querySelectorAll('#columns-options input[data-column]').forEach(input => {
+    input.checked = state.columns.has(input.dataset.column);
+  });
+}
+
+let sidebarMode = null;
+
+function setSidebarMode(mode) {
+  sidebarMode = mode || null;
+  const layout = document.getElementById('panes');
+  const columns = document.getElementById('columns-panel');
+  const detail = document.getElementById('detail-panel');
+  if (columns) columns.hidden = sidebarMode !== 'columns';
+  if (detail) detail.hidden = sidebarMode !== 'detail';
+  if (layout) layout.classList.toggle('sidebar-open', Boolean(sidebarMode));
+}
+
+function openColumnsPanel() {
+  const panel = document.getElementById('columns-panel');
+  if (!panel) return;
+  syncColumnsPanel();
+  setSidebarMode('columns');
+  const close = document.getElementById('columns-close');
+  if (close) close.focus({ preventScroll: true });
+}
+
+function closeColumnsPanel() {
+  if (sidebarMode !== 'columns') return;
+  setSidebarMode(null);
+}
+
+function closeDetailPanel() {
+  if (sidebarMode !== 'detail') return;
+  setSidebarMode(null);
+}
+
+function detailFact(label, value, opts = {}) {
+  const row = document.createElement('div');
+  row.className = 'detail-fact' + (opts.mono ? ' mono' : '');
+  const name = document.createElement('span');
+  name.className = 'detail-fact-label';
+  name.textContent = label;
+  const text = document.createElement('span');
+  text.className = 'detail-fact-value';
+  if (value instanceof Node) text.append(value);
+  else {
+    text.textContent = value;
+    text.title = opts.title || value;
+  }
+  row.append(name, text);
+  return row;
+}
+
+function renderDetailPanel(pane, entry) {
+  const body = document.getElementById('detail-body');
+  if (!body || !entry) return;
+  const name = entry.name || baseOf(entry.path);
+  body.replaceChildren();
+
+  const hero = document.createElement('div');
+  hero.className = 'detail-hero';
+  const icon = document.createElement('span');
+  icon.className = 'detail-icon';
+  icon.innerHTML = iconFor(entry); // static icon markup only
+  const titles = document.createElement('div');
+  titles.className = 'detail-hero-text';
+  const heading = document.createElement('h3');
+  heading.textContent = name;
+  heading.title = name;
+  titles.append(heading);
+  if (entry.path && entry.path !== name) {
+    const path = document.createElement('p');
+    path.className = 'detail-path';
+    path.textContent = entry.path;
+    path.title = entry.path;
+    titles.append(path);
+  }
+  hero.append(icon, titles);
+  body.append(hero);
+
+  const badges = document.createElement('div');
+  badges.className = 'detail-badges';
+  const type = document.createElement('span');
+  type.className = 'detail-type';
+  type.textContent = entry.is_dir ? 'Folder' : entryType(entry);
+  const chip = document.createElement('span');
+  chip.className = `status-chip st-${entry.status || 'unmatched'}`;
+  const dot = document.createElement('span');
+  dot.className = 'dot';
+  const chipLabel = document.createElement('span');
+  chipLabel.textContent = statusLabel(entry, pane.side);
+  chip.append(dot, chipLabel);
+  const chipTitle = statusTitle(entry);
+  if (chipTitle) chip.title = chipTitle;
+  badges.append(type, chip);
+  body.append(badges);
+
+  const facts = document.createElement('div');
+  facts.className = 'detail-facts';
+  facts.append(detailFact(entry.is_dir ? 'Items' : 'Size', entry.is_dir
+    ? (entry.child_count != null ? `${fmtNum(entry.child_count)} direct` : '—')
+    : fmtBytes(entry.size)));
+  if (entry.modified) facts.append(detailFact('Modified', fmtDate(entry.modified)));
+  if (entry.parent) facts.append(detailFact('Folder', entry.parent, { mono: true }));
+  if (entry.found_at) facts.append(detailFact('Found at', entry.found_at, { mono: true }));
+  facts.append(detailFact('Source', pane.side === 'local'
+    ? 'Local index'
+    : currentProvider().label));
+  body.append(facts);
+
+  const notes = [];
+  if (entry.note) notes.push(entry.note);
+  if (entry.agg && entry.agg.total) {
+    const a = entry.agg;
+    const parts = [
+      `${fmtNum(a.exact)} same`,
+      `${fmtNum(a.moved)} moved`,
+      `${fmtNum(a.possible)} maybe`,
+    ];
+    if (a.partial) parts.push(`${fmtNum(a.partial)} partial`);
+    parts.push(`${fmtNum(a.missing)} missing`);
+    notes.push(`${fmtNum(a.total)} items: ${parts.join(', ')}`);
+  }
+  if (notes.length) {
+    const note = document.createElement('p');
+    note.className = 'detail-note';
+    note.textContent = notes.join('\n');
+    body.append(note);
+  }
+
+  const actions = document.createElement('div');
+  actions.className = 'detail-actions';
+  if (entry.is_dir) {
+    const open = document.createElement('button');
+    open.type = 'button';
+    open.className = 'btn primary';
+    open.textContent = 'Open folder';
+    open.addEventListener('click', () => {
+      closeDetailPanel();
+      pane.activate(entry);
+    });
+    actions.append(open);
+  }
+  const target = counterpartTarget(entry, pane.side);
+  const reveal = document.createElement('button');
+  reveal.type = 'button';
+  reveal.className = 'btn';
+  reveal.textContent = pane.side === 'remote'
+    ? 'Show in local index'
+    : `Show in ${currentProvider().label}`;
+  reveal.disabled = !target;
+  reveal.addEventListener('click', () => revealCounterpart(entry, pane.side));
+  actions.append(reveal);
+  body.append(actions);
+}
+
+function openDetailPanel(pane, entry) {
+  if (!entry) return;
+  renderDetailPanel(pane, entry);
+  setSidebarMode('detail');
+}
+
+function refreshDetailPanel() {
+  if (sidebarMode !== 'detail') return;
+  const pane = panes[state.active];
+  const entry = pane && pane.selectedEntry();
+  if (entry) renderDetailPanel(pane, entry);
+  else closeDetailPanel();
+}
 
 let toastTimer = null;
 function toast(message) {
@@ -302,6 +566,7 @@ class Pane {
     this.badgeEl = root.querySelector('[data-role="badge"]');
     this.summaryEl = root.querySelector('[data-role="summary"]');
     this.chipsEl = root.querySelector('[data-role="chips"]');
+    this.columnHead = root.querySelector('[data-role="columns"]');
     this.columnButtons = [...root.querySelectorAll('[data-sort]')];
     this.backBtn = root.querySelector('[data-act="back"]');
     this.forwardBtn = root.querySelector('[data-act="forward"]');
@@ -309,6 +574,7 @@ class Pane {
     this.mirrorBtn = root.querySelector('[data-act="mirror"]');
 
     this.bind();
+    this.applyColumns(false);
     this.updateSortIndicators();
     this.buildStatusFilter();
 
@@ -356,6 +622,24 @@ class Pane {
 
     this.columnButtons.forEach(btn => {
       btn.addEventListener('click', () => this.setSort(btn.dataset.sort));
+    });
+
+    this.columnHead.addEventListener('contextmenu', ev => {
+      ev.preventDefault();
+      openColumnsPanel();
+    });
+    this.list.addEventListener('contextmenu', ev => {
+      const row = ev.target.closest('.row');
+      if (!row) {
+        ev.preventDefault();
+        openColumnsPanel();
+        return;
+      }
+      ev.preventDefault();
+      setActive(this.side);
+      this.select(row.dataset.path);
+      const entry = this.currentEntries().find(e => e.path === row.dataset.path);
+      if (entry) openDetailPanel(this, entry);
     });
 
     this.body.addEventListener('click', ev => {
@@ -543,6 +827,7 @@ class Pane {
     const { push = true, select = null } = opts;
     path = path || '';
     this.exitSearch(false);
+    closeDetailPanel();
     this.path = path;
     if (push) {
       if (this.history[this.hIndex] !== path) {
@@ -711,6 +996,7 @@ class Pane {
     if (this.sort === 'size') key = e => e.size || 0;
     else if (this.sort === 'modified') key = e => e.modified || 0;
     else if (this.sort === 'status') key = e => statusOrder[e.status] ?? 99;
+    else if (this.sort === 'type') key = e => entryType(e).toLocaleLowerCase();
     else key = e => (e.name || '').toLocaleLowerCase();
     const dir = this.dir === 'desc' ? -1 : 1;
     this.results.sort((a, b) => {
@@ -737,6 +1023,15 @@ class Pane {
     } else {
       this.fetchList();
     }
+  }
+
+  applyColumns(rerender = true) {
+    this.columnButtons.forEach(btn => {
+      btn.hidden = !state.columns.has(btn.dataset.sort);
+    });
+    this.root.style.setProperty('--col-template', columnTemplate());
+    this.updateSortIndicators();
+    if (rerender) this.renderAll(false);
   }
 
   updateSortIndicators() {
@@ -820,6 +1115,13 @@ class Pane {
       nameCell.append(sub);
     }
 
+    const typeCell = document.createElement('div');
+    typeCell.className = 'row-cell cell-type';
+    typeCell.textContent = entryType(entry);
+    if (!entry.is_dir && entry.size != null) {
+      typeCell.title = `${entryType(entry)} file · ${fmtNum(entry.size)} bytes`;
+    }
+
     const statusCell = document.createElement('div');
     statusCell.className = 'row-cell cell-status';
     const chip = document.createElement('span');
@@ -851,7 +1153,16 @@ class Pane {
     modCell.className = 'row-cell cell-mod';
     modCell.textContent = entry.modified ? fmtDate(entry.modified) : '—';
 
-    row.append(nameCell, statusCell, sizeCell, modCell);
+    const cells = {
+      name: nameCell,
+      type: typeCell,
+      status: statusCell,
+      size: sizeCell,
+      modified: modCell,
+    };
+    COLUMN_DEFS.forEach(col => {
+      if (state.columns.has(col.id)) row.append(cells[col.id]);
+    });
     return row;
   }
 
@@ -1054,6 +1365,7 @@ function updateSelectionBar() {
   if (!pane) return;
 
   const entry = pane.selectedEntry();
+  refreshDetailPanel();
   info.replaceChildren();
   if (!entry) {
     const span = document.createElement('span');
@@ -1324,6 +1636,11 @@ async function init() {
   panes.local = new Pane('local', document.getElementById('pane-local'));
   panes.remote = new Pane('remote', document.getElementById('pane-remote'));
 
+  buildColumnsPanel();
+  document.getElementById('columns-close').addEventListener('click', closeColumnsPanel);
+  document.getElementById('columns-reset').addEventListener('click', resetColumns);
+  document.getElementById('detail-close').addEventListener('click', closeDetailPanel);
+
   try {
     await loadProviders();
   } catch (err) {
@@ -1377,6 +1694,11 @@ async function init() {
     }
   });
   document.addEventListener('keydown', ev => {
+    if (ev.key === 'Escape' && sidebarMode) {
+      ev.preventDefault();
+      setSidebarMode(null);
+      return;
+    }
     if ((ev.metaKey || ev.ctrlKey) && ev.key.toLowerCase() === 'f') {
       ev.preventDefault();
       panes[state.active].searchInput.focus();

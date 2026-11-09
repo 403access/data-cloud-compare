@@ -126,7 +126,13 @@ explains what to run. Jottacloud keeps working independently.
   bottom bar. It jumps the other pane to the matching item — the other path
   for a moved file, the same path for an exact match. `Partial` folders jump to
   the same path; `Missing`/`Local only` items have no counterpart.
-- **Columns**: click `Name`, `Status`, `Size` or `Modified` to sort.
+- **Details**: right-click a file or folder to open its details sidebar. It shows
+  the path, type, size or item count, modified date, match status and any
+  comparison notes, plus actions to open the folder or reveal the counterpart.
+- **Columns**: click `Name`, `Type`, `Status`, `Size` or `Modified` to sort.
+  Right-click a table header (or empty table space) to open the column sidebar
+  and choose which columns are shown; the choice is remembered and applies to
+  both panes.
 - **Hidden files**: the `Hidden` switch shows dotfiles (off by default, like
   Finder).
 - **Theme**: the sun/moon button switches light/dark. Add `?theme=light` or

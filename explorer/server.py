@@ -86,6 +86,17 @@ def placeholders(n: int) -> str:
     return ",".join("?" * n)
 
 
+def entry_type(name: str, is_dir: bool) -> str:
+    """Human-readable type: Folder, File, or the uppercase file extension."""
+    if is_dir:
+        return "Folder"
+    name = name or ""
+    dot = name.rfind(".")
+    if 0 < dot < len(name) - 1:
+        return name[dot + 1:].upper()
+    return "File"
+
+
 def sort_entries(entries: list, sort: str, direction: str) -> list:
     desc = direction == "desc"
     if sort == "size":
@@ -94,6 +105,8 @@ def sort_entries(entries: list, sort: str, direction: str) -> list:
         key = lambda e: e.get("modified") or 0  # noqa: E731
     elif sort == "status":
         key = lambda e: STATUS_ORDER.get(e.get("status"), 99)  # noqa: E731
+    elif sort == "type":
+        key = lambda e: (e.get("type") or "").casefold()  # noqa: E731
     else:
         key = lambda e: e.get("name", "").casefold()  # noqa: E731
     entries.sort(key=key, reverse=desc)
@@ -148,6 +161,7 @@ def remote_entry(row) -> dict:
         "path": row["path"],
         "parent": row["path"].rpartition("/")[0] if "/" in row["path"] else "",
         "is_dir": is_dir,
+        "type": entry_type(row["name"], is_dir),
         "size": None if is_dir else int(row["size"] or 0),
         "modified": None,
         "status": status,
@@ -412,11 +426,13 @@ def local_entries_from_rows(rows, cache_con, con, need_counts=True) -> list:
             continue
         rel = path[len(BASE) + 1:]
         is_dir = bool(r["is_directory"])
+        name = rel.rpartition("/")[2]
         entries.append({
-            "name": rel.rpartition("/")[2],
+            "name": name,
             "path": rel,
             "parent": rel.rpartition("/")[0] if "/" in rel else "",
             "is_dir": is_dir,
+            "type": entry_type(name, is_dir),
             "size": None if is_dir else int(r["size"] or 0),
             "modified": r["modified"],
             "status": "unmatched",
@@ -612,7 +628,7 @@ class Handler(BaseHTTPRequestHandler):
             sort = params.get("sort", "name")
             direction = params.get("dir", "asc")
             hidden = params.get("hidden", "0") in ("1", "true", "yes")
-            if sort not in ("name", "size", "modified", "status"):
+            if sort not in ("name", "type", "size", "modified", "status"):
                 sort = "name"
             if direction not in ("asc", "desc"):
                 direction = "asc"
