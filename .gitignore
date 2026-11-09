@@ -1,0 +1,25 @@
+# Credentials
+/rclone.conf
+
+# Large provider snapshots and the local index
+/archive.json
+/google_drive.json
+/file_indexer.db
+/file_indexer.db-shm
+/file_indexer.db-wal
+/archive_list.log
+/compare.log
+
+# Generated comparison reports (keep the hand-written summary)
+/report/*
+!/report/SUMMARY.md
+
+# Explorer cache (generated from snapshots + report data)
+explorer/.cache/
+
+# Python
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
