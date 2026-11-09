@@ -334,14 +334,35 @@ function syncColumnsPanel() {
 }
 
 let sidebarMode = null;
+let sidebarHideTimer = null;
+const SIDEBAR_MS = 340; // keep in sync with --motion-layout in style.css
 
 function setSidebarMode(mode) {
   sidebarMode = mode || null;
   const layout = document.getElementById('panes');
-  const columns = document.getElementById('columns-panel');
-  const detail = document.getElementById('detail-panel');
-  if (columns) columns.hidden = sidebarMode !== 'columns';
-  if (detail) detail.hidden = sidebarMode !== 'detail';
+  const panels = {
+    columns: document.getElementById('columns-panel'),
+    detail: document.getElementById('detail-panel'),
+  };
+  clearTimeout(sidebarHideTimer);
+
+  for (const [key, panel] of Object.entries(panels)) {
+    if (!panel || key === sidebarMode) continue;
+    panel.classList.remove('is-open');
+    if (panel.hidden) continue;
+    // Keep the closing panel around until it has animated away.
+    sidebarHideTimer = setTimeout(() => {
+      if (sidebarMode !== key) panel.hidden = true;
+    }, SIDEBAR_MS);
+  }
+
+  const panel = panels[sidebarMode];
+  if (panel) {
+    panel.hidden = false;
+    void panel.offsetWidth; // flush the closed state so the open transition runs
+    panel.classList.add('is-open');
+  }
+
   if (layout) layout.classList.toggle('sidebar-open', Boolean(sidebarMode));
 }
 
@@ -1367,6 +1388,9 @@ function updateSelectionBar() {
   const entry = pane.selectedEntry();
   refreshDetailPanel();
   info.replaceChildren();
+  info.classList.remove('selection-enter');
+  void info.offsetWidth;
+  info.classList.add('selection-enter');
   if (!entry) {
     const span = document.createElement('span');
     span.className = 'muted';

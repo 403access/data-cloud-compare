@@ -40,6 +40,11 @@
   --col-status: 98px;
   --col-size: 86px;
   --col-mod: 138px;
+  --sidebar-w: 300px;
+  --motion-fast: 160ms;
+  --motion-base: 240ms;
+  --motion-layout: 340ms;
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI",
           "Helvetica Neue", Arial, sans-serif;
 }
@@ -387,13 +392,23 @@ button { cursor: pointer; }
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  /* The sidebar track is always part of the grid so its width can animate. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0px, 0px);
   gap: 10px;
-  padding: 10px;
+  padding: 10px 0 10px 10px;
+  transition:
+    grid-template-columns var(--motion-layout) var(--ease-out),
+    padding-right var(--motion-layout) var(--ease-out);
 }
 .panes.sidebar-open {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 300px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0px, var(--sidebar-w));
+  padding-right: 10px;
 }
+
+.panes > #pane-local { grid-column: 1; grid-row: 1; }
+.panes > #pane-remote { grid-column: 2; grid-row: 1; }
+.panes > .columns-panel,
+.panes > .detail-panel { grid-column: 3; grid-row: 1; }
 
 .pane {
   display: flex;
@@ -405,6 +420,9 @@ button { cursor: pointer; }
   border-radius: 12px;
   overflow: hidden;
   box-shadow: var(--shadow);
+  transition:
+    border-color var(--motion-fast) ease,
+    box-shadow var(--motion-fast) ease;
 }
 .pane.active {
   border-color: color-mix(in srgb, var(--accent) 42%, var(--line));
@@ -939,6 +957,11 @@ button { cursor: pointer; }
   max-width: 40%;
 }
 .selection .sel-found:hover { filter: brightness(1.08); }
+.selection.selection-enter { animation: selection-in var(--motion-base) var(--ease-out); }
+@keyframes selection-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
 .muted { color: var(--text-3); }
 
 /* ------------------------------ column sidebar ------------------------- */
@@ -949,14 +972,48 @@ button { cursor: pointer; }
   flex-direction: column;
   min-width: 0;
   min-height: 0;
+  width: 100%;
   background: var(--pane-bg);
   border: 1px solid var(--line);
   border-radius: 12px;
   box-shadow: var(--shadow);
   overflow: hidden;
+  opacity: 0;
+  transform: translateX(18px) scale(.985);
+  transform-origin: right center;
+  pointer-events: none;
+  transition:
+    opacity var(--motion-base) var(--ease-out),
+    transform var(--motion-layout) var(--ease-out);
+  will-change: opacity, transform;
+}
+.columns-panel.is-open,
+.detail-panel.is-open {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
 }
 .columns-panel[hidden],
 .detail-panel[hidden] { display: none; }
+
+/* Slight fade/stagger so the sidebar content settles after the panel lands. */
+.columns-panel > *,
+.detail-panel > * {
+  opacity: 0;
+  transform: translateY(7px);
+  transition:
+    opacity var(--motion-fast) ease,
+    transform var(--motion-base) var(--ease-out);
+}
+.columns-panel.is-open > *,
+.detail-panel.is-open > * {
+  opacity: 1;
+  transform: none;
+}
+.columns-panel.is-open > :nth-child(2),
+.detail-panel.is-open > :nth-child(2) { transition-delay: 45ms; }
+.columns-panel.is-open > :nth-child(3),
+.detail-panel.is-open > :nth-child(3) { transition-delay: 90ms; }
 
 .columns-panel-head,
 .detail-panel-head {
@@ -1144,6 +1201,18 @@ button { cursor: pointer; }
 }
 .detail-actions .btn { justify-content: center; }
 
+/* -------------------------------- motion ------------------------------- */
+
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(-6px) scale(.98); }
+  to { opacity: 1; transform: none; }
+}
+.legend,
+.filter-menu {
+  transform-origin: top right;
+  animation: pop-in var(--motion-fast) var(--ease-out);
+}
+
 /* -------------------------------- toast -------------------------------- */
 
 .toast {
@@ -1174,9 +1243,7 @@ button { cursor: pointer; }
     --col-status: 92px;
     --col-size: 78px;
     --col-mod: 112px;
-  }
-  .panes.sidebar-open {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 260px;
+    --sidebar-w: 260px;
   }
   .mirror-text { display: none; }
   .brand { min-width: 190px; }
@@ -1188,13 +1255,22 @@ button { cursor: pointer; }
   .meta-strip { order: 3; flex-basis: 100%; }
   .panes {
     grid-template-columns: 1fr;
-    grid-template-rows: minmax(430px, 1fr) minmax(430px, 1fr);
+    grid-template-rows: minmax(430px, 1fr) minmax(430px, 1fr) minmax(0px, 0px);
+    padding-bottom: 0;
     overflow-y: auto;
+    transition:
+      grid-template-rows var(--motion-layout) var(--ease-out),
+      padding-bottom var(--motion-layout) var(--ease-out);
   }
   .panes.sidebar-open {
     grid-template-columns: 1fr;
-    grid-template-rows: minmax(430px, 1fr) minmax(430px, 1fr) minmax(260px, auto);
+    grid-template-rows: minmax(430px, 1fr) minmax(430px, 1fr) minmax(280px, 280px);
+    padding-bottom: 10px;
   }
+  .panes > #pane-local { grid-column: 1; grid-row: 1; }
+  .panes > #pane-remote { grid-column: 1; grid-row: 2; }
+  .panes > .columns-panel,
+  .panes > .detail-panel { grid-column: 1; grid-row: 3; }
   :root {
     --col-type: 58px;
     --col-status: 82px;
