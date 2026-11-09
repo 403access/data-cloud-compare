@@ -135,8 +135,14 @@ explains what to run. Jottacloud keeps working independently.
   both panes.
 - **Hidden files**: the `Hidden` switch shows dotfiles (off by default, like
   Finder).
-- **Theme**: the sun/moon button switches light/dark. Add `?theme=light` or
-  `?theme=dark` to the URL to force one.
+- **Theme**: pick `System`, `Light`, `Dark` or `Water` from the theme menu in
+  the header. The Water theme adds fluid motion, drifting light and optional
+  cursor drips. Its settings live in the left sidebar (open it with the gear
+  button, or automatically when you choose Water): toggle the effects, cursor
+  drips, click ripples, caustic shimmer and glass surfaces, and choose the water
+  tone, flow speed and drip energy. Settings are saved per device. Add
+  `?theme=light`, `?theme=dark` or `?theme=water` to the URL to force a theme
+  for that visit.
 
 Lists are virtualised, so folders with tens of thousands of entries stay
 responsive. Sizes are byte sizes for files and direct item counts for folders.
@@ -179,9 +185,10 @@ explorer/
   cache.py           builds explorer/.cache/explorer*.db per provider
   search_index.py    compact name index for fast substring search
   web/
-    index.html       two-pane shell + provider switch
-    style.css        Finder-like light/dark theme
-    app.js           virtual list, navigation, search, reveal, provider switch
+    index.html       two-pane shell + provider switch + theme menu
+    style.css        Finder-like light/dark themes + the Water theme
+    app.js           virtual list, navigation, search, reveal, provider switch,
+                     theme settings and the water ripple canvas
   run.command        macOS double-click launcher
 scripts/
   compare.py         snapshot vs local DB comparison + report

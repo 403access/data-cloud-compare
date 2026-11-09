@@ -7,18 +7,25 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='7' width='12' height='18' rx='3' fill='%230a84ff'/%3E%3Crect x='18' y='7' width='12' height='18' rx='3' fill='%235e5ce6'/%3E%3C/svg%3E">
 <script>
   try {
+    var validThemes = ['light', 'dark', 'water'];
     var wantedTheme = new URLSearchParams(location.search).get('theme');
-    if (wantedTheme === 'light' || wantedTheme === 'dark') {
+    if (wantedTheme === 'system') {
+      /* follow the operating system */
+    } else if (validThemes.indexOf(wantedTheme) !== -1) {
       document.documentElement.dataset.theme = wantedTheme;
     } else {
       var savedTheme = localStorage.getItem('explorer-theme');
-      if (savedTheme) document.documentElement.dataset.theme = savedTheme;
+      if (validThemes.indexOf(savedTheme) !== -1) {
+        document.documentElement.dataset.theme = savedTheme;
+      }
     }
   } catch (e) { /* ignore */ }
 </script>
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
+
+<canvas id="water-fx" aria-hidden="true"></canvas>
 
 <header class="appbar">
   <div class="brand">
@@ -57,13 +64,25 @@
       <span class="toggle-track"><span class="toggle-thumb"></span></span>
       <span>Hidden</span>
     </label>
-    <button id="theme-toggle" class="btn icon-btn" title="Toggle light / dark">
-      <svg class="icon-sun" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-        <circle cx="10" cy="10" r="3.4" fill="currentColor"/>
-        <path d="M10 1.6v2M10 16.4v2M1.6 10h2M16.4 10h2M3.9 3.9l1.4 1.4M14.7 14.7l1.4 1.4M16.1 3.9l-1.4 1.4M5.3 14.7l-1.4 1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    <div class="theme-picker">
+      <svg class="theme-picker-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M10 2.6S4.4 8.2 4.4 12a5.6 5.6 0 0 0 11.2 0c0-3.8-5.6-9.4-5.6-9.4Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+        <path d="M7.6 12.5a2.5 2.5 0 0 0 2.4 2.2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".7"/>
       </svg>
-      <svg class="icon-moon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-        <path d="M16.5 12.2A7 7 0 0 1 7.8 3.5 7 7 0 1 0 16.5 12.2Z" fill="currentColor"/>
+      <select id="theme-select" aria-label="Theme">
+        <option value="system">System</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="water">Water</option>
+      </select>
+      <svg class="theme-picker-chevron" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+        <path d="m2.5 4.5 3.5 3.5 3.5-3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <button id="theme-settings-toggle" class="btn icon-btn" title="Water theme settings" aria-label="Water theme settings" aria-expanded="false" aria-controls="theme-panel">
+      <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <circle cx="10" cy="10" r="2.4" stroke="currentColor" stroke-width="1.4"/>
+        <path d="M10 2.4v1.8M10 15.8v1.8M2.4 10h1.8M15.8 10h1.8M4.6 4.6l1.3 1.3M14.1 14.1l1.3 1.3M15.4 4.6l-1.3 1.3M5.9 14.1l-1.3 1.3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
       </svg>
     </button>
   </div>
@@ -227,6 +246,122 @@
       <span class="mini-chips" data-role="chips"></span>
     </div>
   </section>
+
+  <aside class="theme-panel" id="theme-panel" aria-labelledby="theme-panel-title" hidden>
+    <header class="theme-panel-head">
+      <div>
+        <h2 id="theme-panel-title">Water settings</h2>
+        <p>Shape the current and the calm.</p>
+      </div>
+      <button type="button" class="btn icon-btn" id="theme-panel-close" title="Close" aria-label="Close">×</button>
+    </header>
+    <div class="theme-panel-body">
+      <div class="theme-status" id="theme-status">
+        <span class="theme-status-dot" aria-hidden="true"></span>
+        <p id="theme-status-text">Water effects are active.</p>
+        <button type="button" class="theme-status-action" id="theme-activate" hidden>Use Water</button>
+      </div>
+
+      <section class="theme-group">
+        <h3>Effects</h3>
+        <label class="theme-switch-row">
+          <span class="theme-switch-text">
+            <span class="theme-switch-title">Water effects</span>
+            <span class="theme-switch-hint">Master switch for ripples and shimmer.</span>
+          </span>
+          <span class="toggle">
+            <input type="checkbox" id="water-effects">
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </span>
+        </label>
+        <label class="theme-switch-row">
+          <span class="theme-switch-text">
+            <span class="theme-switch-title">Drips follow the cursor</span>
+            <span class="theme-switch-hint">Small, soft rings trail your pointer.</span>
+          </span>
+          <span class="toggle">
+            <input type="checkbox" id="water-drips">
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </span>
+        </label>
+        <label class="theme-switch-row">
+          <span class="theme-switch-text">
+            <span class="theme-switch-title">Ripples on click</span>
+            <span class="theme-switch-hint">Clicking sends one larger ring outward.</span>
+          </span>
+          <span class="toggle">
+            <input type="checkbox" id="water-click">
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </span>
+        </label>
+        <label class="theme-switch-row">
+          <span class="theme-switch-text">
+            <span class="theme-switch-title">Caustic shimmer</span>
+            <span class="theme-switch-hint">Slow light patterns drift behind the app.</span>
+          </span>
+          <span class="toggle">
+            <input type="checkbox" id="water-caustics">
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </span>
+        </label>
+      </section>
+
+      <section class="theme-group">
+        <h3>Current</h3>
+        <label class="theme-select-row">
+          <span class="theme-switch-text">
+            <span class="theme-switch-title">Flow speed</span>
+            <span class="theme-switch-hint">How quickly the water moves.</span>
+          </span>
+          <select id="water-speed" class="theme-select">
+            <option value="calm">Calm</option>
+            <option value="flowing">Flowing</option>
+            <option value="rapid">Rapid</option>
+          </select>
+        </label>
+        <label class="theme-select-row">
+          <span class="theme-switch-text">
+            <span class="theme-switch-title">Drip energy</span>
+            <span class="theme-switch-hint">How lively cursor drips feel.</span>
+          </span>
+          <select id="water-intensity" class="theme-select">
+            <option value="subtle">Subtle</option>
+            <option value="balanced">Balanced</option>
+            <option value="lively">Lively</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="theme-group">
+        <h3>Look</h3>
+        <label class="theme-select-row">
+          <span class="theme-switch-text">
+            <span class="theme-switch-title">Water tone</span>
+            <span class="theme-switch-hint">Choose the palette of the sea.</span>
+          </span>
+          <select id="water-tone" class="theme-select">
+            <option value="lagoon">Lagoon</option>
+            <option value="ocean">Ocean</option>
+            <option value="deep">Deep</option>
+          </select>
+        </label>
+        <label class="theme-switch-row">
+          <span class="theme-switch-text">
+            <span class="theme-switch-title">Glass surfaces</span>
+            <span class="theme-switch-hint">Frosted panes over the moving water.</span>
+          </span>
+          <span class="toggle">
+            <input type="checkbox" id="water-glass">
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </span>
+        </label>
+      </section>
+    </div>
+    <footer class="theme-panel-foot">
+      <button type="button" class="btn ghost" id="theme-reset">Reset water settings</button>
+      <p>Saved on this device. The Water theme is available from the theme menu in the header.</p>
+    </footer>
+  </aside>
 
   <aside class="columns-panel" id="columns-panel" aria-labelledby="columns-title" hidden>
     <header class="columns-panel-head">
