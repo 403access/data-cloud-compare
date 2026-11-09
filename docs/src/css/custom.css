@@ -1,0 +1,226 @@
+/**
+ * Data Cloud Compare documentation theme.
+ * Mirrors the marketing site's slate + teal palette.
+ */
+
+:root {
+  --ifm-color-primary: #0e9c8b;
+  --ifm-color-primary-dark: #0c8c7d;
+  --ifm-color-primary-darker: #0b8476;
+  --ifm-color-primary-darkest: #096d61;
+  --ifm-color-primary-light: #10ac99;
+  --ifm-color-primary-lighter: #11b4a0;
+  --ifm-color-primary-lightest: #22cbb7;
+
+  --ifm-background-color: #f6f8fc;
+  --ifm-background-surface-color: #ffffff;
+  --ifm-font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter",
+    Roboto, Helvetica, Arial, sans-serif;
+  --ifm-font-family-monospace: "SFMono-Regular", ui-monospace, Menlo, Consolas,
+    "Liberation Mono", monospace;
+  --ifm-heading-font-weight: 720;
+  --ifm-heading-letter-spacing: -0.025em;
+  --ifm-code-font-size: 92%;
+  --ifm-navbar-height: 64px;
+  --ifm-navbar-background-color: rgba(255, 255, 255, 0.82);
+  --ifm-footer-background-color: #f0f4fa;
+  --ifm-toc-border-color: #dbe3ef;
+  --docusaurus-highlighted-code-line-bg: rgba(14, 156, 139, 0.1);
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #5eead4;
+  --ifm-color-primary-dark: #3fe4ca;
+  --ifm-color-primary-darker: #2ee0c4;
+  --ifm-color-primary-darkest: #1cbda4;
+  --ifm-color-primary-light: #7defdd;
+  --ifm-color-primary-lighter: #8ff1e2;
+  --ifm-color-primary-lightest: #b9f7ee;
+
+  --ifm-background-color: #070a11;
+  --ifm-background-surface-color: #0e1522;
+  --ifm-navbar-background-color: rgba(9, 13, 22, 0.78);
+  --ifm-footer-background-color: #0a0f19;
+  --ifm-toc-border-color: rgba(160, 185, 220, 0.13);
+  --ifm-color-content-secondary: #8998b0;
+  --docusaurus-highlighted-code-line-bg: rgba(94, 234, 212, 0.12);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.navbar {
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+  box-shadow: none;
+}
+
+.navbar__title {
+  font-weight: 740;
+  letter-spacing: -0.025em;
+}
+
+.navbar__logo {
+  height: 28px;
+  width: 28px;
+}
+
+.navbar__link {
+  font-weight: 560;
+}
+
+.navbar__link--active {
+  color: var(--ifm-color-primary);
+}
+
+.footer {
+  border-top: 1px solid var(--ifm-toc-border-color);
+}
+
+.footer__title {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.footer__copyright {
+  font-size: 0.78rem;
+  opacity: 0.75;
+}
+
+.markdown h1:first-child {
+  --ifm-h1-font-size: 2.6rem;
+  letter-spacing: -0.04em;
+}
+
+.markdown h2 {
+  --ifm-h2-font-size: 1.65rem;
+  letter-spacing: -0.03em;
+  margin-top: 2.8rem;
+}
+
+.markdown h3 {
+  --ifm-h3-font-size: 1.25rem;
+  letter-spacing: -0.02em;
+}
+
+.markdown > p > code,
+.markdown li code {
+  border: 1px solid var(--ifm-toc-border-color);
+  border-radius: 5px;
+  padding: 0.1rem 0.32rem;
+  background: var(--ifm-background-surface-color);
+}
+
+.theme-code-block {
+  border: 1px solid var(--ifm-toc-border-color);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.menu__link {
+  border-radius: 7px;
+  font-size: 0.9rem;
+}
+
+.menu__link--active:not(.menu__link--sublist) {
+  background: color-mix(in srgb, var(--ifm-color-primary) 12%, transparent);
+}
+
+.table-of-contents__link {
+  font-size: 0.82rem;
+}
+
+.pagination-nav__link {
+  border-radius: 12px;
+}
+
+.admonition {
+  border-radius: 12px;
+}
+
+/* Simple status pills usable inside Markdown tables. */
+.status {
+  display: inline-block;
+  padding: 0.08rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+.status-same,
+.status-in {
+  color: #0f9d6e;
+  background: rgba(15, 157, 110, 0.12);
+}
+.status-moved {
+  color: #2f6fe4;
+  background: rgba(47, 111, 228, 0.12);
+}
+.status-possible {
+  color: #a97208;
+  background: rgba(169, 114, 8, 0.14);
+}
+.status-partial {
+  color: #c2571e;
+  background: rgba(194, 87, 30, 0.13);
+}
+.status-missing {
+  color: #d63b45;
+  background: rgba(214, 59, 69, 0.12);
+}
+.status-local {
+  color: #7c5ce0;
+  background: rgba(124, 92, 224, 0.13);
+}
+.status-type {
+  color: #b53d9b;
+  background: rgba(181, 61, 155, 0.12);
+}
+
+[data-theme='dark'] .status-same,
+[data-theme='dark'] .status-in {
+  color: #45e0a3;
+  background: rgba(69, 224, 163, 0.12);
+}
+[data-theme='dark'] .status-moved {
+  color: #74a8ff;
+  background: rgba(116, 168, 255, 0.12);
+}
+[data-theme='dark'] .status-possible {
+  color: #f3c969;
+  background: rgba(243, 201, 105, 0.13);
+}
+[data-theme='dark'] .status-partial {
+  color: #ffa26b;
+  background: rgba(255, 162, 107, 0.13);
+}
+[data-theme='dark'] .status-missing {
+  color: #ff7d82;
+  background: rgba(255, 125, 130, 0.12);
+}
+[data-theme='dark'] .status-local {
+  color: #b49bff;
+  background: rgba(180, 155, 255, 0.13);
+}
+[data-theme='dark'] .status-type {
+  color: #f08ad8;
+  background: rgba(240, 138, 216, 0.12);
+}
+
+.doc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.18rem 0.55rem;
+  border: 1px solid var(--ifm-toc-border-color);
+  border-radius: 999px;
+  color: var(--ifm-color-content-secondary);
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}

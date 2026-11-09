@@ -1,0 +1,739 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Data Cloud Compare — Know what's really in your cloud archive</title>
+  <meta name="description" content="Compare millions of cloud files against your local index. Find what's missing, what moved, and what's safe — in a local-first, read-only two-pane explorer.">
+  <meta name="theme-color" content="#0b0f17">
+  <meta property="og:title" content="Data Cloud Compare">
+  <meta property="og:description" content="Know what's really in your cloud archive. Local-first, read-only verification for millions of files.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    (function () {
+      document.documentElement.classList.add('js');
+      try {
+        var saved = localStorage.getItem('dcc-theme');
+        if (saved === 'light' || saved === 'dark') {
+          document.documentElement.dataset.theme = saved;
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <script src="main.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <svg class="icon-sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-folder" viewBox="0 0 24 24">
+      <path d="M3.5 7.5A2.5 2.5 0 0 1 6 5h3.2c.5 0 1 .2 1.4.6l1.2 1.1c.3.3.8.5 1.3.5H18a2.5 2.5 0 0 1 2.5 2.5v6.8A2.5 2.5 0 0 1 18 19H6a2.5 2.5 0 0 1-2.5-2.5z"/>
+    </symbol>
+    <symbol id="i-file" viewBox="0 0 24 24">
+      <path d="M6 3.5h7l5 5v12H6z"/><path d="M13 3.5v5h5"/>
+    </symbol>
+    <symbol id="i-search" viewBox="0 0 24 24">
+      <circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4.5 4.5"/>
+    </symbol>
+    <symbol id="i-check" viewBox="0 0 24 24">
+      <path d="m5 12.5 4.2 4.2L19 6.5"/>
+    </symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24">
+      <path d="M4 12h15"/><path d="m13 6 6 6-6 6"/>
+    </symbol>
+    <symbol id="i-arrow-up-down" viewBox="0 0 24 24">
+      <path d="M7 4v16"/><path d="m4 17 3 3 3-3"/><path d="M17 20V4"/><path d="m14 7 3-3 3 3"/>
+    </symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24">
+      <path d="m8 10 4 4 4-4"/>
+    </symbol>
+    <symbol id="i-github" viewBox="0 0 24 24">
+      <path d="M12 2.5a9.5 9.5 0 0 0-3 18.5c.5.1.7-.2.7-.5v-1.8c-2.7.6-3.3-1.2-3.3-1.2-.4-1.1-1.1-1.4-1.1-1.4-.9-.6.1-.6.1-.6 1 0 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.7.3-1.1.6-1.4-2.2-.2-4.5-1.1-4.5-4.8 0-1.1.4-1.9 1-2.6-.1-.3-.4-1.3.1-2.6 0 0 .8-.3 2.7 1a9.3 9.3 0 0 1 4.9 0c1.9-1.3 2.7-1 2.7-1 .5 1.3.2 2.3.1 2.6.6.7 1 1.5 1 2.6 0 3.7-2.3 4.5-4.5 4.8.3.3.6.9.6 1.8v2.7c0 .3.2.6.7.5A9.5 9.5 0 0 0 12 2.5z"/>
+    </symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/>
+    </symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24">
+      <path d="M20 14.2A8.5 8.5 0 0 1 9.8 4a8.5 8.5 0 1 0 10.2 10.2z"/>
+    </symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24">
+      <rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>
+    </symbol>
+    <symbol id="i-database" viewBox="0 0 24 24">
+      <ellipse cx="12" cy="5.5" rx="7.5" ry="3"/><path d="M4.5 5.5v6c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-6"/><path d="M4.5 11.5v6c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-6"/>
+    </symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24">
+      <path d="M6.5 18.5a4 4 0 0 1-.6-7.9A6 6 0 0 1 17.5 9a4.8 4.8 0 0 1-.5 9.5z"/>
+    </symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24">
+      <path d="M12 3.5 19 6v5.4c0 4.4-2.9 7.5-7 9.1-4.1-1.6-7-4.7-7-9.1V6z"/><path d="m9 12 2 2 4-4.5"/>
+    </symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24">
+      <path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/><path d="m3 17.5 9 5 9-5"/>
+    </symbol>
+    <symbol id="i-terminal" viewBox="0 0 24 24">
+      <rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path d="m7 9 3 3-3 3M12.5 15H17"/>
+    </symbol>
+    <symbol id="i-branch" viewBox="0 0 24 24">
+      <circle cx="6" cy="5" r="2"/><circle cx="18" cy="7" r="2"/><circle cx="6" cy="19" r="2"/><path d="M6 7v10M18 9c0 4-3 5-6 6-2.5.8-4 1.8-4 4"/>
+    </symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  </svg>
+
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="./" aria-label="Data Cloud Compare home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none">
+            <rect x="2.5" y="6.5" width="18" height="13" rx="4" class="mark-back"/>
+            <rect x="11.5" y="12.5" width="18" height="13" rx="4" class="mark-front"/>
+            <path d="m15.5 19 2.2 2.2 4.4-4.8" class="mark-check"/>
+          </svg>
+        </span>
+        <span class="brand-name">Data Cloud<span>Compare</span></span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav id="nav-links" class="nav-links" aria-label="Main">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#explorer">Explorer</a>
+        <a href="#matching">Matching</a>
+        <a href="docs/">Docs</a>
+        <a class="nav-github" href="https://github.com/403access/data-cloud-compare" target="_blank" rel="noreferrer">
+          <svg class="icon"><use href="#i-github"/></svg>
+          <span>GitHub</span>
+        </a>
+        <a class="button button-small button-primary nav-cta" href="docs/">Read the docs</a>
+      </nav>
+
+      <button class="theme-toggle" type="button" aria-label="Switch to light theme" data-theme-toggle>
+        <svg class="icon icon-sun"><use href="#i-sun"/></svg>
+        <svg class="icon icon-moon"><use href="#i-moon"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="hero-bg" aria-hidden="true">
+        <div class="hero-grid"></div>
+        <div class="hero-glow hero-glow-a"></div>
+        <div class="hero-glow hero-glow-b"></div>
+      </div>
+
+      <div class="container hero-inner">
+        <div class="eyebrow reveal">
+          <span class="pulse-dot"></span>
+          Local-first archive verification
+        </div>
+
+        <h1 class="reveal">Know what's really<br>in your <span class="gradient-text">cloud archive.</span></h1>
+
+        <p class="hero-sub reveal">
+          Compare millions of cloud files against your local index. See what's safe,
+          what moved, and what's actually missing — in a virtual two-pane explorer
+          that never uploads a byte.
+        </p>
+
+        <div class="hero-actions reveal">
+          <a class="button button-primary" href="docs/">
+            Get started
+            <svg class="icon"><use href="#i-arrow-right"/></svg>
+          </a>
+          <a class="button button-ghost" href="#how-it-works">See how it works</a>
+        </div>
+
+        <p class="hero-meta reveal">
+          <span><svg class="icon"><use href="#i-shield"/></svg> Read-only</span>
+          <span><svg class="icon"><use href="#i-database"/></svg> SQLite + rclone</span>
+          <span><svg class="icon"><use href="#i-terminal"/></svg> Python standard library</span>
+        </p>
+
+        <div class="hero-visual reveal">
+          <div class="app-window" role="img" aria-label="Screenshot of the Data Cloud Compare two-pane explorer comparing a local index with Jottacloud">
+            <div class="app-titlebar">
+              <span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="app-title">Data Cloud Compare <span>/</span> Explorer</span>
+              <span class="app-titlebar-right"><span class="live-dot"></span> Local · read-only</span>
+            </div>
+
+            <div class="app-toolbar">
+              <div class="provider-switch" aria-hidden="true">
+                <span class="provider active"><i class="provider-dot jotta"></i> Jottacloud</span>
+                <span class="provider"><i class="provider-dot drive"></i> Google Drive</span>
+              </div>
+              <div class="toolbar-actions" aria-hidden="true">
+                <span class="mini-button"><svg class="icon"><use href="#i-arrow-up-down"/></svg> Same path</span>
+                <span class="mini-button">Hidden</span>
+              </div>
+            </div>
+
+            <div class="pane-grid">
+              <div class="pane">
+                <div class="pane-head">
+                  <div class="crumbs"><span>tank</span><b>/</b><span>Projects</span><b>/</b><span>Aurora</span><b>/</b><span class="current">web</span></div>
+                  <div class="pane-search"><svg class="icon"><use href="#i-search"/></svg><span>Search everywhere</span></div>
+                </div>
+                <div class="pane-cols"><span>Name</span><span>Status</span><span>Size</span></div>
+                <div class="pane-rows">
+                  <div class="row folder">
+                    <span class="row-name"><svg class="icon folder-icon"><use href="#i-folder"/></svg>src</span>
+                    <span class="badge b-in">In Jottacloud</span><span class="size">—</span>
+                  </div>
+                  <div class="row folder">
+                    <span class="row-name"><svg class="icon folder-icon"><use href="#i-folder"/></svg>public</span>
+                    <span class="badge b-in">In Jottacloud</span><span class="size">—</span>
+                  </div>
+                  <div class="row">
+                    <span class="row-name"><svg class="icon file-icon"><use href="#i-file"/></svg>package.json</span>
+                    <span class="badge b-in">In Jottacloud</span><span class="size">2.1 KB</span>
+                  </div>
+                  <div class="row selected">
+                    <span class="row-name"><svg class="icon file-icon"><use href="#i-file"/></svg>README.md</span>
+                    <span class="badge b-moved">Moved match</span><span class="size">11.4 KB</span>
+                  </div>
+                  <div class="row folder">
+                    <span class="row-name"><svg class="icon folder-icon"><use href="#i-folder"/></svg>archive-2024</span>
+                    <span class="badge b-partial">In Jottacloud</span><span class="size">—</span>
+                  </div>
+                  <div class="row">
+                    <span class="row-name"><svg class="icon file-icon"><use href="#i-file"/></svg>legacy-build.sh</span>
+                    <span class="badge b-local">Local only</span><span class="size">1.8 KB</span>
+                  </div>
+                </div>
+                <div class="pane-foot">
+                  <span class="chip c-in"><i></i>In Jottacloud <b>4</b></span>
+                  <span class="chip c-moved"><i></i>Moved <b>1</b></span>
+                  <span class="chip c-local"><i></i>Local only <b>2</b></span>
+                </div>
+              </div>
+
+              <div class="pane">
+                <div class="pane-head">
+                  <div class="crumbs"><span>Archive</span><b>/</b><span>Projects</span><b>/</b><span>Aurora</span><b>/</b><span class="current">web</span></div>
+                  <div class="pane-search"><svg class="icon"><use href="#i-search"/></svg><span>Search everywhere</span></div>
+                </div>
+                <div class="pane-cols"><span>Name</span><span>Status</span><span>Size</span></div>
+                <div class="pane-rows">
+                  <div class="row folder">
+                    <span class="row-name"><svg class="icon folder-icon"><use href="#i-folder"/></svg>src</span>
+                    <span class="badge b-same">Same</span><span class="size">—</span>
+                  </div>
+                  <div class="row folder">
+                    <span class="row-name"><svg class="icon folder-icon"><use href="#i-folder"/></svg>public</span>
+                    <span class="badge b-same">Same</span><span class="size">—</span>
+                  </div>
+                  <div class="row">
+                    <span class="row-name"><svg class="icon file-icon"><use href="#i-file"/></svg>package.json</span>
+                    <span class="badge b-same">Same</span><span class="size">2.1 KB</span>
+                  </div>
+                  <div class="row selected">
+                    <span class="row-name"><svg class="icon file-icon"><use href="#i-file"/></svg>README.md</span>
+                    <span class="badge b-moved">Moved</span><span class="size">11.4 KB</span>
+                  </div>
+                  <div class="row folder">
+                    <span class="row-name"><svg class="icon folder-icon"><use href="#i-folder"/></svg>archive-2024</span>
+                    <span class="badge b-partial">Partial</span><span class="size">—</span>
+                  </div>
+                  <div class="row">
+                    <span class="row-name"><svg class="icon folder-icon dim"><use href="#i-folder"/></svg>node_modules</span>
+                    <span class="badge b-missing">Missing</span><span class="size">—</span>
+                  </div>
+                  <div class="row">
+                    <span class="row-name"><svg class="icon folder-icon dim"><use href="#i-folder"/></svg>site-backup</span>
+                    <span class="badge b-missing">Missing</span><span class="size">—</span>
+                  </div>
+                </div>
+                <div class="pane-foot">
+                  <span class="chip c-same"><i></i>Same <b>3</b></span>
+                  <span class="chip c-moved"><i></i>Moved <b>1</b></span>
+                  <span class="chip c-partial"><i></i>Partial <b>1</b></span>
+                  <span class="chip c-missing"><i></i>Missing <b>2</b></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="app-statusbar">
+              <span><svg class="icon"><use href="#i-shield"/></svg> Virtual view — no files were read or changed</span>
+              <span class="status-right">1,434,971 files indexed <b>·</b> 87.7% verified</span>
+            </div>
+          </div>
+          <div class="glow-under" aria-hidden="true"></div>
+        </div>
+
+        <div class="hero-stats reveal" aria-label="Example comparison results">
+          <p class="stats-label">From a real 1.4M-file archive comparison</p>
+          <div class="stats-grid">
+            <div class="stat">
+              <span class="stat-value"><span data-count="1434971" data-format="compact">1.43M</span></span>
+              <span class="stat-label">cloud files compared</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value"><span data-count="7.14" data-decimals="1">7.1</span> TB</span>
+              <span class="stat-label">catalogued &amp; checked</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value"><span data-count="87.7" data-decimals="1">87.7</span>%</span>
+              <span class="stat-label">present by path, move, or name</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value accent"><span data-count="176971" data-format="comma">176,971</span></span>
+              <span class="stat-label">files needing a closer look</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="built-with" aria-label="Technology">
+      <div class="container built-with-inner">
+        <span class="built-label">Built for the tools you already use</span>
+        <div class="built-logos">
+          <span class="built-item"><svg class="icon"><use href="#i-cloud"/></svg>rclone snapshots</span>
+          <span class="built-item"><svg class="icon"><use href="#i-database"/></svg>SQLite indexes</span>
+          <span class="built-item"><svg class="icon"><use href="#i-cloud"/></svg>Jottacloud</span>
+          <span class="built-item"><svg class="icon"><use href="#i-cloud"/></svg>Google Drive</span>
+          <span class="built-item"><svg class="icon"><use href="#i-terminal"/></svg>Python stdlib</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section problem" id="why">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-kicker">The problem</span>
+          <h2>A backup you can't verify<br>is a backup you <span class="accent-text">can't trust.</span></h2>
+          <p>
+            Cloud sync is optimistic. It tells you what it uploaded, not whether your
+            archive still matches the machine it came from. After a rename, a migration,
+            or a decade of backups, the only honest answer is a full comparison.
+          </p>
+        </div>
+
+        <div class="problem-grid">
+          <article class="problem-card reveal">
+            <span class="problem-icon"><svg class="icon"><use href="#i-branch"/></svg></span>
+            <h3>Paths drift</h3>
+            <p>Projects get reorganized, machines get retired, and folders move. A simple path check reports thousands of healthy files as missing.</p>
+          </article>
+          <article class="problem-card reveal">
+            <span class="problem-icon"><svg class="icon"><use href="#i-layers"/></svg></span>
+            <h3>Millions of rows</h3>
+            <p>At 1.4 million files, a CSV and a spreadsheet stop being a strategy. You need aggregation, search, and a way to navigate the gaps.</p>
+          </article>
+          <article class="problem-card reveal">
+            <span class="problem-icon"><svg class="icon"><use href="#i-shield"/></svg></span>
+            <h3>Hashes don't line up</h3>
+            <p>Cloud providers often expose MD5 while local indexers store SHA-256. Content hashing across both sides is not always available.</p>
+          </article>
+        </div>
+
+        <div class="pull-quote reveal">
+          <span class="quote-mark" aria-hidden="true">“</span>
+          <p>So matching is a cascade, not a single lookup: exact path, then case-insensitive path, then name and size anywhere in the index.</p>
+          <a href="docs/concepts/matching/">Read the matching model <svg class="icon"><use href="#i-arrow-right"/></svg></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section features" id="features">
+      <div class="container">
+        <div class="section-head center">
+          <span class="section-kicker">What you get</span>
+          <h2>One comparison. <span class="accent-text">Every verdict.</span></h2>
+          <p>Designed for archives that are too large to inspect by hand and too important to guess about.</p>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-card reveal feature-wide">
+            <div class="feature-copy">
+              <span class="feature-num">01</span>
+              <h3>Exact-path verification</h3>
+              <p>Match every cloud item to the same relative path in your local index, with a case-insensitive fallback for filesystems that don't care about case.</p>
+            </div>
+            <div class="feature-art art-exact" aria-hidden="true">
+              <div class="path-line"><span class="dot green"></span><code>Projects/Aurora/src</code><span class="verdict same">Same</span></div>
+              <div class="path-line"><span class="dot green"></span><code>Projects/Aurora/public</code><span class="verdict same">Same</span></div>
+              <div class="path-line"><span class="dot green"></span><code>Projects/Aurora/package.json</code><span class="verdict same">Same</span></div>
+            </div>
+          </article>
+
+          <article class="feature-card reveal">
+            <span class="feature-icon green"><svg class="icon"><use href="#i-branch"/></svg></span>
+            <h3>Moved-file detection</h3>
+            <p>When a file isn't at its old path, find the same basename and byte size anywhere in the index — then pick the most plausible location.</p>
+          </article>
+
+          <article class="feature-card reveal">
+            <span class="feature-icon amber"><svg class="icon"><use href="#i-search"/></svg></span>
+            <h3>Possible matches</h3>
+            <p>Same name, different size? It is flagged as possible, not missing. Edited files get reviewed instead of silently written off.</p>
+          </article>
+
+          <article class="feature-card reveal">
+            <span class="feature-icon blue"><svg class="icon"><use href="#i-layers"/></svg></span>
+            <h3>Folder-level rollups</h3>
+            <p>Folders are never labelled missing because one child changed. Partial folders show exactly how many children were found.</p>
+          </article>
+
+          <article class="feature-card reveal">
+            <span class="feature-icon violet"><svg class="icon"><use href="#i-folder"/></svg></span>
+            <h3>Virtual two-pane explorer</h3>
+            <p>A Finder-style view of both sides. Navigate, search, filter by status, and reveal the matching local item in one keystroke.</p>
+          </article>
+
+          <article class="feature-card reveal">
+            <span class="feature-icon cyan"><svg class="icon"><use href="#i-cloud"/></svg></span>
+            <h3>Provider switching</h3>
+            <p>Keep one local reference and compare it against Jottacloud or Google Drive. Switch providers without losing your place.</p>
+          </article>
+
+          <article class="feature-card reveal feature-wide feature-report">
+            <div class="feature-copy">
+              <span class="feature-num">07</span>
+              <h3>Reports you can actually share</h3>
+              <p>Every run writes a self-contained HTML report, tidy CSVs for missing and moved items, and a machine-readable JSON dataset for your own tooling.</p>
+              <ul class="check-list">
+                <li><svg class="icon"><use href="#i-check"/></svg>HTML tree opens filtered to problem folders</li>
+                <li><svg class="icon"><use href="#i-check"/></svg>CSV exports include where a moved item was found</li>
+                <li><svg class="icon"><use href="#i-check"/></svg>No server, no external assets, no telemetry</li>
+              </ul>
+            </div>
+            <div class="feature-art art-report" aria-hidden="true">
+              <div class="report-file"><svg class="icon"><use href="#i-file"/></svg><div><b>report.html</b><span>self-contained visual diff</span></div><span class="file-tag">HTML</span></div>
+              <div class="report-file"><svg class="icon"><use href="#i-file"/></svg><div><b>missing.csv</b><span>path, type, size, status</span></div><span class="file-tag">CSV</span></div>
+              <div class="report-file"><svg class="icon"><use href="#i-file"/></svg><div><b>report_data.json</b><span>full machine-readable dataset</span></div><span class="file-tag">JSON</span></div>
+            </div>
+          </article>
+
+          <article class="feature-card reveal feature-privacy">
+            <span class="feature-icon green"><svg class="icon"><use href="#i-shield"/></svg></span>
+            <h3>Local by design</h3>
+            <p>The explorer binds to <code>127.0.0.1</code>, opens the index read-only, and never uploads anything. Your archive stays yours.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section steps" id="how-it-works">
+      <div class="container steps-layout">
+        <div class="steps-copy">
+          <span class="section-kicker">How it works</span>
+          <h2>From snapshot to answer<br>in <span class="accent-text">three commands.</span></h2>
+          <p>No daemon, no database migration, no cloud API keys in a browser. Point the comparator at the listing you already have.</p>
+
+          <ol class="step-list">
+            <li class="reveal">
+              <span class="step-num">1</span>
+              <div><h3>Snapshot the cloud</h3><p>Use rclone's JSON listing. It records paths, sizes, and folder structure without downloading file contents.</p></div>
+            </li>
+            <li class="reveal">
+              <span class="step-num">2</span>
+              <div><h3>Compare with your index</h3><p>Run the comparator against your SQLite file index. It streams results into reports instead of holding a million rows in memory.</p></div>
+            </li>
+            <li class="reveal">
+              <span class="step-num">3</span>
+              <div><h3>Explore &amp; resolve</h3><p>Open the virtual explorer, filter to what matters, and reveal counterparts side by side. Nothing is deleted or modified.</p></div>
+            </li>
+          </ol>
+
+          <a class="text-link" href="docs/getting-started/quickstart/">Full quickstart <svg class="icon"><use href="#i-arrow-right"/></svg></a>
+        </div>
+
+        <div class="terminal-card reveal">
+          <div class="terminal-head">
+            <span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span>quickstart.sh</span>
+            <button class="copy-button" type="button" data-copy-target="quickstart-code" aria-label="Copy commands">
+              <svg class="icon"><use href="#i-copy"/></svg><span>Copy</span>
+            </button>
+          </div>
+          <pre class="terminal-code" id="quickstart-code"><code><span class="c-comment"># 1 · Snapshot the cloud listing</span>
+<span class="c-prompt">$</span> rclone lsjson jotta:Archive -R &gt; archive.json
+
+<span class="c-comment"># 2 · Compare against the local index</span>
+<span class="c-prompt">$</span> python3 scripts/compare.py \
+    --db file_indexer.db \
+    --archive archive.json \
+    --out report
+
+<span class="c-comment"># 3 · Open the virtual explorer</span>
+<span class="c-prompt">$</span> python3 explorer/server.py --open</code></pre>
+          <div class="terminal-foot">
+            <span class="terminal-ok"><i></i> Runs locally</span>
+            <span>Python 3.10+ · rclone · no packages</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section explorer-section" id="explorer">
+      <div class="container explorer-layout">
+        <div class="explorer-copy">
+          <span class="section-kicker">The explorer</span>
+          <h2>Two panes.<br><span class="accent-text">Zero guesswork.</span></h2>
+          <p>
+            The explorer is virtual: neither pane touches a live filesystem. It reads the
+            comparison cache and lets you move through both trees as if they were folders
+            on your machine.
+          </p>
+
+          <ul class="explorer-features">
+            <li>
+              <span class="mini-icon"><svg class="icon"><use href="#i-arrow-up-down"/></svg></span>
+              <div><b>Reveal the counterpart</b><span>Jump the other pane to the exact path, or to where a moved file was found.</span></div>
+            </li>
+            <li>
+              <span class="mini-icon"><svg class="icon"><use href="#i-search"/></svg></span>
+              <div><b>Search millions of names</b><span>Sub-second substring search across the current folder or the whole snapshot.</span></div>
+            </li>
+            <li>
+              <span class="mini-icon"><svg class="icon"><use href="#i-layers"/></svg></span>
+              <div><b>Filter the noise</b><span>Tick any combination of statuses. Filtering follows you as you navigate and search.</span></div>
+            </li>
+            <li>
+              <span class="mini-icon"><svg class="icon"><use href="#i-shield"/></svg></span>
+              <div><b>Safe by construction</b><span>Read-only SQLite connections, path traversal checks, and a loopback-only server.</span></div>
+            </li>
+          </ul>
+
+          <a class="text-link" href="docs/guides/explorer/">Explore the interface guide <svg class="icon"><use href="#i-arrow-right"/></svg></a>
+        </div>
+
+        <div class="reveal-card reveal" role="img" aria-label="A moved file being resolved to its local location">
+          <div class="reveal-head">
+            <span class="reveal-label">Reveal counterpart</span>
+            <span class="badge b-moved">Moved</span>
+          </div>
+          <div class="path-block remote">
+            <span class="path-side">Cloud</span>
+            <code>Archive/Projects/Aurora/README.md</code>
+            <span class="path-meta">11.4 KB · file</span>
+          </div>
+          <div class="reveal-connector" aria-hidden="true">
+            <span class="line"></span>
+            <span class="match-pill"><svg class="icon"><use href="#i-arrow-up-down"/></svg> basename + size</span>
+            <span class="line"></span>
+          </div>
+          <div class="path-block local">
+            <span class="path-side">Local index</span>
+            <code>tank/archive/2024/Aurora/README.md</code>
+            <span class="path-meta">11.4 KB · 1 candidate</span>
+          </div>
+          <div class="reveal-note">
+            <svg class="icon"><use href="#i-check"/></svg>
+            Found elsewhere in the index. Not missing — just moved.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section matching" id="matching">
+      <div class="container">
+        <div class="section-head center">
+          <span class="section-kicker">The verdicts</span>
+          <h2>Every file gets <span class="accent-text">an honest label.</span></h2>
+          <p>No silent assumptions. Each status tells you exactly how far the matcher got.</p>
+        </div>
+
+        <div class="verdict-grid">
+          <div class="verdict-group">
+            <h3><span class="group-dot cloud"></span>Cloud side</h3>
+            <div class="verdict-row"><span class="badge b-same">Same</span><p>Same relative path exists in the local index.</p></div>
+            <div class="verdict-row"><span class="badge b-moved">Moved</span><p>Same basename and byte size found elsewhere in the index.</p></div>
+            <div class="verdict-row"><span class="badge b-possible">Maybe</span><p>Same basename locally, but the size differs — needs review.</p></div>
+            <div class="verdict-row"><span class="badge b-partial">Partial</span><p>Folder contains a mix of present and missing children.</p></div>
+            <div class="verdict-row"><span class="badge b-missing">Missing</span><p>Not found by path, name, or name + size. Absence from the index, not proof of deletion.</p></div>
+          </div>
+
+          <div class="verdict-group">
+            <h3><span class="group-dot disk"></span>Local side</h3>
+            <div class="verdict-row"><span class="badge b-in">In Jottacloud</span><p>Same path exists in the selected provider snapshot.</p></div>
+            <div class="verdict-row"><span class="badge b-moved">Moved match</span><p>This is the local match for a cloud item that moved.</p></div>
+            <div class="verdict-row"><span class="badge b-local">Local only</span><p>Present in the index but not found anywhere in the provider.</p></div>
+            <div class="verdict-row"><span class="badge b-muted">Not in cloud</span><p>No same-path counterpart; it may still have matched elsewhere.</p></div>
+            <div class="verdict-row"><span class="badge b-type">Type differs</span><p>Same name, but one side is a file and the other is a folder.</p></div>
+          </div>
+        </div>
+
+        <div class="honesty-card reveal">
+          <div class="honesty-icon"><svg class="icon"><use href="#i-shield"/></svg></div>
+          <div>
+            <h3>The most important number is the one you should question.</h3>
+            <p>
+              In the reference run, 98% of “missing” files were inside build and dependency
+              folders the indexer deliberately skips — <code>node_modules</code>, <code>.next</code>,
+              <code>target</code>, and friends. Data Cloud Compare keeps the full picture and
+              makes the caveat explicit, so the actionable remainder stands out.
+            </p>
+          </div>
+          <a class="button button-ghost button-small" href="docs/concepts/matching/">How missing is defined</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section providers" id="providers">
+      <div class="container">
+        <div class="section-head center">
+          <span class="section-kicker">Providers</span>
+          <h2>One reference. <span class="accent-text">More than one cloud.</span></h2>
+          <p>The left pane is always your local index. The right pane is whichever provider you choose.</p>
+        </div>
+
+        <div class="provider-grid">
+          <article class="provider-card reveal">
+            <div class="provider-card-head">
+              <span class="provider-logo jotta"><svg class="icon"><use href="#i-cloud"/></svg></span>
+              <div><h3>Jottacloud</h3><span class="provider-tag">Archive mountpoint</span></div>
+            </div>
+            <p>List your Jottacloud Archive with rclone, then compare it directly against the local index. The Archive prefix is stripped automatically.</p>
+            <ul class="check-list">
+              <li><svg class="icon"><use href="#i-check"/></svg>rclone remote named <code>jotta</code></li>
+              <li><svg class="icon"><use href="#i-check"/></svg>MD5 metadata preserved</li>
+              <li><svg class="icon"><use href="#i-check"/></svg>No modification times required</li>
+            </ul>
+            <a class="text-link" href="docs/guides/jottacloud/">Jottacloud guide <svg class="icon"><use href="#i-arrow-right"/></svg></a>
+          </article>
+
+          <article class="provider-card reveal">
+            <div class="provider-card-head">
+              <span class="provider-logo drive"><svg class="icon"><use href="#i-cloud"/></svg></span>
+              <div><h3>Google Drive</h3><span class="provider-tag">My Drive or a subfolder</span></div>
+            </div>
+            <p>A dedicated fetch script snapshots your Drive, runs the comparison, and writes a separate report directory. Re-run it whenever you need fresh numbers.</p>
+            <ul class="check-list">
+              <li><svg class="icon"><use href="#i-check"/></svg>rclone remote named <code>gdrive</code></li>
+              <li><svg class="icon"><use href="#i-check"/></svg>Optional subfolder scope</li>
+              <li><svg class="icon"><use href="#i-check"/></svg>Independent report per provider</li>
+            </ul>
+            <a class="text-link" href="docs/guides/google-drive/">Google Drive guide <svg class="icon"><use href="#i-arrow-right"/></svg></a>
+          </article>
+
+          <article class="provider-card provider-card-add reveal">
+            <span class="provider-logo neutral"><svg class="icon"><use href="#i-terminal"/></svg></span>
+            <h3>Bring your own</h3>
+            <p>Any rclone backend that can produce a JSON listing can become a provider. Add a definition, generate a report, and it appears in the switch.</p>
+            <ul class="check-list">
+              <li><svg class="icon"><use href="#i-check"/></svg>Any rclone JSON listing</li>
+              <li><svg class="icon"><use href="#i-check"/></svg>Independent cache and report</li>
+              <li><svg class="icon"><use href="#i-check"/></svg>Appears in the provider switch</li>
+            </ul>
+            <a class="text-link" href="docs/contributing/adding-a-provider/">Add a provider <svg class="icon"><use href="#i-arrow-right"/></svg></a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section faq" id="faq">
+      <div class="container faq-layout">
+        <div class="faq-head">
+          <span class="section-kicker">FAQ</span>
+          <h2>Questions,<br><span class="accent-text">answered.</span></h2>
+          <p>Still curious? The documentation goes deeper into every status, flag, and file.</p>
+          <a class="text-link" href="docs/">Browse the docs <svg class="icon"><use href="#i-arrow-right"/></svg></a>
+        </div>
+
+        <div class="faq-list">
+          <details class="reveal">
+            <summary>Does it upload, move, or delete anything?<svg class="icon"><use href="#i-chevron"/></svg></summary>
+            <p>No. The comparator reads an rclone JSON listing and your SQLite index. The explorer opens the index read-only and serves a virtual view from cache. It only writes report artifacts and cache files.</p>
+          </details>
+          <details class="reveal">
+            <summary>What do I need to run it?<svg class="icon"><use href="#i-chevron"/></svg></summary>
+            <p>Python 3.10 or newer, rclone with a configured remote, an index database with a <code>files</code> table, and a provider snapshot. The server itself uses only the Python standard library — no pip install.</p>
+          </details>
+          <details class="reveal">
+            <summary>Why are so many “missing” files in node_modules?<svg class="icon"><use href="#i-chevron"/></svg></summary>
+            <p>File indexers commonly skip dependency and build folders such as <code>node_modules</code>, <code>.next</code>, <code>dist</code>, <code>build</code>, <code>target</code>, and <code>vendor</code>. Those files exist in the cloud but were never indexed locally. The report quantifies this so you can focus on the actionable remainder.</p>
+          </details>
+          <details class="reveal">
+            <summary>How are moved files matched?<svg class="icon"><use href="#i-chevron"/></svg></summary>
+            <p>The matcher looks for the same basename and exact byte size anywhere in the index, then scores candidates by shared parent folder, shared top-level folder, and path depth. If several candidates exist, the best one is shown and the rest are counted.</p>
+          </details>
+          <details class="reveal">
+            <summary>Can it compare file contents?<svg class="icon"><use href="#i-chevron"/></svg></summary>
+            <p>Not directly. Cloud providers often expose MD5 while local indexers store SHA-256, so the reference workflow cross-checks name, path, and size. A file renamed and resized can be reported as missing even if a copy exists — treat “possible” as needs review, not confirmed absent.</p>
+          </details>
+          <details class="reveal">
+            <summary>Is there a hosted demo?<svg class="icon"><use href="#i-chevron"/></svg></summary>
+            <p>No. The explorer is intentionally local: archives are large and private, and the point is to inspect your own index without sending it anywhere. The documentation includes screenshots and a complete walkthrough instead.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="final-cta">
+      <div class="container final-cta-inner reveal">
+        <div class="cta-glow" aria-hidden="true"></div>
+        <span class="section-kicker">Start verifying</span>
+        <h2>Your archive deserves<br>a straight answer.</h2>
+        <p>Run the comparison locally. Keep the reports. Question the number that matters.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="docs/getting-started/quickstart/">
+            Read the quickstart
+            <svg class="icon"><use href="#i-arrow-right"/></svg>
+          </a>
+          <a class="button button-ghost" href="https://github.com/403access/data-cloud-compare" target="_blank" rel="noreferrer">
+            <svg class="icon"><use href="#i-github"/></svg>
+            View on GitHub
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="./" aria-label="Data Cloud Compare home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none">
+              <rect x="2.5" y="6.5" width="18" height="13" rx="4" class="mark-back"/>
+              <rect x="11.5" y="12.5" width="18" height="13" rx="4" class="mark-front"/>
+              <path d="m15.5 19 2.2 2.2 4.4-4.8" class="mark-check"/>
+            </svg>
+          </span>
+          <span class="brand-name">Data Cloud<span>Compare</span></span>
+        </a>
+        <p>Local-first verification for cloud archives that are too large to inspect by hand.</p>
+        <span class="footer-badge"><svg class="icon"><use href="#i-shield"/></svg> No uploads · No telemetry</span>
+      </div>
+
+      <nav class="footer-col" aria-label="Product">
+        <h4>Product</h4>
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#explorer">Explorer</a>
+        <a href="#matching">Matching</a>
+      </nav>
+
+      <nav class="footer-col" aria-label="Documentation">
+        <h4>Documentation</h4>
+        <a href="docs/getting-started/quickstart/">Quickstart</a>
+        <a href="docs/guides/jottacloud/">Jottacloud</a>
+        <a href="docs/guides/google-drive/">Google Drive</a>
+        <a href="docs/reference/cli/">CLI reference</a>
+      </nav>
+
+      <nav class="footer-col" aria-label="Project">
+        <h4>Project</h4>
+        <a href="https://github.com/403access/data-cloud-compare" target="_blank" rel="noreferrer">GitHub</a>
+        <a href="docs/help/troubleshooting/">Troubleshooting</a>
+        <a href="docs/concepts/matching/">Matching model</a>
+        <a href="docs/contributing/adding-a-provider/">Add a provider</a>
+      </nav>
+    </div>
+
+    <div class="container footer-bottom">
+      <span>© <span data-year>2026</span> Data Cloud Compare</span>
+      <span>Built for archives, not marketing dashboards.</span>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "data-cloud-compare",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Marketing site and documentation for Data Cloud Compare",
+  "scripts": {
+    "dev:docs": "npm --prefix docs run start",
+    "build": "npm run build:site",
+    "build:docs": "npm --prefix docs run build",
+    "build:site": "npm run build:docs && node scripts/assemble-site.mjs",
+    "preview": "python3 -m http.server 4173 --directory dist",
+    "clean": "rm -rf dist docs/build docs/.docusaurus"
+  },
+  "engines": {
+    "node": ">=20.0"
+  }
+}

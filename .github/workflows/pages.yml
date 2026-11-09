@@ -1,0 +1,88 @@
+name: Deploy site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "marketing/**"
+      - "docs/**"
+      - "scripts/assemble-site.mjs"
+      - ".github/workflows/pages.yml"
+      - "package.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+
+      - name: Configure Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Derive site URLs
+        id: site
+        env:
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          ORIGIN: ${{ steps.pages.outputs.origin }}
+        run: |
+          set -euo pipefail
+          # Project sites get /<repo>; user/org sites get an empty base path.
+          BASE_PATH="${BASE_PATH%/}"
+          if [ "$BASE_PATH" = "/" ]; then BASE_PATH=""; fi
+          DOCS_BASE_URL="${BASE_PATH}/docs/"
+          MARKETING_URL="${BASE_PATH}/"
+          echo "docs_base_url=${DOCS_BASE_URL}" >> "$GITHUB_OUTPUT"
+          echo "marketing_url=${MARKETING_URL}" >> "$GITHUB_OUTPUT"
+          echo "site_url=${ORIGIN}" >> "$GITHUB_OUTPUT"
+          echo "Marketing: ${ORIGIN}${MARKETING_URL}"
+          echo "Docs:      ${ORIGIN}${DOCS_BASE_URL}"
+
+      - name: Install docs dependencies
+        working-directory: docs
+        run: npm ci
+
+      - name: Build docs
+        working-directory: docs
+        env:
+          SITE_URL: ${{ steps.site.outputs.site_url }}
+          DOCS_BASE_URL: ${{ steps.site.outputs.docs_base_url }}
+          MARKETING_URL: ${{ steps.site.outputs.marketing_url }}
+        run: npm run build
+
+      - name: Assemble site
+        run: node scripts/assemble-site.mjs
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
