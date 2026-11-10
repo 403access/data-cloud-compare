@@ -53,6 +53,10 @@ the provider's cache files.
 | Left | `file_indexer.db` | The indexed `/mnt/tank` snapshot. |
 | Right | `archive.json` or `google_drive.json` | The selected cloud snapshot. |
 
+Both pane headers carry small **Snapshot** and **Read-only** indicators. The **i** button in
+each header opens a source panel with the snapshot file, date, size, comparison dates, and the
+full "not a live mount" / "virtual read-only view" description.
+
 Use the segmented **Jottacloud** / **Google Drive** switch in the top bar to choose the
 provider. The right pane tries to stay in the same folder; if that folder does not exist on
 the other provider it starts at the root. The left pane stays put, but its badges are

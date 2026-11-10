@@ -102,10 +102,32 @@
         </span>
         <div class="pane-titles">
           <h2>Local index <span class="root-path">/mnt/tank</span></h2>
-          <p>file_indexer.db snapshot · not a live mount</p>
+          <div class="source-flags" aria-label="Source type">
+            <span class="source-flag" title="Read from a point-in-time snapshot">
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <ellipse cx="8" cy="4.2" rx="5.1" ry="2.1" stroke="currentColor" stroke-width="1.2"/>
+                <path d="M2.9 4.2v3.6c0 1.16 2.28 2.1 5.1 2.1s5.1-.94 5.1-2.1V4.2M2.9 7.8v3.6c0 1.16 2.28 2.1 5.1 2.1s5.1-.94 5.1-2.1V7.8" stroke="currentColor" stroke-width="1.2"/>
+              </svg>Snapshot
+            </span>
+            <span class="source-flag" title="The explorer never writes to this source">
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <rect x="3.4" y="7" width="9.2" height="6.2" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
+                <path d="M5.5 7V5.2a2.5 2.5 0 0 1 5 0V7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>Read-only
+            </span>
+          </div>
         </div>
       </div>
-      <div class="pane-badge" data-role="badge"></div>
+      <div class="pane-head-actions">
+        <div class="pane-badge" data-role="badge"></div>
+        <button type="button" class="btn icon-btn source-info" data-role="source-info" data-side="local" title="About the local index" aria-label="About the local index" aria-haspopup="dialog" aria-controls="source-panel" aria-expanded="false">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <circle cx="10" cy="10" r="7.2" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M10 9.1v4.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <circle cx="10" cy="6.4" r="1" fill="currentColor"/>
+          </svg>
+        </button>
+      </div>
     </div>
 
     <div class="pane-toolbar">
@@ -180,10 +202,32 @@
         </span>
         <div class="pane-titles">
           <h2><span id="remote-provider-name">Jottacloud</span><span class="pane-sep">·</span><span class="root-path" id="remote-root-name">Archive</span></h2>
-          <p id="remote-provider-desc">archive.json snapshot · virtual read-only view</p>
+          <div class="source-flags" aria-label="Source type">
+            <span class="source-flag" title="Read from a point-in-time snapshot">
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <ellipse cx="8" cy="4.2" rx="5.1" ry="2.1" stroke="currentColor" stroke-width="1.2"/>
+                <path d="M2.9 4.2v3.6c0 1.16 2.28 2.1 5.1 2.1s5.1-.94 5.1-2.1V4.2M2.9 7.8v3.6c0 1.16 2.28 2.1 5.1 2.1s5.1-.94 5.1-2.1V7.8" stroke="currentColor" stroke-width="1.2"/>
+              </svg>Snapshot
+            </span>
+            <span class="source-flag" title="This is a virtual, read-only view">
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <rect x="3.4" y="7" width="9.2" height="6.2" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
+                <path d="M5.5 7V5.2a2.5 2.5 0 0 1 5 0V7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>Read-only
+            </span>
+          </div>
         </div>
       </div>
-      <div class="pane-badge" data-role="badge"></div>
+      <div class="pane-head-actions">
+        <div class="pane-badge" data-role="badge"></div>
+        <button type="button" class="btn icon-btn source-info" data-role="source-info" data-side="remote" title="About this snapshot" aria-label="About this snapshot" aria-haspopup="dialog" aria-controls="source-panel" aria-expanded="false">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <circle cx="10" cy="10" r="7.2" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M10 9.1v4.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <circle cx="10" cy="6.4" r="1" fill="currentColor"/>
+          </svg>
+        </button>
+      </div>
     </div>
 
     <div class="pane-toolbar">
@@ -397,6 +441,17 @@
       <button type="button" class="btn icon-btn" id="detail-close" title="Close" aria-label="Close">×</button>
     </header>
     <div class="detail-body" id="detail-body"></div>
+  </aside>
+
+  <aside class="source-panel" id="source-panel" aria-labelledby="source-title" hidden>
+    <header class="source-panel-head">
+      <div>
+        <h2 id="source-title">Source details</h2>
+        <p id="source-subtitle">Where this pane's data comes from.</p>
+      </div>
+      <button type="button" class="btn icon-btn" id="source-close" title="Close" aria-label="Close">×</button>
+    </header>
+    <div class="detail-body" id="source-body"></div>
   </aside>
 
 </main>

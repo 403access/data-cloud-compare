@@ -568,7 +568,8 @@ button { cursor: pointer; }
 .panes > #pane-remote { grid-column: 3; grid-row: 1; }
 .panes > .theme-panel { grid-column: 1; grid-row: 1; }
 .panes > .columns-panel,
-.panes > .detail-panel { grid-column: 4; grid-row: 1; }
+.panes > .detail-panel,
+.panes > .source-panel { grid-column: 4; grid-row: 1; }
 
 .pane {
   display: flex;
@@ -650,6 +651,101 @@ button { cursor: pointer; }
   text-overflow: ellipsis;
 }
 .pane-badge b { color: var(--text); font-weight: 600; }
+
+.pane-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  min-width: 0;
+  max-width: 52%;
+}
+.pane-head-actions .pane-badge { min-width: 0; }
+
+.source-info {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  border-color: transparent;
+  background: transparent;
+  color: var(--text-3);
+}
+.source-info:hover:not(:disabled) {
+  background: var(--hover);
+  color: var(--text);
+}
+.source-info svg { width: 15px; height: 15px; }
+.source-info[aria-expanded="true"] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.source-flags {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 2px;
+  min-width: 0;
+  overflow: hidden;
+}
+.source-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--text-3);
+  font-size: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.source-flag svg { width: 11px; height: 11px; flex: none; }
+.source-flag + .source-flag::before {
+  content: "·";
+  margin-right: 1px;
+  color: var(--line-strong, var(--text-3));
+  opacity: .7;
+}
+
+.source-hero-icon.local { color: #0a84ff; }
+.source-hero-icon.remote { color: var(--remote-brand, #5e5ce6); }
+
+.source-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--sidebar);
+  color: var(--text-2);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .1px;
+}
+.source-pill::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  margin-right: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.source-pill + .source-pill::before { background: var(--text-3); }
+
+.source-compare {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--sidebar);
+  color: var(--text-2);
+  font-size: 11px;
+  line-height: 1.4;
+}
+.source-compare b { color: var(--text); font-weight: 600; }
+.source-compare-arrow { color: var(--text-3); }
 
 .pane-toolbar {
   flex: none;
@@ -1128,6 +1224,7 @@ button { cursor: pointer; }
 
 .columns-panel,
 .detail-panel,
+.source-panel,
 .theme-panel {
   display: flex;
   flex-direction: column;
@@ -1154,6 +1251,7 @@ button { cursor: pointer; }
 }
 .columns-panel.is-open,
 .detail-panel.is-open,
+.source-panel.is-open,
 .theme-panel.is-open {
   opacity: 1;
   transform: none;
@@ -1161,11 +1259,13 @@ button { cursor: pointer; }
 }
 .columns-panel[hidden],
 .detail-panel[hidden],
+.source-panel[hidden],
 .theme-panel[hidden] { display: none; }
 
 /* Slight fade/stagger so the sidebar content settles after the panel lands. */
 .columns-panel > *,
 .detail-panel > *,
+.source-panel > *,
 .theme-panel > * {
   opacity: 0;
   transform: translateY(7px);
@@ -1175,19 +1275,23 @@ button { cursor: pointer; }
 }
 .columns-panel.is-open > *,
 .detail-panel.is-open > *,
+.source-panel.is-open > *,
 .theme-panel.is-open > * {
   opacity: 1;
   transform: none;
 }
 .columns-panel.is-open > :nth-child(2),
 .detail-panel.is-open > :nth-child(2),
+.source-panel.is-open > :nth-child(2),
 .theme-panel.is-open > :nth-child(2) { transition-delay: 45ms; }
 .columns-panel.is-open > :nth-child(3),
 .detail-panel.is-open > :nth-child(3),
+.source-panel.is-open > :nth-child(3),
 .theme-panel.is-open > :nth-child(3) { transition-delay: 90ms; }
 
 .columns-panel-head,
 .detail-panel-head,
+.source-panel-head,
 .theme-panel-head {
   display: flex;
   align-items: flex-start;
@@ -1197,6 +1301,7 @@ button { cursor: pointer; }
 }
 .columns-panel-head h2,
 .detail-panel-head h2,
+.source-panel-head h2,
 .theme-panel-head h2 {
   margin: 0;
   font-size: 15px;
@@ -1205,6 +1310,7 @@ button { cursor: pointer; }
 }
 .columns-panel-head p,
 .detail-panel-head p,
+.source-panel-head p,
 .theme-panel-head p {
   margin: 3px 0 0;
   color: var(--text-3);
@@ -1212,6 +1318,7 @@ button { cursor: pointer; }
 }
 .columns-panel-head .icon-btn,
 .detail-panel-head .icon-btn,
+.source-panel-head .icon-btn,
 .theme-panel-head .icon-btn { margin-left: auto; flex: none; }
 
 .columns-options {
@@ -1596,7 +1703,8 @@ button { cursor: pointer; }
 :root[data-theme="water"] .statusbar,
 :root[data-theme="water"] .theme-panel,
 :root[data-theme="water"] .columns-panel,
-:root[data-theme="water"] .detail-panel {
+:root[data-theme="water"] .detail-panel,
+:root[data-theme="water"] .source-panel {
   animation: water-breathe calc(14s / var(--water-speed-factor)) ease-in-out infinite alternate;
 }
 :root[data-theme="water"] .appbar {
@@ -1727,6 +1835,7 @@ button { cursor: pointer; }
 :root[data-theme="water"][data-water-glass="on"] .pane,
 :root[data-theme="water"][data-water-glass="on"] .columns-panel,
 :root[data-theme="water"][data-water-glass="on"] .detail-panel,
+:root[data-theme="water"][data-water-glass="on"] .source-panel,
 :root[data-theme="water"][data-water-glass="on"] .theme-panel {
   background: color-mix(in srgb, var(--pane-bg) 76%, transparent);
   backdrop-filter: blur(20px) saturate(150%);
@@ -1739,7 +1848,8 @@ button { cursor: pointer; }
 :root[data-theme="water"][data-water-effects="off"] .statusbar,
 :root[data-theme="water"][data-water-effects="off"] .theme-panel,
 :root[data-theme="water"][data-water-effects="off"] .columns-panel,
-:root[data-theme="water"][data-water-effects="off"] .detail-panel {
+:root[data-theme="water"][data-water-effects="off"] .detail-panel,
+:root[data-theme="water"][data-water-effects="off"] .source-panel {
   animation: none;
 }
 :root[data-theme="water"] .row-icon-folder { color: #55dcff; }
@@ -1823,7 +1933,8 @@ button { cursor: pointer; }
   .panes > #pane-remote { grid-column: 1; grid-row: 2; }
   .panes > .theme-panel { grid-column: 1; grid-row: 3; }
   .panes > .columns-panel,
-  .panes > .detail-panel { grid-column: 1; grid-row: 4; }
+  .panes > .detail-panel,
+  .panes > .source-panel { grid-column: 1; grid-row: 4; }
   :root {
     --col-type: 58px;
     --col-status: 82px;
