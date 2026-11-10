@@ -31,13 +31,15 @@ missing are marked unavailable; the others keep working.
 ## First start and caches
 
 The first start builds a cache per available provider (roughly 30 seconds each on a large
-index) and a compact search index (roughly 20 seconds each). Later starts are instant.
+index), a compact search index (roughly 20 seconds each), and a shared folder-size index for
+the local snapshot (roughly 15 seconds). Later starts are instant.
 
 Caches live in `explorer/.cache/` and are git-ignored:
 
 ```text
 explorer/.cache/
   explorer-<provider>.db
+  local-folder-sizes.db
   search-<provider>.index
   search-<provider>.index.json
 ```
@@ -139,9 +141,11 @@ Click `Name`, `Type`, `Status`, `Size`, or `Modified` to sort. Right-click a tab
 empty table space) to open the column sidebar and choose which columns are shown. The choice
 is remembered and applies to both panes.
 
-Sizes are byte sizes for files and direct item counts for folders. Jottacloud's listing has
-no modification times, so that column shows `—` on that side. Google Drive snapshots include
-modification times when rclone provides them.
+The same sidebar has a **Folder size** selector for the `Size` column. Folders can show the
+recursive size of everything beneath them, their direct item count, or both. Files always
+show their own byte size. Jottacloud's listing has no modification times, so that column
+shows `—` on that side. Google Drive snapshots include modification times when rclone
+provides them.
 
 ## Hidden files and theme
 
@@ -163,12 +167,13 @@ The UI is backed by a small JSON API. All endpoints are GET requests.
 | --- | --- | --- |
 | `/api/providers` | none | Provider list, availability, summaries, sources. |
 | `/api/meta` | `provider` | Provider metadata and summary. |
-| `/api/list` | `provider`, `side` (`local`/`remote`), `path`, `sort`, `dir`, `hidden` | Directory listing. |
+| `/api/list` | `provider`, `side` (`local`/`remote`), `path`, `sort`, `dir`, `hidden`, `sizemode` | Directory listing. |
 | `/api/search` | `provider`, `side`, `q`, `scope` (`all`/`folder`), `path`, `hidden` | Search results. |
 
 `sort` accepts `name`, `type`, `size`, `modified`, or `status`; `dir` accepts `asc` or
-`desc`. Unknown providers or sides return an error. The server also serves the static files
-in `explorer/web/`.
+`desc`. `sizemode` accepts `bytes` (default), `files`, or `both` and controls how folder
+sizes are sorted. Unknown providers or sides return an error. The server also serves the
+static files in `explorer/web/`.
 
 ## Security model
 

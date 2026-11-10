@@ -35,6 +35,7 @@ except ImportError:
 ROOT = Path(__file__).resolve().parent.parent
 CACHE_DIR = Path(__file__).resolve().parent / ".cache"
 SCHEMA_VERSION = 1
+FOLDER_SIZE_VERSION = 1
 
 # Jottacloud replaces these characters with fullwidth lookalikes.
 FW = str.maketrans({
@@ -230,6 +231,143 @@ def _build_status(con: sqlite3.Connection, provider: Provider) -> None:
         local_rows)
 
 
+def local_folder_sizes_path() -> Path:
+    return CACHE_DIR / "local-folder-sizes.db"
+
+
+def _local_folder_sizes_signature(local_db: Path, base: str) -> str:
+    try:
+        st = local_db.stat()
+    except OSError:
+        return "missing"
+    return f"{st.st_size}:{st.st_mtime_ns}:{base}"
+
+
+def _folder_totals(rows, base: str = ""):
+    """Return recursive byte totals for every folder in *rows*.
+
+    Rows must be sorted by path and contain ``(path, is_dir, size)``.  Paths
+    are laid out depth-first in that order, so a running total plus a stack of
+    open folders yields every subtree sum in one pass.
+    """
+    totals: dict[str, int] = {}
+    stack: list[tuple[str, int]] = []
+    running = 0
+    prefix = base + "/" if base else ""
+    cut = len(prefix)
+    for path, is_dir, size in rows:
+        if prefix:
+            if not path.startswith(prefix):
+                continue
+            path = path[cut:]
+        while stack and not path.startswith(stack[-1][0] + "/"):
+            folder, before = stack.pop()
+            totals[folder] = running - before
+        if is_dir:
+            stack.append((path, running))
+        else:
+            running += size or 0
+    while stack:
+        folder, before = stack.pop()
+        totals[folder] = running - before
+    return totals
+
+
+def _write_folder_sizes(con: sqlite3.Connection, rows, base: str = "") -> int:
+    totals = _folder_totals(rows, base)
+    con.executemany(
+        "INSERT OR REPLACE INTO folder_size(path,bytes) VALUES (?,?)",
+        totals.items())
+    return len(totals)
+
+
+def ensure_provider_folder_sizes(db_path: Path) -> Path:
+    """Add the recursive folder-size table to an existing provider cache."""
+    con = sqlite3.connect(str(db_path))
+    try:
+        meta = dict(con.execute("SELECT key,value FROM meta").fetchall())
+        if meta.get("folder_sizes") == str(FOLDER_SIZE_VERSION):
+            return db_path
+        _log("  indexing recursive folder sizes …")
+        t0 = time.time()
+        con.execute(
+            "CREATE TABLE IF NOT EXISTS folder_size ("
+            "path TEXT PRIMARY KEY, bytes INTEGER NOT NULL) WITHOUT ROWID")
+        rows = con.execute(
+            "SELECT path,is_dir,size FROM archive ORDER BY path")
+        count = _write_folder_sizes(con, rows)
+        con.execute(
+            "INSERT OR REPLACE INTO meta(key,value) VALUES ('folder_sizes',?)",
+            (str(FOLDER_SIZE_VERSION),))
+        con.commit()
+        _log(f"  {count:,} folder sizes ready in {time.time() - t0:.1f}s")
+    finally:
+        con.close()
+    return db_path
+
+
+def ensure_local_folder_sizes(local_db: Path, base: str) -> Path:
+    """Build/refresh a shared recursive size index for the local snapshot."""
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    db_path = local_folder_sizes_path()
+    signature = _local_folder_sizes_signature(local_db, base)
+    if db_path.exists():
+        try:
+            con = sqlite3.connect(str(db_path))
+            meta = dict(con.execute("SELECT key,value FROM meta").fetchall())
+            con.close()
+            if (meta.get("folder_sizes") == str(FOLDER_SIZE_VERSION)
+                    and meta.get("signature") == signature):
+                return db_path
+        except Exception:
+            pass
+
+    tmp = db_path.with_suffix(".db.tmp")
+    for suffix in ("", "-wal", "-shm", "-journal"):
+        try:
+            Path(str(tmp) + suffix).unlink()
+        except FileNotFoundError:
+            pass
+
+    _log("Indexing local folder sizes (one-time) …")
+    t0 = time.time()
+    source = sqlite3.connect(
+        local_db.resolve().as_uri() + "?mode=ro", uri=True, timeout=20)
+    con = sqlite3.connect(str(tmp))
+    try:
+        con.executescript("""
+            PRAGMA journal_mode = OFF;
+            PRAGMA synchronous = OFF;
+            PRAGMA temp_store = MEMORY;
+            CREATE TABLE meta (
+                key   TEXT PRIMARY KEY,
+                value TEXT NOT NULL
+            );
+            CREATE TABLE folder_size (
+                path  TEXT PRIMARY KEY,
+                bytes INTEGER NOT NULL
+            ) WITHOUT ROWID;
+        """)
+        rows = source.execute(
+            "SELECT path,is_directory,size FROM files "
+            "WHERE path >= ? AND path < ? ORDER BY path",
+            (base + "/", base + "0"))
+        count = _write_folder_sizes(con, rows, base)
+        con.execute(
+            "INSERT INTO meta(key,value) VALUES ('folder_sizes',?)",
+            (str(FOLDER_SIZE_VERSION),))
+        con.execute(
+            "INSERT INTO meta(key,value) VALUES ('signature',?)",
+            (signature,))
+        con.commit()
+        _log(f"  {count:,} local folder sizes ready in {time.time() - t0:.1f}s")
+    finally:
+        source.close()
+        con.close()
+    os.replace(tmp, db_path)
+    return db_path
+
+
 def _create_schema(con: sqlite3.Connection) -> None:
     con.executescript("""
         PRAGMA journal_mode = OFF;
@@ -273,6 +411,10 @@ def _create_schema(con: sqlite3.Connection) -> None:
             is_dir INTEGER NOT NULL,
             size   INTEGER NOT NULL
         );
+        CREATE TABLE folder_size (
+            path  TEXT PRIMARY KEY,
+            bytes INTEGER NOT NULL
+        ) WITHOUT ROWID;
     """)
 
 
@@ -299,6 +441,7 @@ def build_cache(provider: Provider | None = None, force: bool = False) -> Path:
             con.close()
             if (meta.get("schema_version") == str(SCHEMA_VERSION)
                     and meta.get("signature") == _signature(provider)):
+                ensure_provider_folder_sizes(db_path)
                 return db_path
         except Exception:
             pass
@@ -318,10 +461,17 @@ def build_cache(provider: Provider | None = None, force: bool = False) -> Path:
         _build_archive(con, provider)
         _build_status(con, provider)
         _create_indexes(con)
+        _log("  indexing recursive folder sizes …")
+        t0_sizes = time.time()
+        count = _write_folder_sizes(
+            con, con.execute("SELECT path,is_dir,size FROM archive ORDER BY path"))
+        _log(f"  {count:,} folder sizes ready in {time.time() - t0_sizes:.1f}s")
         con.execute("INSERT INTO meta(key,value) VALUES ('schema_version',?)",
                     (str(SCHEMA_VERSION),))
         con.execute("INSERT INTO meta(key,value) VALUES ('signature',?)",
                     (_signature(provider),))
+        con.execute("INSERT INTO meta(key,value) VALUES ('folder_sizes',?)",
+                    (str(FOLDER_SIZE_VERSION),))
         con.commit()
     finally:
         con.close()

@@ -22,11 +22,13 @@ from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
 
 try:
-    from .cache import build_cache, cache_path, load_summary, norm_path
+    from .cache import (build_cache, cache_path, ensure_local_folder_sizes,
+                        load_summary, norm_path)
     from .providers import DEFAULT_PROVIDER, ROOT, get_providers
     from .search_index import load_indexes
 except ImportError:
-    from cache import build_cache, cache_path, load_summary, norm_path
+    from cache import (build_cache, cache_path, ensure_local_folder_sizes,
+                       load_summary, norm_path)
     from providers import DEFAULT_PROVIDER, ROOT, get_providers
     from search_index import load_indexes
 
@@ -38,6 +40,8 @@ SEARCH_LIMIT = 400
 PROVIDERS = {p.key: p for p in get_providers()}
 PROVIDER_STATE: dict[str, dict] = {}
 SEARCH: dict[str, object] = {}  # provider key -> SearchIndexes, set in main()
+LOCAL_SIZE_DB: Path | None = None
+SIZE_MODES = ("bytes", "files", "both")
 
 STATUS_ORDER = {
     "missing": 0,
@@ -97,10 +101,16 @@ def entry_type(name: str, is_dir: bool) -> str:
     return "File"
 
 
-def sort_entries(entries: list, sort: str, direction: str) -> list:
+def sort_entries(entries: list, sort: str, direction: str,
+                 size_mode: str = "bytes") -> list:
     desc = direction == "desc"
     if sort == "size":
-        key = lambda e: e.get("size") or 0  # noqa: E731
+        if size_mode == "files":
+            key = lambda e: (e.get("size") if not e.get("is_dir")
+                             else e.get("child_count")) or 0  # noqa: E731
+        else:
+            key = lambda e: (e.get("size") if not e.get("is_dir")
+                             else e.get("folder_size")) or 0  # noqa: E731
     elif sort == "modified":
         key = lambda e: e.get("modified") or 0  # noqa: E731
     elif sort == "status":
@@ -131,6 +141,7 @@ def build_stats(entries: list) -> dict:
     files = sum(1 for e in entries if not e["is_dir"])
     dirs = len(entries) - files
     size = sum((e.get("size") or 0) for e in entries if not e["is_dir"])
+    size += sum((e.get("folder_size") or 0) for e in entries if e["is_dir"])
     return {"files": files, "dirs": dirs, "items": len(entries), "bytes": size}
 
 
@@ -168,8 +179,34 @@ def remote_entry(row) -> dict:
         "found_at": row["found_at"] or (agg["found_at"] if agg else ""),
         "note": row["note"] or "",
         "child_count": None,
+        "folder_size": None,
         "agg": agg,
     }
+
+
+def apply_folder_sizes(entries: list, db_path: Path) -> None:
+    """Fill ``folder_size`` (recursive bytes) for folder entries."""
+    dirs = {norm_path(e["path"]): e for e in entries if e["is_dir"]}
+    if not dirs:
+        return
+    con = connect_ro(db_path)
+    try:
+        for chunk in chunks(list(dirs), 400):
+            ph = placeholders(len(chunk))
+            for r in con.execute(
+                    f"SELECT path, bytes FROM folder_size WHERE path IN ({ph})",
+                    chunk):
+                entry = dirs.get(r["path"])
+                if entry is not None:
+                    entry["folder_size"] = int(r["bytes"] or 0)
+    finally:
+        con.close()
+
+
+def apply_local_folder_sizes(entries: list) -> None:
+    if LOCAL_SIZE_DB is None:
+        return
+    apply_folder_sizes(entries, LOCAL_SIZE_DB)
 
 
 def apply_folder_rollups(provider, entries: list, con=None) -> None:
@@ -238,7 +275,7 @@ def apply_folder_rollups(provider, entries: list, con=None) -> None:
 
 
 def list_remote(provider, rel: str, sort: str, direction: str,
-                hidden: bool) -> dict:
+                hidden: bool, size_mode: str = "bytes") -> dict:
     con = connect_ro(cache_path(provider))
     try:
         rows = con.execute(
@@ -265,7 +302,8 @@ def list_remote(provider, rel: str, sort: str, direction: str,
             continue
         entries.append(remote_entry(row))
     apply_folder_rollups(provider, entries)
-    sort_entries(entries, sort, direction)
+    apply_folder_sizes(entries, cache_path(provider))
+    sort_entries(entries, sort, direction, size_mode)
     return {
         "side": "remote",
         "provider": provider.key,
@@ -321,6 +359,7 @@ def search_remote(provider, q: str, scope: str, rel: str,
             truncated = True
             break
     apply_folder_rollups(provider, entries)
+    apply_folder_sizes(entries, cache_path(provider))
     sort_entries(entries, "name", "asc")
     return {
         "side": "remote",
@@ -439,6 +478,7 @@ def local_entries_from_rows(rows, cache_con, con, need_counts=True) -> list:
             "found_at": "",
             "note": "",
             "child_count": None,
+            "folder_size": None,
             "agg": None,
         })
     statuses = local_status_map(cache_con, entries)
@@ -452,7 +492,7 @@ def local_entries_from_rows(rows, cache_con, con, need_counts=True) -> list:
 
 
 def list_local(provider, rel: str, sort: str, direction: str,
-               hidden: bool) -> dict:
+               hidden: bool, size_mode: str = "bytes") -> dict:
     con = connect_ro(LOCAL_DB)
     cache_con = connect_ro(cache_path(provider))
     try:
@@ -466,13 +506,14 @@ def list_local(provider, rel: str, sort: str, direction: str,
             (local_abs(rel),)).fetchone())
         entries = local_entries_from_rows(rows, cache_con, con)
         apply_folder_rollups(provider, entries, cache_con)
+        apply_local_folder_sizes(entries)
     finally:
         con.close()
         cache_con.close()
 
     if not hidden:
         entries = [e for e in entries if not e["name"].startswith(".")]
-    sort_entries(entries, sort, direction)
+    sort_entries(entries, sort, direction, size_mode)
     return {
         "side": "local",
         "provider": provider.key,
@@ -513,6 +554,7 @@ def search_local(provider, q: str, scope: str, rel: str,
         entries = local_entries_from_rows(rows, cache_con, con,
                                           need_counts=True)
         apply_folder_rollups(provider, entries, cache_con)
+        apply_local_folder_sizes(entries)
     finally:
         con.close()
         cache_con.close()
@@ -627,17 +669,22 @@ class Handler(BaseHTTPRequestHandler):
             rel = clean_rel(params.get("path", ""))
             sort = params.get("sort", "name")
             direction = params.get("dir", "asc")
+            size_mode = params.get("sizemode", "bytes")
             hidden = params.get("hidden", "0") in ("1", "true", "yes")
             if sort not in ("name", "type", "size", "modified", "status"):
                 sort = "name"
             if direction not in ("asc", "desc"):
                 direction = "asc"
+            if size_mode not in SIZE_MODES:
+                size_mode = "bytes"
             if side == "remote":
                 self.send_json(
-                    list_remote(provider, rel, sort, direction, hidden))
+                    list_remote(provider, rel, sort, direction, hidden,
+                                size_mode))
             elif side == "local":
                 self.send_json(
-                    list_local(provider, rel, sort, direction, hidden))
+                    list_local(provider, rel, sort, direction, hidden,
+                               size_mode))
             else:
                 self.send_error_json(400, "unknown side")
             return
@@ -743,6 +790,10 @@ def main() -> None:
     if not LOCAL_DB.exists():
         _ = sys.stderr.write(f"Local index not found: {LOCAL_DB}\n")
         raise SystemExit(1)
+
+    global LOCAL_SIZE_DB
+    LOCAL_SIZE_DB = ensure_local_folder_sizes(LOCAL_DB, BASE)
+    print(f"  local folder sizes: {LOCAL_SIZE_DB}")
 
     for provider in PROVIDERS.values():
         ready, reason = provider.readiness()

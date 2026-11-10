@@ -119,6 +119,40 @@ function fmtBytes(n) {
   return `${value.toFixed(digits)} ${units[i]}`;
 }
 
+function sizeDisplay(entry) {
+  if (!entry.is_dir) {
+    return {
+      text: fmtBytes(entry.size),
+      title: entry.size != null ? `${fmtNum(entry.size)} bytes` : '',
+    };
+  }
+  const bytes = entry.folder_size != null ? fmtBytes(entry.folder_size) : '—';
+  const bytesTitle = entry.folder_size != null
+    ? `${fmtNum(entry.folder_size)} bytes across all nested files`
+    : 'Folder size unavailable';
+  const count = entry.child_count != null ? fmtNum(entry.child_count) : '—';
+  const countTitle = entry.child_count != null
+    ? `${fmtNum(entry.child_count)} direct items`
+    : 'Item count unavailable';
+  if (state.sizeMode === 'files') {
+    return { text: count, title: countTitle };
+  }
+  if (state.sizeMode === 'both') {
+    return {
+      text: `${bytes} · ${count}`,
+      title: `${bytesTitle} · ${countTitle}`,
+    };
+  }
+  return { text: bytes, title: bytesTitle };
+}
+
+function sizeSortValue(entry) {
+  if (!entry.is_dir) return entry.size || 0;
+  return state.sizeMode === 'files'
+    ? (entry.child_count || 0)
+    : (entry.folder_size || 0);
+}
+
 function fmtDate(ts) {
   if (!ts) return '—';
   try { return DATE.format(new Date(ts * 1000)); } catch { return '—'; }
@@ -204,6 +238,9 @@ function statusTitle(entry) {
   } else if (entry.is_dir && entry.child_count != null) {
     bits.push(`${fmtNum(entry.child_count)} direct items`);
   }
+  if (entry.is_dir && entry.folder_size != null) {
+    bits.push(`${fmtNum(entry.folder_size)} bytes across all nested files`);
+  }
   if (entry.found_at) bits.push(`Found at: ${entry.found_at}`);
   return bits.join(' · ');
 }
@@ -231,11 +268,18 @@ const COLUMN_DEFS = [
   { id: 'name', label: 'Name', hint: 'File or folder name', width: 'minmax(0, 1fr)', required: true },
   { id: 'type', label: 'Type', hint: 'Folder or file extension', width: 'var(--col-type)' },
   { id: 'status', label: 'Status', hint: 'Comparison result', width: 'var(--col-status)' },
-  { id: 'size', label: 'Size', hint: 'Bytes or direct item count', width: 'var(--col-size)' },
+  { id: 'size', label: 'Size', hint: 'Nested bytes or direct item count', width: 'var(--col-size)' },
   { id: 'modified', label: 'Modified', hint: 'Last modified date', width: 'var(--col-mod)' },
 ];
 
 const COLUMN_STORAGE_KEY = 'explorer-columns';
+const SIZE_MODE_STORAGE_KEY = 'explorer-size-mode';
+const SIZE_MODES = ['bytes', 'files', 'both'];
+const SIZE_MODE_LABELS = {
+  bytes: 'Size in bytes',
+  files: 'Item count',
+  both: 'Bytes + item count',
+};
 const DEFAULT_COLUMNS = COLUMN_DEFS.map(col => col.id);
 
 function readVisibleColumns() {
@@ -256,11 +300,22 @@ function saveVisibleColumns() {
   } catch { /* ignore */ }
 }
 
+function readSizeMode() {
+  let saved = null;
+  try { saved = localStorage.getItem(SIZE_MODE_STORAGE_KEY); } catch { /* ignore */ }
+  return SIZE_MODES.includes(saved) ? saved : 'bytes';
+}
+
+function saveSizeMode() {
+  try { localStorage.setItem(SIZE_MODE_STORAGE_KEY, state.sizeMode); } catch { /* ignore */ }
+}
+
 const state = {
   active: 'local',
   hidden: false,
   provider: 'jottacloud',
   columns: readVisibleColumns(),
+  sizeMode: readSizeMode(),
 };
 
 const providerCatalog = {
@@ -717,6 +772,14 @@ function resetColumns() {
   Object.values(panes).forEach(pane => pane.applyColumns());
 }
 
+function setSizeMode(mode) {
+  if (!SIZE_MODES.includes(mode) || state.sizeMode === mode) return;
+  state.sizeMode = mode;
+  saveSizeMode();
+  syncColumnsPanel();
+  Object.values(panes).forEach(pane => pane.refreshSizeDisplay());
+}
+
 function buildColumnsPanel() {
   const options = document.getElementById('columns-options');
   if (!options) return;
@@ -743,13 +806,41 @@ function buildColumnsPanel() {
     row.append(input, text);
     return row;
   });
-  options.replaceChildren(...rows);
+
+  const sizeRow = document.createElement('label');
+  sizeRow.className = 'columns-setting';
+  const sizeText = document.createElement('span');
+  sizeText.className = 'columns-option-text';
+  const sizeTitle = document.createElement('span');
+  sizeTitle.className = 'columns-option-title';
+  sizeTitle.textContent = 'Folder size';
+  const sizeHint = document.createElement('span');
+  sizeHint.className = 'columns-option-hint';
+  sizeHint.textContent = 'Choose how the Size column shows folders.';
+  sizeText.append(sizeTitle, sizeHint);
+  const select = document.createElement('select');
+  select.id = 'columns-size-mode';
+  select.className = 'columns-select';
+  select.setAttribute('aria-label', 'Folder size display');
+  SIZE_MODES.forEach(mode => {
+    const option = document.createElement('option');
+    option.value = mode;
+    option.textContent = SIZE_MODE_LABELS[mode];
+    select.append(option);
+  });
+  select.value = state.sizeMode;
+  select.addEventListener('change', () => setSizeMode(select.value));
+  sizeRow.append(sizeText, select);
+
+  options.replaceChildren(...rows, sizeRow);
 }
 
 function syncColumnsPanel() {
   document.querySelectorAll('#columns-options input[data-column]').forEach(input => {
     input.checked = state.columns.has(input.dataset.column);
   });
+  const select = document.getElementById('columns-size-mode');
+  if (select) select.value = state.sizeMode;
 }
 
 let sidebarMode = null;
@@ -1242,9 +1333,14 @@ function renderDetailPanel(pane, entry) {
 
   const facts = document.createElement('div');
   facts.className = 'detail-facts';
-  facts.append(detailFact(entry.is_dir ? 'Items' : 'Size', entry.is_dir
-    ? (entry.child_count != null ? `${fmtNum(entry.child_count)} direct` : '—')
-    : fmtBytes(entry.size)));
+  if (entry.is_dir) {
+    facts.append(detailFact('Folder size', entry.folder_size != null
+      ? fmtBytes(entry.folder_size) : '—'));
+    facts.append(detailFact('Items', entry.child_count != null
+      ? `${fmtNum(entry.child_count)} direct` : '—'));
+  } else {
+    facts.append(detailFact('Size', fmtBytes(entry.size)));
+  }
   if (entry.modified) facts.append(detailFact('Modified', fmtDate(entry.modified)));
   if (entry.parent) facts.append(detailFact('Folder', entry.parent, { mono: true }));
   if (entry.found_at) facts.append(detailFact('Found at', entry.found_at, { mono: true }));
@@ -1668,6 +1764,7 @@ class Pane {
       `&provider=${encodeURIComponent(state.provider)}` +
       `&path=${encodeURIComponent(this.path)}` +
       `&sort=${this.sort}&dir=${this.dir}` +
+      `&sizemode=${state.sizeMode}` +
       `&hidden=${state.hidden ? 1 : 0}`;
     try {
       const data = await getJSON(url);
@@ -1812,7 +1909,7 @@ class Pane {
       type_mismatch: 4, exact: 5, local_only: 6, unmatched: 7,
     };
     let key;
-    if (this.sort === 'size') key = e => e.size || 0;
+    if (this.sort === 'size') key = e => sizeSortValue(e);
     else if (this.sort === 'modified') key = e => e.modified || 0;
     else if (this.sort === 'status') key = e => statusOrder[e.status] ?? 99;
     else if (this.sort === 'type') key = e => entryType(e).toLocaleLowerCase();
@@ -1851,6 +1948,14 @@ class Pane {
     this.root.style.setProperty('--col-template', columnTemplate());
     this.updateSortIndicators();
     if (rerender) this.renderAll(false);
+  }
+
+  refreshSizeDisplay() {
+    if (this.searchMode) this.sortResults();
+    if (this.sort === 'size' && !this.searchMode) this.fetchList();
+    else this.renderAll(false);
+    refreshDetailPanel();
+    updateSelectionBar();
   }
 
   updateSortIndicators() {
@@ -1956,17 +2061,9 @@ class Pane {
 
     const sizeCell = document.createElement('div');
     sizeCell.className = 'row-cell cell-size';
-    if (entry.is_dir) {
-      if (entry.child_count != null) {
-        sizeCell.textContent = fmtNum(entry.child_count);
-        sizeCell.title = `${fmtNum(entry.child_count)} direct items`;
-      } else {
-        sizeCell.textContent = '—';
-      }
-    } else {
-      sizeCell.textContent = fmtBytes(entry.size);
-      sizeCell.title = entry.size != null ? `${fmtNum(entry.size)} bytes` : '';
-    }
+    const size = sizeDisplay(entry);
+    sizeCell.textContent = size.text;
+    if (size.title) sizeCell.title = size.title;
 
     const modCell = document.createElement('div');
     modCell.className = 'row-cell cell-mod';
@@ -2197,7 +2294,11 @@ function updateSelectionBar() {
   const bits = [];
   if (entry.is_dir) {
     bits.push('Folder');
-    if (entry.child_count != null) bits.push(`${fmtNum(entry.child_count)} items`);
+    const size = sizeDisplay(entry);
+    if (size.text && size.text !== '—') bits.push(size.text);
+    if (state.sizeMode === 'bytes' && entry.child_count != null) {
+      bits.push(`${fmtNum(entry.child_count)} items`);
+    }
   } else {
     bits.push('File');
     bits.push(fmtBytes(entry.size));

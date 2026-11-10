@@ -28,9 +28,10 @@ Then open <http://127.0.0.1:8787/> if the browser did not open by itself.
 
 On macOS you can also double-click `explorer/run.command`.
 
-The first start builds a cache per available provider (about 30s each) and a
-compact search index (about 20s each). Later starts are instant. The generated
-files live in `explorer/.cache/` and are git-ignored.
+The first start builds a cache per available provider (about 30s each), a
+compact search index (about 20s each), and a shared folder-size index for the
+local snapshot (about 15s). Later starts are instant. The generated files live
+in `explorer/.cache/` and are git-ignored.
 
 Useful flags:
 
@@ -138,7 +139,8 @@ explains what to run. Jottacloud keeps working independently.
 - **Columns**: click `Name`, `Type`, `Status`, `Size` or `Modified` to sort.
   Right-click a table header (or empty table space) to open the column sidebar
   and choose which columns are shown; the choice is remembered and applies to
-  both panes.
+  both panes. The sidebar's **Folder size** selector switches the `Size` column
+  between recursive bytes for folders, direct item counts, or both.
 - **Hidden files**: the `Hidden` switch shows dotfiles (off by default, like
   Finder).
 - **Theme**: pick `System`, `Light`, `Dark` or `Water` from the theme menu in
@@ -151,7 +153,8 @@ explains what to run. Jottacloud keeps working independently.
   URL to force a theme for that visit.
 
 Lists are virtualised, so folders with tens of thousands of entries stay
-responsive. Sizes are byte sizes for files and direct item counts for folders.
+responsive. Folder sizes are indexed recursively in the background cache, so the
+`Size` column can show total nested bytes instead of only a direct item count.
 Jottacloud's listing has no modification times, so that column shows `—` on
 that side. Google Drive snapshots include modification times when rclone
 provides them.

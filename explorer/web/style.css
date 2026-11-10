@@ -38,7 +38,7 @@
   --row-h: 30px;
   --col-type: 72px;
   --col-status: 98px;
-  --col-size: 86px;
+  --col-size: 112px;
   --col-mod: 138px;
   --sidebar-w: 300px;
   --theme-sidebar-w: 292px;
@@ -1364,6 +1364,33 @@ button { cursor: pointer; }
   font-size: 11px;
   line-height: 1.35;
 }
+.columns-setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 6px;
+  padding: 10px;
+  border-top: 1px solid var(--line);
+  border-radius: 8px;
+}
+.columns-setting:hover { background: var(--hover); }
+.columns-select {
+  flex: none;
+  max-width: 136px;
+  height: 26px;
+  padding: 0 6px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  outline: none;
+  background: var(--pane-bg);
+  color: var(--text);
+  font-size: 11px;
+}
+.columns-select:focus-visible {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
 
 .columns-panel-foot {
   margin-top: auto;
@@ -2264,7 +2291,7 @@ button { cursor: pointer; }
   :root {
     --col-type: 64px;
     --col-status: 92px;
-    --col-size: 78px;
+    --col-size: 100px;
     --col-mod: 112px;
     --sidebar-w: 260px;
     --theme-sidebar-w: 264px;
@@ -2320,7 +2347,7 @@ button { cursor: pointer; }
   :root {
     --col-type: 58px;
     --col-status: 82px;
-    --col-size: 70px;
+    --col-size: 92px;
     --col-mod: 96px;
   }
   .pane-titles p { display: none; }
