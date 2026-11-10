@@ -62,6 +62,18 @@ provider. The right pane tries to stay in the same folder; if that folder does n
 the other provider it starts at the root. The left pane stays put, but its badges are
 recalculated for the new provider.
 
+## Analytics
+
+The bar-chart button in the top bar opens an **Analytics** sidebar for the selected provider.
+It hides the snapshot totals from the workspace itself and shows them on demand:
+
+- File, folder, and total-size counts for the provider snapshot.
+- Local index entries, index date, database size, and local-only entries.
+- Coverage — the share of provider files found in the local index — with a progress bar.
+- A status breakdown of same-path, moved, possible, and missing files.
+
+The same panel is available from the command bar as **Open the analytics view**.
+
 ## Navigation
 
 | Action | Control |

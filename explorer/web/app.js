@@ -772,6 +772,7 @@ function setSidebarMode(mode) {
     columns: document.getElementById('columns-panel'),
     detail: document.getElementById('detail-panel'),
     source: document.getElementById('source-panel'),
+    analytics: document.getElementById('analytics-panel'),
   };
   clearTimeout(sidebarHideTimer);
 
@@ -798,6 +799,11 @@ function setSidebarMode(mode) {
     const open = sidebarMode === 'source' && btn.dataset.side === sourcePanelSide;
     btn.setAttribute('aria-expanded', String(open));
   });
+
+  const analyticsBtn = document.getElementById('analytics-toggle');
+  if (analyticsBtn) {
+    analyticsBtn.setAttribute('aria-expanded', String(sidebarMode === 'analytics'));
+  }
 }
 
 function openColumnsPanel() {
@@ -991,6 +997,185 @@ function openSourcePanel(side) {
 
 function closeSourcePanel() {
   if (sidebarMode !== 'source') return;
+  setSidebarMode(null);
+}
+
+/* --------------------------------------------------------------- analytics */
+
+function analyticsHero(title, subtitle) {
+  const hero = document.createElement('div');
+  hero.className = 'detail-hero';
+  const icon = document.createElement('span');
+  icon.className = 'detail-icon analytics-hero-icon';
+  icon.innerHTML = `<svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path d="M3.2 17V9.4M8 17V4.2M12.8 17v-5.1M17.6 17V6.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M2.2 17h15.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+    </svg>`;
+  const text = document.createElement('div');
+  text.className = 'detail-hero-text';
+  const heading = document.createElement('h3');
+  heading.textContent = title;
+  text.append(heading);
+  if (subtitle) {
+    const sub = document.createElement('p');
+    sub.className = 'detail-path';
+    sub.textContent = subtitle;
+    text.append(sub);
+  }
+  hero.append(icon, text);
+  return hero;
+}
+
+function analyticsStat(label, value, tone) {
+  const tile = document.createElement('div');
+  tile.className = 'analytics-stat' + (tone ? ` ${tone}` : '');
+  const name = document.createElement('span');
+  name.className = 'analytics-stat-label';
+  name.textContent = label;
+  const val = document.createElement('strong');
+  val.className = 'analytics-stat-value';
+  val.textContent = value;
+  tile.append(name, val);
+  return tile;
+}
+
+function analyticsSection(title) {
+  const heading = document.createElement('h4');
+  heading.className = 'analytics-section-title';
+  heading.textContent = title;
+  return heading;
+}
+
+function analyticsCoverageRow(pct) {
+  const row = document.createElement('div');
+  row.className = 'analytics-coverage';
+  const track = document.createElement('span');
+  track.className = 'analytics-track';
+  const fill = document.createElement('span');
+  fill.className = 'analytics-fill ' + (pct > 90 ? 'good' : (pct > 60 ? 'ok' : 'low'));
+  fill.style.width = `${Math.max(0, Math.min(100, pct))}%`;
+  track.append(fill);
+  const label = document.createElement('span');
+  label.className = 'analytics-pct';
+  label.textContent = `${pct.toFixed(1)}%`;
+  row.append(track, label);
+  return row;
+}
+
+function analyticsBreakdownRow(label, bucket, tone) {
+  const row = document.createElement('div');
+  row.className = 'analytics-row';
+  const name = document.createElement('span');
+  name.className = 'analytics-row-label';
+  const dot = document.createElement('span');
+  dot.className = `dot ${tone || ''}`;
+  name.append(dot, document.createTextNode(label));
+  const count = document.createElement('span');
+  count.className = 'analytics-row-count';
+  count.textContent = `${fmtNum(bucket.files)} files`;
+  const size = document.createElement('span');
+  size.className = 'analytics-row-size';
+  size.textContent = fmtBytes(bucket.bytes);
+  row.append(name, count, size);
+  return row;
+}
+
+function renderAnalyticsPanel() {
+  const body = document.getElementById('analytics-body');
+  if (!body) return;
+  const meta = sourceMeta();
+  const provider = (meta && meta.provider) || currentProvider();
+
+  const subtitleEl = document.getElementById('analytics-subtitle');
+  if (subtitleEl) {
+    subtitleEl.textContent = `${provider.label} snapshot totals and index coverage.`;
+  }
+
+  body.replaceChildren();
+  if (!meta) {
+    const loading = document.createElement('p');
+    loading.className = 'detail-note';
+    loading.textContent = 'Loading analytics…';
+    body.append(loading);
+    return;
+  }
+
+  const summary = meta.summary || {};
+  const archive = summary.archive || {};
+  const buckets = summary.buckets || {};
+  const localSource = sourceFind(meta, 'local_db');
+  const archiveSource = sourceFind(meta, 'archive');
+  const pct = summary.present_pct;
+
+  body.append(analyticsHero(`${provider.label} analytics`, provider.archive || ''));
+
+  const stats = document.createElement('div');
+  stats.className = 'analytics-stats';
+  stats.append(
+    analyticsStat('Files', fmtNum(archive.files)),
+    analyticsStat('Folders', fmtNum(archive.dirs)),
+    analyticsStat('Total size', fmtBytes(archive.bytes)),
+    analyticsStat('Coverage', pct != null ? `${pct.toFixed(1)}%` : '—',
+      pct == null ? '' : (pct > 90 ? 'good' : (pct > 60 ? 'ok' : 'low'))));
+  body.append(stats);
+
+  if (pct != null) body.append(analyticsCoverageRow(pct));
+
+  body.append(analyticsSection('Snapshot'));
+  const snapshot = document.createElement('div');
+  snapshot.className = 'detail-facts';
+  snapshot.append(detailFact('Version', provider.snapshot_version || '—', { mono: true }));
+  snapshot.append(detailFact('Date', fmtSourceDate(archiveSource)));
+  snapshot.append(detailFact('Root', provider.root_label || '—', { mono: true }));
+  snapshot.append(detailFact('Archive file', provider.archive || '—', { mono: true }));
+  body.append(snapshot);
+
+  body.append(analyticsSection('Local index'));
+  const local = document.createElement('div');
+  local.className = 'detail-facts';
+  local.append(detailFact('Entries', fmtNum(summary.db_entries)));
+  local.append(detailFact('Index date', fmtSourceDate(localSource)));
+  local.append(detailFact('Source', localSource && localSource.path
+    ? baseOf(localSource.path) : 'file_indexer.db', { mono: true }));
+  if (localSource && !localSource.missing) {
+    local.append(detailFact('Database size', fmtBytes(localSource.size)));
+  }
+  if (summary.local_only_count != null) {
+    local.append(detailFact('Local-only entries', fmtNum(summary.local_only_count)));
+  }
+  body.append(local);
+
+  const bucketRows = [
+    ['Same path', buckets.exact, 'good'],
+    ['Moved', buckets.moved, 'ok'],
+    ['Maybe', buckets.possible, 'warn'],
+    ['Missing', buckets.missing, 'low'],
+  ].filter(([, bucket]) => bucket && bucket.files != null);
+  if (bucketRows.length) {
+    body.append(analyticsSection('Status breakdown'));
+    const breakdown = document.createElement('div');
+    breakdown.className = 'analytics-breakdown';
+    bucketRows.forEach(([label, bucket, tone]) => {
+      breakdown.append(analyticsBreakdownRow(label, bucket, tone));
+    });
+    body.append(breakdown);
+  }
+
+  const note = document.createElement('p');
+  note.className = 'detail-note';
+  note.textContent = 'Computed from the snapshot and file_indexer.db · not a live mount';
+  body.append(note);
+}
+
+function openAnalyticsPanel() {
+  renderAnalyticsPanel();
+  setSidebarMode('analytics');
+  const close = document.getElementById('analytics-close');
+  if (close) close.focus({ preventScroll: true });
+}
+
+function closeAnalyticsPanel() {
+  if (sidebarMode !== 'analytics') return;
   setSidebarMode(null);
 }
 
@@ -2146,6 +2331,9 @@ const COMMAND_ICONS = {
   details: svg(
     `<rect x="2.3" y="2.7" width="11.4" height="10.6" rx="1.4" stroke="currentColor" stroke-width="1.25"/>` +
     `<path d="M8 5.3v3.2M8 10.6v.1" stroke="currentColor" stroke-width="1.45" stroke-linecap="round"/>`),
+  analytics: svg(
+    `<path d="M2.8 13.4V8.2M6.4 13.4V4.1M10 13.4v-3.6M13.6 13.4V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>` +
+    `<path d="M2 13.9h12.2" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>`),
   reset: svg(
     `<path d="M13.2 8a5.2 5.2 0 1 1-1.5-3.7M13.1 2.6v3.1H10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>`),
   settings: svg(
@@ -2366,6 +2554,13 @@ function commandCatalog() {
     subtitle: 'Choose which table columns both panes show',
     keywords: 'table layout settings',
     run: () => (sidebarMode === 'columns' ? closeColumnsPanel() : openColumnsPanel()),
+  });
+  add('View', sidebarMode === 'analytics' ? 'Close the analytics view' : 'Open the analytics view', {
+    id: 'toggle-analytics-panel',
+    icon: 'analytics',
+    subtitle: 'Snapshot totals, local index entries, and coverage',
+    keywords: 'stats statistics metrics summary report numbers',
+    run: () => (sidebarMode === 'analytics' ? closeAnalyticsPanel() : openAnalyticsPanel()),
   });
   if (selected) {
     add('View', 'Show details for the selected item', {
@@ -2976,47 +3171,12 @@ function setupCommandBar() {
 function loadMeta(providerKey = state.provider) {
   getJSON(`/api/meta?provider=${encodeURIComponent(providerKey)}`).then(data => {
     if (providerKey !== state.provider) return;
-    const provider = data.provider || currentProvider();
-    const s = data.summary || {};
-    const archive = s.archive || {};
-    const buckets = s.buckets || {};
-    const strip = document.getElementById('meta-strip');
-    strip.replaceChildren();
-
-    const addChip = (html, title, optional) => {
-      const chip = document.createElement('span');
-      chip.className = 'meta-chip' + (optional ? ' optional' : '');
-      chip.innerHTML = '<span class="dot"></span>';
-      const body = document.createElement('span');
-      body.innerHTML = html; // only server-side numeric summary, no filenames
-      chip.append(body);
-      if (title) chip.title = title;
-      strip.append(chip);
-    };
-
-    addChip(
-      `${provider.label} <b>${fmtNum(archive.files)}</b> files · ` +
-      `<b>${fmtNum(archive.dirs)}</b> folders · ${fmtBytes(archive.bytes)}`,
-      `${provider.label} snapshot (${provider.archive})`, false);
-    const localEntries = s.db_entries;
-    addChip(
-      `Local index <b>${fmtNum(localEntries)}</b> entries`,
-      'file_indexer.db (/mnt/tank index snapshot)', true);
-    const pct = s.present_pct;
-    if (pct != null) {
-      addChip(`Coverage <b>${pct.toFixed(1)}%</b>`,
-        `${provider.label} files found in the local index ` +
-        '(same path, moved, or possible)', true);
-    }
-    if (buckets.missing && buckets.missing.files != null) {
-      addChip(`Missing <b>${fmtNum(buckets.missing.files)}</b> files`,
-        `${provider.label} files not found in the local index`, true);
-    }
-
     sourceMetaCache[providerKey] = data;
     if (sidebarMode === 'source') renderSourcePanel(sourcePanelSide);
+    if (sidebarMode === 'analytics') renderAnalyticsPanel();
   }).catch(() => {
     if (sidebarMode === 'source') renderSourcePanel(sourcePanelSide);
+    if (sidebarMode === 'analytics') renderAnalyticsPanel();
   });
 }
 
@@ -3090,6 +3250,9 @@ function updateProviderChrome() {
 
   if (sidebarMode === 'source' && sourcePanelSide === 'remote') {
     renderSourcePanel('remote');
+  }
+  if (sidebarMode === 'analytics') {
+    renderAnalyticsPanel();
   }
 
   if (panes.remote) {
@@ -3166,6 +3329,11 @@ async function init() {
   document.getElementById('columns-reset').addEventListener('click', resetColumns);
   document.getElementById('detail-close').addEventListener('click', closeDetailPanel);
   document.getElementById('source-close').addEventListener('click', closeSourcePanel);
+  document.getElementById('analytics-close').addEventListener('click', closeAnalyticsPanel);
+  document.getElementById('analytics-toggle').addEventListener('click', () => {
+    if (sidebarMode === 'analytics') closeAnalyticsPanel();
+    else openAnalyticsPanel();
+  });
   setupTheme();
   setupCommandBar();
 

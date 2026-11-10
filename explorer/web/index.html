@@ -52,9 +52,15 @@
     </button>
   </div>
 
-  <div class="meta-strip" id="meta-strip"></div>
-
   <div class="appbar-actions">
+    <button id="analytics-toggle" class="btn icon-btn" type="button"
+      title="Analytics" aria-label="Analytics" aria-haspopup="dialog"
+      aria-controls="analytics-panel" aria-expanded="false">
+      <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M3.2 17V9.4M8 17V4.2M12.8 17v-5.1M17.6 17V6.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M2.2 17h15.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+    </button>
     <button id="command-open" class="btn command-trigger" type="button"
       title="Search files and folders or run a command (⌘K)"
       aria-haspopup="dialog" aria-controls="command-overlay" aria-expanded="false"
@@ -461,6 +467,17 @@
       <button type="button" class="btn icon-btn" id="source-close" title="Close" aria-label="Close">×</button>
     </header>
     <div class="detail-body" id="source-body"></div>
+  </aside>
+
+  <aside class="analytics-panel" id="analytics-panel" aria-labelledby="analytics-title" hidden>
+    <header class="analytics-panel-head">
+      <div>
+        <h2 id="analytics-title">Analytics</h2>
+        <p id="analytics-subtitle">Snapshot totals and index coverage.</p>
+      </div>
+      <button type="button" class="btn icon-btn" id="analytics-close" title="Close" aria-label="Close">×</button>
+    </header>
+    <div class="detail-body" id="analytics-body"></div>
   </aside>
 
 </main>
