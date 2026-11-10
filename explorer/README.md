@@ -116,6 +116,12 @@ explains what to run. Jottacloud keeps working independently.
 - **Search**: type in a pane's search field. By default it searches
   everywhere; switch the dropdown to `This folder` to search only the current
   subtree. `Cmd/Ctrl+F` focuses the active pane's search. `Esc` clears it.
+- **Command bar**: press `Cmd/Ctrl+K` (or click **Search** in the top bar) to
+  search both panes at once and run commands from the keyboard. Typing runs a
+  cross-pane file and folder search alongside fuzzy command matching; start with
+  `>` to search commands only. It covers navigation, status filters, sorting,
+  column visibility, themes, water settings and provider switching. Use
+  `↑`/`↓` to move and `Enter` to open or run the selected item; `Esc` closes it.
 - **Filter by status**: use the `Filter` button next to the search scope to tick
   any number of statuses (`Same`, `Missing`, `Partial`, etc.). The choices match
   the pane: the local side offers `In Jottacloud`, `Local only`, `Type differs`,
@@ -188,7 +194,7 @@ explorer/
     index.html       two-pane shell + provider switch + theme menu
     style.css        Finder-like light/dark themes + the Water theme
     app.js           virtual list, navigation, search, reveal, provider switch,
-                     theme settings and the water ripple canvas
+                     command bar, theme settings and the water ripple canvas
   run.command        macOS double-click launcher
 scripts/
   compare.py         snapshot vs local DB comparison + report

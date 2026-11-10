@@ -91,6 +91,19 @@ Search is backed by a compact name index, so substring queries stay fast even ac
 millions of entries. Results are capped at 400 per query; the response reports whether it
 was truncated.
 
+## Command bar
+
+Press `Cmd/Ctrl+K`, or click **Search** in the top bar, to open the command bar.
+
+- Typing searches files and folders in **both panes at once** and, in the same list, fuzzy
+  matches shortcuts for navigation, status filters, sorting, column visibility, themes,
+  water settings, and provider switching.
+- Start a query with `>` to search commands only.
+- Use `↑` / `↓` to move, `Enter` to open a result or run a command, and `Esc` to close.
+- For a file result, opening it jumps that pane to the file's folder and selects it. For a
+  folder result, opening it navigates into the folder.
+- Commands show a check mark when their setting is already active.
+
 ## Filter by status
 
 Use the **Filter** button next to the search scope to tick any number of statuses. The
