@@ -139,10 +139,10 @@ explains what to run. Jottacloud keeps working independently.
   the header. The Water theme adds fluid motion, drifting light and optional
   cursor drips. Its settings live in the left sidebar (open it with the gear
   button, or automatically when you choose Water): toggle the effects, cursor
-  drips, click ripples, caustic shimmer and glass surfaces, and choose the water
-  tone, flow speed and drip energy. Settings are saved per device. Add
-  `?theme=light`, `?theme=dark` or `?theme=water` to the URL to force a theme
-  for that visit.
+  drips, click ripples, caustic shimmer, animated row highlights and glass
+  surfaces, and choose the water tone, flow speed and drip energy. Settings are
+  saved per device. Add `?theme=light`, `?theme=dark` or `?theme=water` to the
+  URL to force a theme for that visit.
 
 Lists are virtualised, so folders with tens of thousands of entries stay
 responsive. Sizes are byte sizes for files and direct item counts for folders.

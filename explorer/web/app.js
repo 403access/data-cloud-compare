@@ -278,6 +278,7 @@ const WATER_DEFAULTS = Object.freeze({
   drips: true,
   clickRipples: true,
   caustics: true,
+  rowMotion: true,
   glass: true,
   tone: 'ocean',
   speed: 'flowing',
@@ -311,6 +312,7 @@ function readWaterSettings() {
     drips: saved.drips !== false,
     clickRipples: saved.clickRipples !== false,
     caustics: saved.caustics !== false,
+    rowMotion: saved.rowMotion !== false,
     glass: saved.glass !== false,
     tone: pick(saved.tone, Object.keys(WATER_TONES), WATER_DEFAULTS.tone),
     speed: pick(saved.speed, Object.keys(WATER_SPEEDS), WATER_DEFAULTS.speed),
@@ -523,6 +525,7 @@ function applyWaterSettings({ persist = false } = {}) {
   root.dataset.waterGlass = waterSettings.glass ? 'on' : 'off';
   root.dataset.waterEffects = waterSettings.effects ? 'on' : 'off';
   root.dataset.waterCaustics = waterSettings.caustics ? 'on' : 'off';
+  root.dataset.waterRowMotion = waterSettings.rowMotion ? 'on' : 'off';
   if (persist) saveWaterSettings();
 
   if (waterFX) {
@@ -545,6 +548,7 @@ function syncWaterControls() {
   setToggle('water-drips', waterSettings.drips);
   setToggle('water-click', waterSettings.clickRipples);
   setToggle('water-caustics', waterSettings.caustics);
+  setToggle('water-row-motion', waterSettings.rowMotion);
   setToggle('water-glass', waterSettings.glass);
   setSelect('water-tone', waterSettings.tone);
   setSelect('water-speed', waterSettings.speed);
@@ -652,6 +656,7 @@ function setupTheme() {
   bindToggle('water-drips', 'drips');
   bindToggle('water-click', 'clickRipples');
   bindToggle('water-caustics', 'caustics');
+  bindToggle('water-row-motion', 'rowMotion');
   bindToggle('water-glass', 'glass');
 
   const bindSelect = (id, key) => {

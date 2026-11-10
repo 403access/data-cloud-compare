@@ -1627,23 +1627,71 @@ button { cursor: pointer; }
   border-radius: 999px;
 }
 :root[data-theme="water"] .row {
+  position: relative;
+  isolation: isolate;
+  background-color: transparent;
   transition:
-    background var(--motion-base) var(--ease-out),
+    background-color var(--motion-base) var(--ease-out),
     transform var(--motion-base) var(--ease-out),
     color var(--motion-base) ease;
 }
+:root[data-theme="water"] .row::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    linear-gradient(105deg,
+      transparent 0%,
+      color-mix(in srgb, var(--accent) 10%, transparent) 24%,
+      color-mix(in srgb, var(--accent) 17%, transparent) 42%,
+      transparent 68%);
+  background-size: 220% 100%;
+  background-position: 130% 0;
+  transition: opacity var(--motion-base) var(--ease-out);
+  animation: water-row-drift calc(9s / var(--water-speed-factor)) ease-in-out infinite alternate;
+  animation-play-state: paused;
+}
+:root[data-theme="water"] .row > * {
+  position: relative;
+  z-index: 1;
+}
 :root[data-theme="water"] .row:hover {
   transform: translateX(2px);
-  background: linear-gradient(90deg, var(--hover), transparent 92%);
+  background-color: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+:root[data-theme="water"] .row:hover::before {
+  opacity: .5;
+  animation-play-state: running;
 }
 :root[data-theme="water"] .row.selected {
+  background-color: var(--selection);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent),
     0 6px 18px rgba(0, 8, 14, .2);
 }
+:root[data-theme="water"] .row.selected::before {
+  opacity: .8;
+  animation-play-state: running;
+}
+:root[data-theme="water"] .row.selected:hover {
+  background-color: color-mix(in srgb, var(--accent) 20%, transparent);
+}
 :root[data-theme="water"] .pane.active .row.selected {
-  background: color-mix(in srgb, var(--accent) 30%, #04212e);
+  background-color: color-mix(in srgb, var(--accent) 30%, #04212e);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 32%, transparent);
 }
+:root[data-theme="water"] .pane.active .row.selected:hover {
+  background-color: color-mix(in srgb, var(--accent) 38%, #04212e);
+}
+:root[data-theme="water"][data-water-row-motion="off"] .row {
+  transition:
+    transform var(--motion-base) var(--ease-out),
+    color var(--motion-base) ease;
+}
+:root[data-theme="water"][data-water-row-motion="off"] .row::before { display: none; }
 :root[data-theme="water"] .btn.primary:not(:disabled) {
   color: #03202b;
   font-weight: 650;
@@ -1685,6 +1733,7 @@ button { cursor: pointer; }
   -webkit-backdrop-filter: blur(20px) saturate(150%);
 }
 :root[data-theme="water"][data-water-effects="off"] .pane::before,
+:root[data-theme="water"][data-water-effects="off"] .row::before,
 :root[data-theme="water"][data-water-effects="off"] .brand-icon,
 :root[data-theme="water"][data-water-effects="off"] .appbar,
 :root[data-theme="water"][data-water-effects="off"] .statusbar,
@@ -1703,6 +1752,10 @@ button { cursor: pointer; }
 }
 @keyframes water-swirl {
   to { transform: rotate(360deg); }
+}
+@keyframes water-row-drift {
+  from { background-position: 130% 0; }
+  to { background-position: -30% 0; }
 }
 @keyframes water-breathe {
   from { box-shadow: var(--shadow); }
