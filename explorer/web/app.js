@@ -1193,7 +1193,6 @@ class Pane {
     this.filterLabel = root.querySelector('[data-role="filter-label"]');
     this.filterMenu = root.querySelector('[data-role="filter-menu"]');
     this.clearBtn = root.querySelector('[data-role="clear"]');
-    this.badgeEl = root.querySelector('[data-role="badge"]');
     this.summaryEl = root.querySelector('[data-role="summary"]');
     this.chipsEl = root.querySelector('[data-role="chips"]');
     this.columnHead = root.querySelector('[data-role="columns"]');
@@ -1440,7 +1439,6 @@ class Pane {
     }
     this.updateFilterButton();
     this.renderAll(true);
-    this.updateBadge();
     this.updateFooter();
     updateSelectionBar();
   }
@@ -1514,7 +1512,6 @@ class Pane {
     }
     this.renderCrumbs(data.crumbs || []);
     this.updateNavButtons();
-    this.updateBadge();
     this.updateFooter();
     this.renderAll(true);
     this.root.classList.toggle('missing-path', !this.exists);
@@ -1590,7 +1587,6 @@ class Pane {
       this.results = data.entries || [];
       this.truncated = !!data.truncated;
       this.sortResults();
-      this.updateBadge();
       this.updateFooter();
       this.renderAll(true);
       updateSelectionBar();
@@ -1850,19 +1846,6 @@ class Pane {
     requestAnimationFrame(() => {
       this.crumbsEl.scrollLeft = this.crumbsEl.scrollWidth;
     });
-  }
-
-  updateBadge() {
-    const entries = this.currentEntries();
-    const total = this.baseEntries().length;
-    const suffix = this.statusFilters.size ? ` of ${fmtNum(total)}` : '';
-    if (this.searchMode) {
-      this.badgeEl.innerHTML =
-        `<b>${fmtNum(entries.length)}${this.truncated ? '+' : ''}</b>${suffix} results`;
-      return;
-    }
-    this.badgeEl.innerHTML =
-      `<b>${fmtNum(entries.length)}${this.truncated ? '+' : ''}</b>${suffix} items`;
   }
 
   updateFooter() {

@@ -676,28 +676,13 @@ button { cursor: pointer; }
   text-overflow: ellipsis;
 }
 
-.pane-badge {
-  flex: none;
-  font-size: 10.5px;
-  color: var(--text-2);
-  text-align: right;
-  line-height: 1.35;
-  max-width: 44%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.pane-badge b { color: var(--text); font-weight: 600; }
-
 .pane-head-actions {
   display: flex;
   align-items: center;
   gap: 6px;
   flex: none;
   min-width: 0;
-  max-width: 52%;
 }
-.pane-head-actions .pane-badge { min-width: 0; }
 
 .source-info {
   width: 24px;
