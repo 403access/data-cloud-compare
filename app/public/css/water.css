@@ -30,6 +30,9 @@
 }
 :root[data-theme="water"] #pane-remote { animation-delay: 70ms; }
 :root[data-theme="water"] .pane > * { position: relative; z-index: 1; }
+/* The search bar hosts the filter popover. Give it its own stacking context
+   above the virtualized list so the popover is never painted underneath rows. */
+:root[data-theme="water"] .pane > .searchbar { z-index: 2; }
 :root[data-theme="water"] .pane::before {
   content: "";
   position: absolute;

@@ -7,6 +7,7 @@
   --bg-grad: radial-gradient(1200px 600px at 15% -10%, #f7f7fa 0%, #e7e7ec 55%, #e2e2e8 100%);
   --pane-bg: #ffffff;
   --pane-head: #fafafc;
+  --popover-bg: #ffffff;
   --sidebar: #f4f4f7;
   --text: #1d1d1f;
   --text-2: #6e6e73;
@@ -55,6 +56,7 @@
   --bg-grad: radial-gradient(1200px 600px at 15% -10%, #232328 0%, #17171a 60%, #121214 100%);
   --pane-bg: #1f1f23;
   --pane-head: #232328;
+  --popover-bg: #2a2a30;
   --sidebar: #26262b;
   --text: #f2f2f5;
   --text-2: #a7a7af;
@@ -89,6 +91,7 @@
     --bg-grad: radial-gradient(1200px 600px at 15% -10%, #232328 0%, #17171a 60%, #121214 100%);
     --pane-bg: #1f1f23;
     --pane-head: #232328;
+    --popover-bg: #2a2a30;
     --sidebar: #26262b;
     --text: #f2f2f5;
     --text-2: #a7a7af;
@@ -132,6 +135,7 @@
     linear-gradient(165deg, #083545 0%, #052530 48%, #031922 100%);
   --pane-bg: rgba(7, 39, 51, 0.82);
   --pane-head: rgba(11, 57, 71, 0.9);
+  --popover-bg: #0d3d4b;
   --sidebar: rgba(9, 47, 60, 0.9);
   --text: #e9fbff;
   --text-2: #a5dbe5;
@@ -178,6 +182,7 @@
     linear-gradient(165deg, #07535f 0%, #04343e 48%, #021f27 100%);
   --pane-bg: rgba(6, 55, 65, 0.8);
   --pane-head: rgba(9, 77, 89, 0.88);
+  --popover-bg: #0b5059;
   --sidebar: rgba(7, 62, 73, 0.9);
   --accent: #55f0e0;
   --accent-soft: rgba(85, 240, 224, 0.18);
@@ -197,6 +202,7 @@
     linear-gradient(165deg, #06243a 0%, #031625 48%, #010c16 100%);
   --pane-bg: rgba(4, 26, 42, 0.86);
   --pane-head: rgba(6, 39, 61, 0.92);
+  --popover-bg: #07293f;
   --sidebar: rgba(5, 33, 52, 0.92);
   --text: #e4f6ff;
   --text-2: #97c9e2;
