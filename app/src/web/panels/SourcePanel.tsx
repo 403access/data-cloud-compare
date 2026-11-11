@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { DATE, fmtBytes, fmtNum } from "../lib/format";
 import { baseOf } from "../lib/format";
 import type { Meta, ProviderInfo, Side, SourceInfo } from "../lib/types";
-import { DetailFact, useAnimatedPresence } from "./shared";
+import { DetailFact, CloseIcon, useAnimatedPresence } from "./shared";
 
 const LOCAL_HERO = `<svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
   <rect x="2.2" y="4" width="15.6" height="4.6" rx="1.4" fill="currentColor" opacity=".9"/>
@@ -149,7 +149,7 @@ export function SourcePanel({ open, side, meta, provider, base, onClose }: Props
           <p id="source-subtitle">{subtitle}</p>
         </div>
         <button type="button" className="btn icon-btn" id="source-close" ref={closeRef} title="Close" aria-label="Close" onClick={onClose}>
-          ×
+          <CloseIcon />
         </button>
       </header>
       <div className="detail-body" id="source-body">

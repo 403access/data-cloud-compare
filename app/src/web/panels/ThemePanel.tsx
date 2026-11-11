@@ -2,7 +2,7 @@
 
 import type { ThemeMode } from "../lib/types";
 import type { WaterSettings } from "../lib/water";
-import { useAnimatedPresence } from "./shared";
+import { CloseIcon, useAnimatedPresence } from "./shared";
 
 interface Props {
   open: boolean;
@@ -100,7 +100,7 @@ export function ThemePanel({
           <p>Shape the current and the calm.</p>
         </div>
         <button type="button" className="btn icon-btn" id="theme-panel-close" title="Close" aria-label="Close" onClick={onClose}>
-          ×
+          <CloseIcon />
         </button>
       </header>
       <div className="theme-panel-body">

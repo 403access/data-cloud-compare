@@ -93,6 +93,7 @@
   margin: 0;
   font-size: 15px;
   font-weight: 650;
+  line-height: 18px;
   letter-spacing: -0.15px;
 }
 .columns-panel-head p,
@@ -108,7 +109,12 @@
 .detail-panel-head .icon-btn,
 .source-panel-head .icon-btn,
 .analytics-panel-head .icon-btn,
-.theme-panel-head .icon-btn { margin-left: auto; flex: none; }
+.theme-panel-head .icon-btn {
+  margin-left: auto;
+  /* Centre the 28px button on the 18px title line instead of its top edge. */
+  margin-top: -5px;
+  flex: none;
+}
 
 .columns-options {
   display: flex;

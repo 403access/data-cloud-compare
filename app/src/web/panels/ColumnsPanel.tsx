@@ -7,7 +7,7 @@ import {
 } from "../lib/columns";
 import { useEffect, useRef } from "react";
 import type { SizeMode } from "../lib/types";
-import { useAnimatedPresence } from "./shared";
+import { CloseIcon, useAnimatedPresence } from "./shared";
 
 interface Props {
   open: boolean;
@@ -47,7 +47,7 @@ export function ColumnsPanel({
           <p>Choose what both panes show and how folder sizes read.</p>
         </div>
         <button type="button" className="btn icon-btn" id="columns-close" ref={closeRef} title="Close" aria-label="Close" onClick={onClose}>
-          ×
+          <CloseIcon />
         </button>
       </header>
       <div className="columns-options" id="columns-options">

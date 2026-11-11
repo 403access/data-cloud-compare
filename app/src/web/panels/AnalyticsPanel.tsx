@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { fmtBytes, fmtNum } from "../lib/format";
 import { baseOf } from "../lib/format";
 import type { Meta, ProviderInfo } from "../lib/types";
-import { DetailFact, useAnimatedPresence } from "./shared";
+import { DetailFact, CloseIcon, useAnimatedPresence } from "./shared";
 import { fmtSourceDate, sourceFind } from "./SourcePanel";
 
 const ANALYTICS_HERO = `<svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -176,7 +176,7 @@ export function AnalyticsPanel({ open, meta, provider, onClose }: Props) {
           <p id="analytics-subtitle">{subtitle}</p>
         </div>
         <button type="button" className="btn icon-btn" id="analytics-close" ref={closeRef} title="Close" aria-label="Close" onClick={onClose}>
-          ×
+          <CloseIcon />
         </button>
       </header>
       <div className="detail-body" id="analytics-body">

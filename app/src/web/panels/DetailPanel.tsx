@@ -5,7 +5,7 @@ import { iconFor } from "../lib/icons";
 import { counterpartTarget } from "../lib/status";
 import type { Entry, ProviderInfo, Side } from "../lib/types";
 import { StatusChip } from "../components/StatusChip";
-import { DetailFact, useAnimatedPresence } from "./shared";
+import { DetailFact, CloseIcon, useAnimatedPresence } from "./shared";
 
 interface Props {
   open: boolean;
@@ -118,7 +118,7 @@ export function DetailPanel({
           <p>Right-click a file or folder to inspect it.</p>
         </div>
         <button type="button" className="btn icon-btn" id="detail-close" title="Close" aria-label="Close" onClick={onClose}>
-          ×
+          <CloseIcon />
         </button>
       </header>
       <div className="detail-body" id="detail-body">

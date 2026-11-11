@@ -2,6 +2,15 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 
+/** A crisp, optically centred close glyph for the sidebar header buttons. */
+export function CloseIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path d="m5 5 10 10M15 5 5 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export function useAnimatedPresence(open: boolean): { mounted: boolean; shown: boolean } {
   const [mounted, setMounted] = useState(open);
   const [shown, setShown] = useState(open);
