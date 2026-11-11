@@ -1,0 +1,193 @@
+/* ------------------------------ column sidebar ------------------------- */
+
+.columns-panel,
+.detail-panel,
+.source-panel,
+.analytics-panel,
+.theme-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  background: var(--pane-bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateX(18px) scale(.985);
+  transform-origin: right center;
+  pointer-events: none;
+  transition:
+    opacity var(--motion-base) var(--ease-out),
+    transform var(--motion-layout) var(--ease-out);
+  will-change: opacity, transform;
+}
+.theme-panel {
+  transform: translateX(-18px) scale(.985);
+  transform-origin: left center;
+}
+.columns-panel.is-open,
+.detail-panel.is-open,
+.source-panel.is-open,
+.analytics-panel.is-open,
+.theme-panel.is-open {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.columns-panel[hidden],
+.detail-panel[hidden],
+.source-panel[hidden],
+.analytics-panel[hidden],
+.theme-panel[hidden] { display: none; }
+
+/* Slight fade/stagger so the sidebar content settles after the panel lands. */
+.columns-panel > *,
+.detail-panel > *,
+.source-panel > *,
+.analytics-panel > *,
+.theme-panel > * {
+  opacity: 0;
+  transform: translateY(7px);
+  transition:
+    opacity var(--motion-fast) ease,
+    transform var(--motion-base) var(--ease-out);
+}
+.columns-panel.is-open > *,
+.detail-panel.is-open > *,
+.source-panel.is-open > *,
+.analytics-panel.is-open > *,
+.theme-panel.is-open > * {
+  opacity: 1;
+  transform: none;
+}
+.columns-panel.is-open > :nth-child(2),
+.detail-panel.is-open > :nth-child(2),
+.source-panel.is-open > :nth-child(2),
+.analytics-panel.is-open > :nth-child(2),
+.theme-panel.is-open > :nth-child(2) { transition-delay: 45ms; }
+.columns-panel.is-open > :nth-child(3),
+.detail-panel.is-open > :nth-child(3),
+.source-panel.is-open > :nth-child(3),
+.analytics-panel.is-open > :nth-child(3),
+.theme-panel.is-open > :nth-child(3) { transition-delay: 90ms; }
+
+.columns-panel-head,
+.detail-panel-head,
+.source-panel-head,
+.analytics-panel-head,
+.theme-panel-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 18px 18px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.columns-panel-head h2,
+.detail-panel-head h2,
+.source-panel-head h2,
+.analytics-panel-head h2,
+.theme-panel-head h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.15px;
+}
+.columns-panel-head p,
+.detail-panel-head p,
+.source-panel-head p,
+.analytics-panel-head p,
+.theme-panel-head p {
+  margin: 3px 0 0;
+  color: var(--text-3);
+  font-size: 11.5px;
+}
+.columns-panel-head .icon-btn,
+.detail-panel-head .icon-btn,
+.source-panel-head .icon-btn,
+.analytics-panel-head .icon-btn,
+.theme-panel-head .icon-btn { margin-left: auto; flex: none; }
+
+.columns-options {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px;
+  overflow-y: auto;
+}
+.columns-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.columns-option:hover { background: var(--hover); }
+.columns-option input {
+  width: 15px;
+  height: 15px;
+  margin: 2px 0 0;
+  flex: none;
+  accent-color: var(--accent);
+}
+.columns-option input:disabled { opacity: .55; }
+.columns-option-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.columns-option-title {
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.columns-option-hint {
+  color: var(--text-3);
+  font-size: 11px;
+  line-height: 1.35;
+}
+.columns-setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 6px;
+  padding: 10px;
+  border-top: 1px solid var(--line);
+  border-radius: 8px;
+}
+.columns-setting:hover { background: var(--hover); }
+.columns-select {
+  flex: none;
+  max-width: 136px;
+  height: 26px;
+  padding: 0 6px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  outline: none;
+  background: var(--pane-bg);
+  color: var(--text);
+  font-size: 11px;
+}
+.columns-select:focus-visible {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.columns-panel-foot {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 18px 18px;
+  border-top: 1px solid var(--line);
+}
+.columns-panel-foot p {
+  margin: 0;
+  color: var(--text-3);
+  font-size: 10.5px;
+  line-height: 1.4;
+}

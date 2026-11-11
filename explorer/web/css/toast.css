@@ -1,0 +1,20 @@
+/* -------------------------------- toast -------------------------------- */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 56px;
+  transform: translate(-50%, 10px);
+  max-width: min(560px, calc(100vw - 40px));
+  padding: 9px 15px;
+  border-radius: 9px;
+  background: rgba(30, 30, 34, .94);
+  color: #fff;
+  font-size: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.28);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease, transform 160ms ease;
+  z-index: 100;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }

@@ -98,7 +98,13 @@ scripts/
   compare.py                 comparison engine + report writer
   fetch_google_drive.sh      snapshot Google Drive, then compare
 explorer/
-  server.py                  HTTP server + JSON API (stdlib only)
+  server.py                  CLI entry: cache/index bootstrap + HTTP server
+  webapp.py                  HTTP handler (JSON API + static files)
+  api.py                     provider/source metadata payloads
+  local.py                   local-index listings and search
+  remote.py                  remote-snapshot listings and search
+  model.py                   shared listing helpers
+  runtime.py                 shared constants and runtime state
   providers.py               provider definitions
   cache.py                   per-provider explorer cache builder
   search_index.py            compact substring-search index

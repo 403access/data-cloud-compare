@@ -17,14 +17,21 @@ database migration, and no write path into the user's archive.
 │   ├── compare.py              comparison engine + report writer
 │   └── fetch_google_drive.sh   snapshot Drive, then compare
 ├── explorer/
-│   ├── server.py               HTTP server + JSON API (stdlib only)
+│   ├── server.py               CLI entry: cache/index bootstrap + HTTP server
+│   ├── webapp.py               HTTP handler (JSON API + static files)
+│   ├── api.py                  provider/source metadata payloads
+│   ├── local.py                local-index listings and search
+│   ├── remote.py               remote-snapshot listings and search
+│   ├── model.py                shared listing helpers
+│   ├── runtime.py              shared constants and runtime state
 │   ├── providers.py            provider definitions
 │   ├── cache.py                per-provider SQLite tree/status cache
 │   ├── search_index.py         compact name index
 │   ├── web/
 │   │   ├── index.html          two-pane shell
-│   │   ├── style.css           light/dark Finder-like theme
-│   │   └── app.js              virtual list, navigation, search, filters
+│   │   ├── style.css           stylesheet entry point
+│   │   ├── css/                sectioned stylesheets
+│   │   └── js/                 ES modules for the client
 │   └── run.command             macOS double-click launcher
 ├── report/                     Jottacloud outputs
 ├── report/google_drive/        Google Drive outputs
@@ -118,7 +125,8 @@ and include a `truncated` flag.
 
 ## HTTP server
 
-`explorer/server.py` extends `ThreadingHTTPServer`. It has no framework and no external
+`explorer/webapp.py` extends `BaseHTTPRequestHandler` under
+`ThreadingHTTPServer`; `explorer/server.py` starts it. It has no framework and no external
 dependencies.
 
 | Route | Behavior |

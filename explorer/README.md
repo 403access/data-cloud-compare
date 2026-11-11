@@ -189,15 +189,23 @@ comparison; it visualises the selected provider's report results.
 
 ```
 explorer/
-  server.py          HTTP server + JSON API (stdlib only)
+  server.py          CLI entry point: cache/index bootstrap + HTTP server
+  webapp.py          HTTP handler (JSON API + static files)
+  api.py             provider and source metadata payloads
+  local.py           local-index listings and search
+  remote.py          remote-snapshot listings and search
+  model.py           shared listing helpers
+  runtime.py         shared constants and runtime state
   providers.py       provider definitions (Jottacloud, Google Drive)
   cache.py           builds explorer/.cache/explorer*.db per provider
   search_index.py    compact name index for fast substring search
   web/
     index.html       two-pane shell + provider switch + theme menu
-    style.css        Finder-like light/dark themes + the Water theme
-    app.js           virtual list, navigation, search, reveal, provider switch,
-                     command bar, theme settings and the water ripple canvas
+    style.css        stylesheet entry point (imports css/)
+    css/             sectioned styles: tokens, appbar, panes, list, panels,
+                     command bar, water theme, responsive rules
+    js/              ES modules: config/store, formatting, status, panes,
+                     sidebars, command bar, theme and bootstrapping
   run.command        macOS double-click launcher
 scripts/
   compare.py         snapshot vs local DB comparison + report

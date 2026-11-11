@@ -55,7 +55,7 @@ missing → partial → possible → moved / moved_match
 ```
 
 This puts the items that need attention first. The order is defined in
-`explorer/server.py` and mirrored in `explorer/web/app.js`.
+`explorer/runtime.py` and mirrored in `explorer/web/js/pane.js`.
 
 ## Where statuses come from
 
