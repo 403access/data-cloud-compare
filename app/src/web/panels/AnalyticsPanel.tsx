@@ -8,8 +8,8 @@ import { DetailFact, CloseIcon, useAnimatedPresence } from "./shared";
 import { fmtSourceDate, sourceFind } from "./SourcePanel";
 
 const ANALYTICS_HERO = `<svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
-  <path d="M3.2 17V9.4M8 17V4.2M12.8 17v-5.1M17.6 17V6.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-  <path d="M2.2 17h15.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+  <path d="M4 15.8v-4.6M10 15.8V7.4M16 15.8V4.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+  <path d="M2.8 15.8h14.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
 </svg>`;
 
 function AnalyticsStat({ label, value, tone }: { label: string; value: string; tone?: string }) {

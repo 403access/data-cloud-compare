@@ -12,8 +12,8 @@ const BRAND_ICON = `<svg viewBox="0 0 32 32" fill="none">
 export function AnalyticsIcon() {
   return (
     <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
-      <path d="M3.2 17V9.4M8 17V4.2M12.8 17v-5.1M17.6 17V6.9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-      <path d="M2.2 17h15.6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      <path d="M4 15.8v-4.6M10 15.8V7.4M16 15.8V4.6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      <path d="M2.8 15.8h14.4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
     </svg>
   );
 }
