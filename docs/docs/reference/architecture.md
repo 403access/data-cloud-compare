@@ -17,7 +17,7 @@ and no write path into the user's archive.
 ├── scripts/
 │   ├── compare.ts              comparison engine + report writer
 │   ├── fetch_google_drive.sh   snapshot Drive, then compare
-│   └── assemble-site.mjs       combined Pages artifact builder
+│   └── assemble-site.ts        combined Pages artifact builder
 ├── app/
 │   ├── src/server/             Bun HTTP server, caches, listings and JSON API
 │   │   ├── index.ts            CLI entry + HTTP server

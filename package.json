@@ -9,7 +9,7 @@
     "dev:docs": "npm --prefix docs run start",
     "build": "npm run build:site",
     "build:docs": "npm --prefix docs run build",
-    "build:site": "npm run build:docs && node scripts/assemble-site.mjs",
+    "build:site": "npm run build:docs && bun scripts/assemble-site.ts",
     "preview": "bun scripts/serve-dist.ts",
     "clean": "rm -rf dist docs/build docs/.docusaurus",
     "dev:explorer": "bun run --cwd app dev",

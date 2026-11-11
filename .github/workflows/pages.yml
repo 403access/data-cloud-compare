@@ -6,7 +6,7 @@ on:
     paths:
       - "marketing/**"
       - "docs/**"
-      - "scripts/assemble-site.mjs"
+      - "scripts/assemble-site.ts"
       - ".github/workflows/pages.yml"
       - "package.json"
   workflow_dispatch:
@@ -33,6 +33,11 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: docs/package-lock.json
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
 
       - name: Configure Pages
         id: pages
@@ -69,7 +74,7 @@ jobs:
         run: npm run build
 
       - name: Assemble site
-        run: node scripts/assemble-site.mjs
+        run: bun scripts/assemble-site.ts
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

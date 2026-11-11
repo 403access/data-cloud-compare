@@ -19,6 +19,7 @@
 app/.cache/
 app/public/js/
 /screenshots/
+/marketing/main.js
 
 # Node / documentation site
 node_modules/

@@ -691,16 +691,22 @@ function writeHtml(
   label = "Jottacloud Archive",
 ): void {
   const templatePath = resolve(import.meta.dir, "report-template.html");
+  const clientPath = resolve(import.meta.dir, "report-client.ts");
   let doc = readFileSync(templatePath, "utf8");
   const data = JSON.stringify(payload);
   const labels = JSON.stringify(payload.status_labels);
+  const client = new Bun.Transpiler({ loader: "ts" }).transformSync(
+    readFileSync(clientPath, "utf8"),
+  );
   // Resolve template placeholders before injecting the data, so file paths
-  // that happen to look like a placeholder are never rewritten.
+  // that happen to look like a placeholder are never rewritten. Replacement
+  // functions avoid interpreting "$&" and similar sequences in the payload.
   doc = doc
-    .replace("__LABELS__", labels)
-    .replaceAll("__TITLE__", htmlEscape(`${label} vs local index`))
-    .replace("__N_ISSUES__", String(issueCount))
-    .replace("__DATA__", data);
+    .replace("__LABELS__", () => labels)
+    .replaceAll("__TITLE__", () => htmlEscape(`${label} vs local index`))
+    .replace("__N_ISSUES__", () => String(issueCount))
+    .replace("__CLIENT__", () => client)
+    .replace("__DATA__", () => data);
   writeFileSync(resolve(outdir, "report.html"), doc);
 }
 

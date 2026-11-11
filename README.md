@@ -6,7 +6,7 @@ virtual two-pane explorer.
 
 The repository also contains the product's public sites:
 
-- **Marketing site:** [`marketing/`](marketing/) — static, no build step.
+- **Marketing site:** [`marketing/`](marketing/) — static HTML/CSS with TypeScript interactions.
 - **Documentation:** [`docs/`](docs/) — Docusaurus, deployed under `/docs/`.
 
 Both are assembled into one GitHub Pages artifact by
@@ -85,7 +85,7 @@ The workflow derives the Pages origin and base path, builds Docusaurus with the 
 ```text
 scripts/compare.ts               comparison engine + report writer
 scripts/fetch_google_drive.sh    Google Drive snapshot + comparison
-scripts/assemble-site.mjs        combined Pages artifact builder
+scripts/assemble-site.ts         combined Pages artifact builder
 app/                             virtual two-pane explorer (Bun + React + TypeScript)
 run.command                      macOS double-click launcher
 tools/screenshots/               reference screenshots + comparison harness
