@@ -85,7 +85,7 @@ if [[ "${SKIP_COMPARE:-0}" == "1" ]]; then
   echo "Snapshot updated. Skipping comparison (SKIP_COMPARE=1)."
 else
   echo "Comparing with file_indexer.db → ${REPORT}"
-  python3 "$ROOT/scripts/compare.py" \
+  bun "$ROOT/scripts/compare.ts" \
     --db "$ROOT/file_indexer.db" \
     --archive "$ARCHIVE" \
     --out "$REPORT" \
@@ -94,74 +94,15 @@ else
 fi
 
 if [[ "$VERSIONED" == "1" ]]; then
-  python3 - "$ARCHIVE" "$VERSION_DIR/manifest.json" "$STAMP" \
-    "$REMOTE" "$REMOTE_PATH" <<'PY'
-import datetime as dt
-import json
-import os
-import sys
-
-archive, out, version, remote, remote_path = sys.argv[1:6]
-with open(archive, "r", encoding="utf-8") as f:
-    data = json.load(f)
-if isinstance(data, dict):
-    data = data.get("items") or data.get("files") or []
-files = dirs = size = 0
-for e in data:
-    if e.get("IsDir", e.get("is_dir", False)):
-        dirs += 1
-    else:
-        files += 1
-        try:
-            size += max(0, int(e.get("Size") or e.get("size") or 0))
-        except (TypeError, ValueError):
-            pass
-st = os.stat(archive)
-created = st.st_mtime
-manifest = {
-    "version": version,
-    "created_at": created,
-    "created": dt.datetime.fromtimestamp(
-        created, dt.timezone.utc).isoformat().replace("+00:00", "Z"),
-    "remote": remote,
-    "remote_path": remote_path,
-    "archive": os.path.basename(archive),
-    "files": files,
-    "dirs": dirs,
-    "bytes": size,
-    "report": os.path.isdir(os.path.join(os.path.dirname(archive), "report")),
-}
-with open(out, "w", encoding="utf-8") as f:
-    json.dump(manifest, f, indent=2)
-    f.write("\n")
-PY
+  bun "$ROOT/scripts/snapshot-manifest.ts" \
+    "$ARCHIVE" "$VERSION_DIR/manifest.json" "$STAMP" \
+    "$REMOTE" "$REMOTE_PATH"
 
   # Atomically point LATEST at the snapshot that just completed.
   printf '%s\n' "$STAMP" > "$SNAPSHOTS/.LATEST.tmp"
   mv "$SNAPSHOTS/.LATEST.tmp" "$SNAPSHOTS/LATEST"
 
-  python3 - "$SNAPSHOTS" "$KEEP" "$STAMP" <<'PY'
-import os
-import shutil
-import sys
-
-base, keep_arg, current = sys.argv[1:4]
-try:
-    keep = int(keep_arg)
-except ValueError:
-    keep = 5
-if keep <= 0:
-    sys.exit(0)
-versions = sorted(
-    (name for name in os.listdir(base)
-     if os.path.isdir(os.path.join(base, name)) and not name.startswith(".")),
-    reverse=True)
-for name in versions[keep:]:
-    if name == current:
-        continue
-    shutil.rmtree(os.path.join(base, name), ignore_errors=True)
-    print(f"Pruned old snapshot {name}")
-PY
+  bun "$ROOT/scripts/prune-snapshots.ts" "$SNAPSHOTS" "$KEEP" "$STAMP"
 
   COMPLETE=1
   echo
@@ -169,4 +110,4 @@ PY
 fi
 
 echo "Done. Start the explorer with:"
-echo "  python3 explorer/server.py --open"
+echo "  bun run start --open"

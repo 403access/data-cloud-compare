@@ -1,17 +1,17 @@
 # Tank ⇄ cloud explorer (Bun + React + TypeScript)
 
 The two-pane, virtual filesystem explorer for the comparison data in this
-repository. It is a full TypeScript rewrite of the original Python explorer in
-[`../explorer/`](../explorer/), which is kept as the rendering reference for the
-screenshot harness.
+repository. It is written entirely in TypeScript: a Bun HTTP server, a
+`bun:sqlite` backend, and a React 19 client.
 
 | Pane | Source | What it shows |
 |---|---|---|
 | Left | `file_indexer.db` | the indexed `/mnt/tank` snapshot |
 | Right | a provider snapshot | Jottacloud `archive.json` or Google Drive `google_drive.json` |
 
-The HTTP API, cache schema, status model, keyboard shortcuts and CSS are the same
-as the legacy explorer. The UI is React 19; the server is Bun with `bun:sqlite`.
+The HTTP API, cache schema, status model, keyboard shortcuts and CSS are kept
+compatible with the original explorer. Reference screenshots from that
+implementation live in `../tools/screenshots/reference/`.
 
 ## Start
 
@@ -30,8 +30,8 @@ bun install
 bun run dev        # build + start
 ```
 
-On macOS you can also double-click [`../explorer/run.command`](../explorer/run.command),
-which starts the current server entry point.
+On macOS you can also double-click [`../run.command`](../run.command), which builds and
+starts the explorer.
 
 Useful flags:
 
@@ -59,7 +59,7 @@ app/
     index.ts          Bun HTTP server + CLI
     providers.ts      provider catalog and snapshot resolution
     cache.ts          SQLite cache builder and folder-size indexes
-    search-index.ts   compact name index (same TJSI2 format as the legacy app)
+    search-index.ts   compact name index (TJSI2 format)
     model.ts          path/matching/formatting helpers
     listings.ts       local/remote listings and search
     api.ts            JSON API payloads
@@ -74,7 +74,7 @@ app/
     lib/              API client, formatting, icons, water effects
   public/
     index.html        static document shell (theme bootstrap + CSS links)
-    style.css/css/    stylesheet, unchanged from the legacy explorer
+    style.css/css/    stylesheet, preserved from the original explorer
     js/               generated bundle (git-ignored)
   .cache/             generated SQLite and search indexes (git-ignored)
 ```
@@ -84,27 +84,27 @@ never writes to either source.
 
 ## Rendering comparison
 
-Pixel screenshots of every important UI state are captured from both the legacy
-Python explorer and this app, then compared:
+The app is compared against checked-in reference screenshots of every important
+UI state:
 
 ```bash
-bun run screenshots            # capture both + diff + report
-bun run screenshots:baseline   # legacy Python app only
-bun run screenshots:after      # Bun + React app only
+bun run screenshots            # capture + diff + report
+bun run screenshots:after      # capture the app only
 bun run screenshots:compare    # diff existing captures
+bun run screenshots:reference  # materialize the reference images
 ```
 
-The harness starts each server when needed, freezes animations, and writes
-`screenshots/{baseline,after,diff}/<state>.png` plus
-`screenshots/report.json` and `screenshots/report.md`. Scenario names follow the
-UI state (`default-light`, `water`, `command-search`, `analytics-panel`,
+The harness starts the app server when needed, freezes animations, and writes
+`screenshots/{baseline,after,diff}/<state>.png` plus `screenshots/report.json`
+and `screenshots/report.md`. Scenario names follow the UI state
+(`default-light`, `water`, `command-search`, `analytics-panel`,
 `google-drive`, `mobile`, …).
 
 ## Notes
 
-- Caches are shared conceptually with the legacy explorer, but live under
-  `app/.cache/`; both use the same schema and signatures.
-- The UI intentionally uses the legacy stylesheet unchanged so every visual
+- Caches live under `app/.cache/` and stay compatible with the original schema
+  and signatures.
+- The UI intentionally uses the original stylesheet unchanged so every visual
   detail (light/dark/water themes, responsive layout, motion) matches.
 - Jottacloud listings have no modification times, so that column shows `—` on
   that side. Google Drive snapshots include them when rclone provides them.

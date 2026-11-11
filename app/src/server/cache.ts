@@ -2,7 +2,7 @@
  * Build the read-only SQLite caches used by the explorer.
  *
  * The schema, signatures and on-disk layout intentionally match the legacy
- * Python implementation, so an existing cache is reused without rebuilding.
+ * previous implementation, so an existing cache is reused without rebuilding.
  */
 
 import { Database } from "bun:sqlite";
@@ -350,7 +350,7 @@ function buildArchive(con: Database, provider: Provider): void {
   data = null;
 
   // If a Jottacloud listing came from the device root, every path starts with
-  // "Archive/". Strip that one level, exactly like compare.py.
+  // "Archive/". Strip that one level, exactly like compare.ts.
   if (
     provider.key === "jottacloud" &&
     prefixes.size === 1 &&

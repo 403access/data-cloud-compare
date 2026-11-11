@@ -18,9 +18,10 @@ bun run --cwd app build
 bun run --cwd app start --open
 ```
 
-The explorer is the Bun + React + TypeScript app in [`app/`](https://github.com/403access/data-cloud-compare/tree/main/app).
-The original Python implementation remains in `explorer/` as the rendering reference used by
-the screenshot harness.
+The explorer is the Bun + React + TypeScript app in
+[`app/`](https://github.com/403access/data-cloud-compare/tree/main/app). The screenshot
+harness compares it against the checked-in reference captures in
+`tools/screenshots/reference/`.
 
 Then open [http://127.0.0.1:8787/](http://127.0.0.1:8787/) if the browser did not open automatically.
 

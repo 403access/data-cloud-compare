@@ -70,7 +70,8 @@ bucket counts when you need a stricter percentage.
 | `type` | `file` or `dir`. |
 | `size` | Byte size or `0`. |
 
-CSV files are written with Python's `csv` module, UTF-8 encoded, with a header row.
+CSV files are written in RFC 4180 form: UTF-8, CRLF line endings, a header row, and
+quoting only where needed.
 
 ## Internal status keys
 
@@ -98,8 +99,8 @@ The JSON dataset has five top-level keys:
 | `issues` | Array of issue records | Only non-exact items. Keys: `p` path, `d` is-dir, `s` status, `z` size, `f` found-at, `n` note. |
 | `issue_counts` | Object | Counts per internal status key. |
 
-The comparator streams `report_data.json` so it never holds a million-row Python list in
-memory. The HTML receives a bounded sample with these caps:
+The comparator streams `report_data.json` so it never builds a second million-row array
+in memory. The HTML receives a bounded sample with these caps:
 
 | Status | Sample cap |
 | --- | ---: |
@@ -127,22 +128,17 @@ Because the outputs are plain files, they are easy to archive or post-process:
 
 ```bash
 # Count missing files by top-level folder
-python3 - <<'PY'
-import csv, collections
-counts = collections.Counter()
-with open('report/missing.csv', newline='', encoding='utf-8') as f:
-    for row in csv.DictReader(f):
-        if row['type'] == 'file':
-            counts[row['archive_path'].split('/', 1)[0]] += 1
-for name, count in counts.most_common(10):
-    print(f'{count:>8,}  {name}')
-PY
-```
+bun -e 'const d = await Bun.file("report/report_data.json").json();
+const counts = {};
+for (const x of d.issues) {
+  if (x.s !== "missing" || x.d) continue;
+  const key = x.p.split("/")[0];
+  counts[key] = (counts[key] || 0) + 1;
+}
+console.log(Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 10));'
 
-Or query the JSON dataset:
-
-```bash
-python3 -c "import json; d=json.load(open('report/report_data.json')); print(d['summary'])"
+# Print the summary
+bun -e 'console.log((await Bun.file("report/report_data.json").json()).summary)'
 ```
 
 Reports can be large. Store them outside a public repository if the paths are sensitive.

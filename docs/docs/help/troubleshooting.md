@@ -33,7 +33,7 @@ The startup log explains which input is missing. Typical reasons:
 | --- | --- |
 | `archive.json is missing` | Run `rclone lsjson jotta:Archive -R > archive.json`. |
 | `google_drive.json is missing` | Run `scripts/fetch_google_drive.sh`. |
-| The report is missing | Run `python3 scripts/compare.py ...` with the matching `--out`. |
+| The report is missing | Run `bun scripts/compare.ts ...` with the matching `--out`. |
 | `local_only.csv` is missing | Re-run the comparison; the explorer requires all report outputs. |
 
 Provider readiness requires the snapshot, `report_data.json`, and `local_only.csv`. The
@@ -164,7 +164,7 @@ RAM.
 
 Paths outside the base are normalized and kept rather than dropped. They usually will not
 match cloud-relative paths. If your index uses a different root, update the `BASE` constant
-consistently in `scripts/compare.py`, `app/src/server/paths.ts`, and
+consistently in `scripts/compare.ts`, `app/src/server/paths.ts`, and
 `app/src/server/cache.ts`.
 
 ## Exposing the explorer on a network
@@ -198,6 +198,6 @@ Include the following when asking for help:
 
 - the command you ran
 - the full terminal output, including the provider readiness lines
-- `python3 --version` and `rclone version`
+- `bun --version` and `rclone version`
 - the relevant `summary.json`
 - whether the issue is comparison data or explorer behavior

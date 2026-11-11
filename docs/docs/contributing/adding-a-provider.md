@@ -40,7 +40,7 @@ The explorer cache uses `Path`/`Name`, `IsDir`, and `Size`.
 Choose a dedicated output directory:
 
 ```bash
-python3 scripts/compare.py \
+bun scripts/compare.ts \
   --db file_indexer.db \
   --archive my_cloud.json \
   --out report/my_cloud \
@@ -84,7 +84,7 @@ const MY_CLOUD: Provider = {
   accent: "#e07a5f",
   help:
     "Run: rclone lsjson myremote: -R > my_cloud.json && " +
-    "python3 scripts/compare.py --db file_indexer.db " +
+    "bun scripts/compare.ts --db file_indexer.db " +
     "--archive my_cloud.json --out report/my_cloud " +
     "--label 'My Cloud' --no-strip-archive",
   snapshotVersion: "",
@@ -137,7 +137,7 @@ Cache naming:
 
 If listing the provider needs extra flags or arguments, add a script under `scripts/`
 similar to `fetch_google_drive.sh`. Keep it idempotent: write the snapshot to a temporary
-file, move it into place on success, then invoke `compare.py` with the provider's report
+file, move it into place on success, then invoke `compare.ts` with the provider's report
 directory.
 
 ## Testing a new provider

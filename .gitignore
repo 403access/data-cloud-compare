@@ -16,14 +16,9 @@
 !/report/SUMMARY.md
 
 # Explorer cache (generated from snapshots + report data)
-explorer/.cache/
 app/.cache/
 app/public/js/
-screenshots/
-
-# Python
-__pycache__/
-*.pyc
+/screenshots/
 
 # Node / documentation site
 node_modules/

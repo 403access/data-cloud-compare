@@ -28,7 +28,7 @@ result in a Finder-style explorer where both sides are virtual and read-only.
 
 | Piece | Purpose |
 | --- | --- |
-| **Comparator** (`scripts/compare.py`) | Compares an rclone JSON listing with a SQLite index and writes HTML, CSV, and JSON reports. |
+| **Comparator** (`scripts/compare.ts`) | Compares an rclone JSON listing with a SQLite index and writes HTML, CSV, and JSON reports. |
 | **Explorer** (`app/src/server/index.ts`) | Serves a virtual two-pane React UI over the comparison cache. No live filesystem access. |
 | **Provider definitions** (`app/src/server/providers.ts`) | Tell the explorer which snapshot and report belong to each cloud. |
 | **Fetch script** (`scripts/fetch_google_drive.sh`) | Snapshots Google Drive with rclone and runs the comparison in one step. |
@@ -57,7 +57,7 @@ cloud provider                      local machine
         │                                    │
         └──────────────┬─────────────────────┘
                        ▼
-              scripts/compare.py
+              scripts/compare.ts
                        │
         ┌──────────────┼───────────────┐
         ▼              ▼               ▼
@@ -70,8 +70,8 @@ cloud provider                      local machine
 ```
 
 The comparator never writes to the index. The explorer opens it read-only and serves cached
-data over a loopback-only Bun HTTP server. The original Python explorer remains in
-`explorer/` as the rendering reference for the screenshot harness.
+data over a loopback-only Bun HTTP server. Reference screenshots from the original
+implementation live in `tools/screenshots/reference/`.
 
 ## An example run
 
@@ -94,8 +94,7 @@ The actionable remainder was 3,508 files. See
 
 ## Requirements
 
-- Python **3.10+** for the comparator (standard library only — no `pip install` required)
-- [Bun](https://bun.sh/) **1.3+** for the explorer and screenshot harness
+- [Bun](https://bun.sh/) **1.3+** for the comparator, explorer, and screenshot harness
 - [rclone](https://rclone.org/) with a configured remote
 - An index database with the expected `files` table
 - At least one provider snapshot and its comparison report

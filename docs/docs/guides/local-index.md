@@ -75,7 +75,7 @@ discarded, so nothing is silently lost.
 
 The base path is a constant (`BASE = "/mnt/tank"`) in:
 
-- `scripts/compare.py`
+- `scripts/compare.ts`
 - `app/src/server/paths.ts`
 - `app/src/server/cache.ts` (via the shared normalization helpers)
 

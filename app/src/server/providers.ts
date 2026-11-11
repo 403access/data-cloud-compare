@@ -166,7 +166,7 @@ let JOTTACLOUD: Provider = {
   subtitle: "archive.json snapshot · virtual read-only view",
   accent: "#5e5ce6",
   help:
-    "Run: python3 scripts/compare.py --db file_indexer.db " +
+    "Run: bun scripts/compare.ts --db file_indexer.db " +
     "--archive archive.json --out report",
   snapshotVersion: "",
   snapshotTime: null,

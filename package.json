@@ -10,16 +10,17 @@
     "build": "npm run build:site",
     "build:docs": "npm --prefix docs run build",
     "build:site": "npm run build:docs && node scripts/assemble-site.mjs",
-    "preview": "python3 -m http.server 4173 --directory dist",
+    "preview": "bun scripts/serve-dist.ts",
     "clean": "rm -rf dist docs/build docs/.docusaurus",
     "dev:explorer": "bun run --cwd app dev",
     "start:explorer": "bun run --cwd app start",
     "build:explorer": "bun run --cwd app build",
     "typecheck:explorer": "bun run --cwd app typecheck",
     "screenshots": "bun run tools/screenshots/run.ts",
-    "screenshots:baseline": "bun run tools/screenshots/run.ts --target baseline",
+    "screenshots:baseline": "bun run tools/screenshots/run.ts --target reference",
     "screenshots:after": "bun run tools/screenshots/run.ts --target after",
-    "screenshots:compare": "bun run tools/screenshots/run.ts --target compare"
+    "screenshots:compare": "bun run tools/screenshots/run.ts --target compare",
+    "screenshots:reference": "bun run tools/screenshots/run.ts --target reference"
   },
   "engines": {
     "node": ">=20.0"

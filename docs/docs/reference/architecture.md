@@ -6,17 +6,16 @@ description: Repository layout, data flow, caching, performance choices, and the
 
 # Architecture
 
-The comparator is a small Python standard-library script. The explorer is a Bun + React +
-TypeScript app with a `bun:sqlite` backend. There is no external service, no database
-migration, and no write path into the user's archive. The original Python explorer remains
-in `explorer/` as the rendering reference for `bun run screenshots`.
+The comparator, snapshot helpers, and explorer are all Bun + TypeScript. The explorer uses a
+`bun:sqlite` backend and a React client. There is no external service, no database migration,
+and no write path into the user's archive.
 
 ## Repository layout
 
 ```text
 .
 ├── scripts/
-│   ├── compare.py              comparison engine + report writer
+│   ├── compare.ts              comparison engine + report writer
 │   ├── fetch_google_drive.sh   snapshot Drive, then compare
 │   └── assemble-site.mjs       combined Pages artifact builder
 ├── app/
@@ -36,8 +35,8 @@ in `explorer/` as the rendering reference for `bun run screenshots`.
 │   │   └── lib/                API client, formatting, icons, water effects
 │   ├── public/                 HTML shell and styles (generated JS in public/js/)
 │   └── .cache/                 generated SQLite and search indexes
-├── explorer/                   legacy Python explorer + macOS launcher
-├── tools/screenshots/          baseline/after rendering comparison
+├── run.command                 macOS double-click launcher
+├── tools/screenshots/          reference screenshots + rendering comparison
 ├── report/                     Jottacloud outputs
 ├── report/google_drive/        Google Drive outputs
 ├── marketing/                  static marketing site
@@ -55,7 +54,7 @@ provider snapshot (JSON) ───────────────┐
                                         │
 file_indexer.db (SQLite) ───────────────┤
                                         ▼
-                              scripts/compare.py
+                              scripts/compare.ts
                                         │
               ┌─────────────────────────┼──────────────────────┐
               ▼                         ▼                      ▼
@@ -80,7 +79,7 @@ plus the local index.
 
 ## Comparison engine
 
-`scripts/compare.py`:
+`scripts/compare.ts`:
 
 1. Loads the snapshot, normalizes paths, and synthesizes missing parent folders.
 2. Loads the local index into in-memory lookup maps:
@@ -177,11 +176,11 @@ report directory. See [Adding a provider](/contributing/adding-a-provider).
 
 ## Rendering comparison
 
-`bun run screenshots` starts the legacy Python explorer and this app, captures the same UI
-states in Chromium, and writes pixel diffs and a pass/fail report under `screenshots/`.
-Animations are frozen and the water canvas is hidden so the comparison is deterministic.
-See [app/README.md](https://github.com/403access/data-cloud-compare/blob/main/app/README.md)
-for details.
+`bun run screenshots` captures the app in Chromium, compares it with the checked-in
+reference captures in `tools/screenshots/reference/`, and writes pixel diffs and a pass/fail
+report under `screenshots/`. Animations are frozen and the water canvas hidden so the
+comparison is deterministic. See
+[app/README.md](https://github.com/403access/data-cloud-compare/blob/main/app/README.md).
 
 ## Deployment
 

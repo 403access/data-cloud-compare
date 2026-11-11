@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__</title>
+<style>
+:root{
+  --bg:#0f1115; --panel:#171a21; --panel2:#1e222b; --text:#e6e9ef; --muted:#9aa4b2;
+  --green:#2ea043; --greenbg:#16351f; --blue:#3b82f6; --bluebg:#16233d;
+  --amber:#d29922; --amberbg:#3a2d10; --red:#e5534b; --redbg:#3d1a18;
+  --border:#2a2f3a;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+header{padding:22px 26px 6px}
+h1{margin:0 0 4px;font-size:22px;font-weight:650}
+.sub{color:var(--muted);font-size:13px}
+.wrap{padding:16px 26px 60px;max-width:1500px;margin:0 auto}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:18px 0}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.card .k{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.card .v{font-size:26px;font-weight:650;margin-top:4px}
+.card .d{color:var(--muted);font-size:12px;margin-top:2px}
+.g .v{color:var(--green)} .b .v{color:var(--blue)} .a .v{color:var(--amber)} .r .v{color:var(--red)}
+.bar{height:12px;border-radius:8px;overflow:hidden;display:flex;background:#222733;margin:6px 0 2px}
+.bar span{display:block;height:100%}
+section{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin:18px 0}
+h2{margin:0 0 12px;font-size:15px;font-weight:600;letter-spacing:.02em}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--border);vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:12px;position:sticky;top:0;background:var(--panel);z-index:1}
+tr:hover td{background:#1b1f28}
+.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.badge{display:inline-block;padding:1px 8px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+.s-present_exact{background:var(--greenbg);color:#7ee2a0}
+.s-present_moved{background:var(--bluebg);color:#8ab4ff}
+.s-possible{background:var(--amberbg);color:#f0c75e}
+.s-partial{background:var(--amberbg);color:#f0c75e}
+.s-missing{background:var(--redbg);color:#ff8a84}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;word-break:break-all}
+.muted{color:var(--muted)}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+input[type=search],select{background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px 11px;font-size:13px}
+input[type=search]{min-width:320px;flex:1}
+.tabs{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.tab{padding:6px 12px;border:1px solid var(--border);border-radius:20px;cursor:pointer;color:var(--muted);background:var(--panel2);font-size:12px}
+.tab.active{color:var(--text);border-color:#3d4657;background:#232936}
+.tree{max-height:560px;overflow:auto;border:1px solid var(--border);border-radius:8px;padding:6px}
+.tree details{margin-left:14px}
+.tree summary{cursor:pointer;padding:2px 4px;border-radius:5px}
+.tree summary:hover{background:#20252f}
+.tree .leaf{padding:2px 4px 2px 22px}
+.pill{font-size:10px;padding:0 6px;border-radius:10px;margin-left:6px}
+.scroll{max-height:640px;overflow:auto;border:1px solid var(--border);border-radius:8px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:8px}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle}
+</style>
+</head>
+<body>
+<header>
+  <h1>__TITLE__</h1>
+  <div class="sub">Archive is the remote listing. “Present” means found in <span class="mono">file_indexer.db</span> (relative to /mnt/tank), either at the same path or anywhere else by name + size.</div>
+</header>
+<div class="wrap">
+  <div class="cards" id="cards"></div>
+  <section>
+    <h2>Overall coverage</h2>
+    <div class="bar" id="bar"></div>
+    <div class="legend" id="legend"></div>
+  </section>
+  <section>
+    <h2>Top-level folders</h2>
+    <div class="scroll"><table id="toptable">
+      <thead><tr><th>Folder</th><th class="num">Files</th><th class="num">Folders</th>
+      <th class="num">Present</th><th class="num">Moved</th><th class="num">Possible</th>
+      <th class="num">Missing</th><th class="num">Size</th></tr></thead><tbody></tbody></table></div>
+  </section>
+  <section>
+    <h2>Folder tree <span class="muted" style="font-weight:400">(status aggregated from contents)</span></h2>
+    <div class="toolbar">
+      <input type="search" id="foldersearch" placeholder="Filter folders…">
+      <label class="muted"><input type="checkbox" id="onlyproblems"> only folders with missing items</label>
+    </div>
+    <div class="tree" id="tree"></div>
+  </section>
+  <section>
+    <h2>Differences <span class="muted" id="issuecount" style="font-weight:400"></span></h2>
+    <div class="tabs" id="tabs"></div>
+    <div class="muted" id="samplenote" style="margin:0 0 10px"></div>
+    <div class="toolbar">
+      <input type="search" id="q" placeholder="Search path, status or found-at…">
+      <select id="topfilter"><option value="">All top-level folders</option></select>
+      <span class="muted" id="shown"></span>
+    </div>
+    <div class="scroll"><table id="issuetable">
+      <thead><tr><th>Status</th><th>Archive path</th><th class="num">Size</th><th>Found at / note</th></tr></thead>
+      <tbody></tbody></table></div>
+    <div class="legend">
+      <span><span class="dot" style="background:var(--green)"></span>present, same path</span>
+      <span><span class="dot" style="background:var(--blue)"></span>present, moved</span>
+      <span><span class="dot" style="background:var(--amber)"></span>possible / partial</span>
+      <span><span class="dot" style="background:var(--red)"></span>missing</span>
+    </div>
+  </section>
+  <p class="muted">Also written next to this report: <span class="mono">missing.csv</span>, <span class="mono">moved.csv</span>, <span class="mono">local_only.csv</span>, <span class="mono">summary.json</span>, <span class="mono">report_data.json</span>.</p>
+</div>
+<script>
+const DATA = __DATA__;
+const LABELS = __LABELS__;
+const COLORS = {present_exact:'var(--green)',present_moved:'var(--blue)',partial:'var(--amber)',possible:'var(--amber)',missing:'var(--red)'};
+const fmt = n => n.toLocaleString();
+function human(n){const u=['B','KB','MB','GB','TB'];let i=0;while(n>=1024&&i<u.length-1){n/=1024;i++}return (i?n.toFixed(1):n)+' '+u[i]}
+const S = DATA.summary; const N_ISSUES = __N_ISSUES__;
+// cards
+const cards = [
+  ['Archive files', fmt(S.archive.files), human(S.archive.bytes), ''],
+  ['Archive folders', fmt(S.archive.dirs), '', ''],
+  ['Present (same path)', fmt(S.buckets.exact.files), 'files', 'g'],
+  ['Present (moved)', fmt(S.buckets.moved.files), 'files', 'b'],
+  ['Possible', fmt(S.buckets.possible.files), 'files', 'a'],
+  ['Missing', fmt(S.buckets.missing.files), 'files', 'r'],
+  ['Coverage', S.present_pct.toFixed(2)+'%', 'of archive files found', S.present_pct>99?'g':(S.present_pct>90?'b':'a')],
+  ['Local-only DB entries', fmt(S.local_only_count||0), 'in DB, not in Archive', ''],
+];
+document.getElementById('cards').innerHTML = cards.map(([k,v,d,c])=>`<div class="card ${c}"><div class="k">${k}</div><div class="v">${v}</div><div class="d">${d}</div></div>`).join('');
+// bar
+const total = Math.max(1,S.archive.files);
+const segs=[['exact','var(--green)'],['moved','var(--blue)'],['possible','var(--amber)'],['missing','var(--red)']];
+document.getElementById('bar').innerHTML = segs.map(([k,c])=>`<span style="width:${100*S.buckets[k].files/total}%;background:${c}"></span>`).join('');
+document.getElementById('legend').innerHTML = segs.map(([k,c])=>`<span><span class="dot" style="background:${c}"></span>${k}: ${fmt(S.buckets[k].files)} files</span>`).join('');
+// top table
+const tt = document.querySelector('#toptable tbody');
+tt.innerHTML = DATA.top.map(t=>`<tr>
+  <td class="mono">${t.name}</td><td class="num">${fmt(t.files)}</td><td class="num">${fmt(t.dirs)}</td>
+  <td class="num">${fmt(t.exact)}</td><td class="num">${fmt(t.moved)}</td>
+  <td class="num">${fmt(t.possible)}</td><td class="num">${fmt(t.missing)}</td>
+  <td class="num">${human(t.bytes)}</td></tr>`).join('');
+// top filter options
+const tf=document.getElementById('topfilter');
+DATA.top.forEach(t=>{const o=document.createElement('option');o.value=t.name;o.textContent=t.name;tf.appendChild(o)});
+// issues
+const issues = DATA.issues;
+const tabsDef=[['all','All differences',()=>true],['present_moved','Moved',x=>x.s==='present_moved'],['possible','Possible',x=>x.s==='possible'||x.s==='partial'],['size_mismatch','Size differs',x=>x.s==='size_mismatch'],['missing','Missing',x=>x.s==='missing']];
+const COUNTS = DATA.issue_counts||{};
+function tabCount(k){ if(k==='all') return Object.values(COUNTS).reduce((a,b)=>a+b,0); if(k==='possible') return (COUNTS.possible||0)+(COUNTS.partial||0); return COUNTS[k]||0; }
+let active='all';
+document.getElementById('tabs').innerHTML = tabsDef.map(([k,l])=>`<div class="tab${k==='all'?' active':''}" data-k="${k}">${l} (${tabCount(k).toLocaleString()})</div>`).join('');
+document.getElementById('samplenote').textContent = `The table below shows a bounded sample (${issues.length.toLocaleString()} rows) to keep this page light. The complete lists are in missing.csv / moved.csv and report_data.json.`;
+const q=document.getElementById('q');
+const shownEl=document.getElementById('shown');
+const tbody=document.querySelector('#issuetable tbody');
+function renderIssues(){
+  const needle=q.value.toLowerCase();
+  const top=tf.value;
+  const pred=tabsDef.find(d=>d[0]===active)[2];
+  const rows=[];
+  for(const x of issues){
+    if(!pred(x))continue;
+    if(top && !x.p.startsWith(top+'/'))continue;
+    if(needle && !(x.p.toLowerCase().includes(needle)||x.s.includes(needle)||(x.f||'').toLowerCase().includes(needle)||(x.n||'').toLowerCase().includes(needle)))continue;
+    rows.push(x);
+    if(rows.length>=5000)break;
+  }
+  tbody.innerHTML=rows.map(x=>`<tr>
+    <td><span class="badge s-${x.s}">${LABELS[x.s]||x.s}</span></td>
+    <td class="mono">${x.d?'📁 ':''}${x.p}</td>
+    <td class="num">${x.d?'':fmt(x.z)}</td>
+    <td class="mono muted">${x.f?('↳ '+x.f):''}${x.n?(x.f?'<br>':'')+x.n:''}</td></tr>`).join('');
+  shownEl.textContent=`showing ${fmt(rows.length)} sample row(s)${rows.length>=5000?' (table capped at 5,000 — use the CSV/report_data.json for everything)':''}`;
+}
+document.getElementById('tabs').addEventListener('click',e=>{
+  const t=e.target.closest('.tab'); if(!t)return;
+  active=t.dataset.k;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===t));
+  renderIssues();
+});
+q.addEventListener('input',renderIssues); tf.addEventListener('change',renderIssues);
+document.getElementById('issuecount').textContent=`(${fmt(N_ISSUES)} items)`;
+renderIssues();
+// tree
+const byParent={};
+DATA.folders.forEach(f=>{
+  const parent=f.p.includes('/')?f.p.slice(0,f.p.lastIndexOf('/')):'';
+  (byParent[parent]=byParent[parent]||[]).push(f);
+});
+const fs=document.getElementById('foldersearch');
+const onlyp=document.getElementById('onlyproblems');
+function stColor(s){return COLORS[s]||'var(--muted)'}
+function node(f){
+  const kids=byParent[f.p]||[];
+  if(onlyp.checked && f.x===0 && !kids.some(hasProblem)) return '';
+  if(fs.value && !f.p.toLowerCase().includes(fs.value.toLowerCase()) && !kids.some(k=>k.p.toLowerCase().includes(fs.value.toLowerCase()))) return '';
+  const badge=`<span class="pill" style="background:${stColor(f.s)}22;color:${stColor(f.s)}">${LABELS[f.s]||f.s}</span>`;
+  const counts=`<span class="muted">${fmt(f.n)} items · ${fmt(f.e)} exact · ${fmt(f.m)} moved · ${fmt(f.x)} missing</span>`;
+  if(kids.length){
+    return `<details><summary>📁 <b>${f.p.split('/').pop()}</b> ${badge} ${counts}</summary>${kids.map(node).join('')}</details>`;
+  }
+  return `<div class="leaf">📁 ${f.p.split('/').pop()} ${badge} ${counts}</div>`;
+}
+function hasProblem(f){
+  if(f.x>0||f.s==='missing'||f.s==='partial')return true;
+  return (byParent[f.p]||[]).some(hasProblem);
+}
+function renderTree(){
+  const roots=byParent['']||[];
+  document.getElementById('tree').innerHTML=roots.map(node).join('')||'<div class="muted" style="padding:10px">No folders match.</div>';
+}
+fs.addEventListener('input',renderTree); onlyp.addEventListener('change',renderTree);
+renderTree();
+</script>
+</body>
+</html>

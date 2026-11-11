@@ -1,38 +1,25 @@
 ---
 title: Installation
 sidebar_position: 1
-description: Install Python, rclone, and the repository, and confirm the expected index and snapshot files are present.
+description: Install Bun, rclone, and the repository, and confirm the expected index and snapshot files are present.
 ---
 
 # Installation
 
-Data Cloud Compare runs from a checkout of the repository. The comparator uses only the
-Python standard library. The explorer is a Bun + React + TypeScript app with its own
-dependencies; no Python virtual environment is required.
+Data Cloud Compare runs from a checkout of the repository. Everything—the comparator,
+snapshots, and the explorer—runs on Bun and TypeScript.
 
 ## Prerequisites
 
-### Python 3.10 or newer
-
-Check your version:
-
-```bash
-python3 --version
-```
-
-The code uses modern type-hint syntax and `from __future__ import annotations`. Python 3.10+
-is the supported baseline. No third-party Python packages are used.
-
 ### Bun 1.3 or newer
 
-The explorer runs on [Bun](https://bun.sh/):
+Everything runs on [Bun](https://bun.sh/):
 
 ```bash
 bun --version
+bun install          # screenshot/dev tooling
 bun install --cwd app
 ```
-
-The screenshot comparison tooling also needs the root dev dependencies (`bun install`).
 
 ### rclone
 
@@ -106,15 +93,15 @@ snapshot, the report's `report_data.json`, and `local_only.csv`.
 
 ```text
 scripts/
-  compare.py                 comparison engine + report writer
+  compare.ts                 comparison engine + report writer
   fetch_google_drive.sh      snapshot Google Drive, then compare
 app/
   src/server/                Bun HTTP server, caches, listings and JSON API
   src/web/                   React + TypeScript client
   public/                    HTML shell and styles
   .cache/                    generated explorer caches (git-ignored)
-explorer/                    legacy Python explorer (rendering reference)
-tools/screenshots/           baseline/after screenshot harness
+run.command                  macOS double-click launcher
+tools/screenshots/           reference screenshots + comparison harness
 report/                      Jottacloud comparison output
 report/google_drive/         Google Drive comparison output
 marketing/                   static marketing site
@@ -130,12 +117,10 @@ snapshots and reports as private data.
 Run the comparator's help output, the explorer's help output, and its type check:
 
 ```bash
-python3 scripts/compare.py --help
+bun scripts/compare.ts --help
 bun run app/src/server/index.ts --help
 bun run --cwd app typecheck
 ```
-
-The comparator should print usage without importing anything outside the standard library.
 
 ## Next step
 

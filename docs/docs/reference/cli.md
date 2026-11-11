@@ -6,12 +6,12 @@ description: Flags and environment variables for the comparator, the explorer se
 
 # CLI reference
 
-## `scripts/compare.py`
+## `scripts/compare.ts`
 
 Compares an rclone JSON listing with the local SQLite index and writes reports.
 
 ```bash
-python3 scripts/compare.py \
+bun scripts/compare.ts \
   --db file_indexer.db \
   --archive archive.json \
   --out report \
@@ -38,7 +38,7 @@ Examples:
 
 ```bash
 # Google Drive, separate output directory
-python3 scripts/compare.py \
+bun scripts/compare.ts \
   --db file_indexer.db \
   --archive google_drive.json \
   --out report/google_drive \
@@ -46,7 +46,7 @@ python3 scripts/compare.py \
   --no-strip-archive
 
 # Different index location
-python3 scripts/compare.py \
+bun scripts/compare.ts \
   --db /data/index/file_indexer.db \
   --archive archive.json \
   --out /data/reports/jotta

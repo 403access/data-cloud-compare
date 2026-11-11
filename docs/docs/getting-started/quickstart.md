@@ -34,7 +34,7 @@ the comparator strips that prefix automatically. Use `--no-strip-archive` to kee
 ## 2. Compare against the local index
 
 ```bash
-python3 scripts/compare.py \
+bun scripts/compare.ts \
   --db file_indexer.db \
   --archive archive.json \
   --out report

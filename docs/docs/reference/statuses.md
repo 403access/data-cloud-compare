@@ -61,7 +61,7 @@ This puts the items that need attention first. The order is defined in
 
 | Stage | Source |
 | --- | --- |
-| Cloud statuses | `report_data.json` `issues` and `folders`, built by `scripts/compare.py`. |
+| Cloud statuses | `report_data.json` `issues` and `folders`, built by `scripts/compare.ts`. |
 | Local-only entries | `local_only.csv`. |
 | Local badges | Computed per listing by `app/src/server/listings.ts` from the cache and local index. |
 

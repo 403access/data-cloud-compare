@@ -1,7 +1,7 @@
 /**
  * Compact, memory-resident substring index for file names.
  *
- * The on-disk format matches the legacy Python implementation (magic TJSI2)
+ * The on-disk format matches the legacy explorer implementation (magic TJSI2)
  * so existing indexes are reused. Both sides are packed into one byte buffer
  * of lower-cased names, with parallel offset/id/parent arrays.
  */

@@ -43,7 +43,7 @@ scripts/fetch_google_drive.sh
 The script performs two steps:
 
 1. `rclone lsjson gdrive: -R > google_drive.json`
-2. `python3 scripts/compare.py --db file_indexer.db --archive google_drive.json --out report/google_drive --label "Google Drive" --no-strip-archive`
+2. `bun scripts/compare.ts --db file_indexer.db --archive google_drive.json --out report/google_drive --label "Google Drive" --no-strip-archive`
 
 It then prints the command to start the explorer.
 

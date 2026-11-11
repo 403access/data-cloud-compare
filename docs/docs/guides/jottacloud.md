@@ -48,7 +48,7 @@ modification times, so the explorer shows `—` in its Modified column.
 ## Run the comparison
 
 ```bash
-python3 scripts/compare.py \
+bun scripts/compare.ts \
   --db file_indexer.db \
   --archive archive.json \
   --out report \
@@ -81,7 +81,7 @@ Re-run the two commands whenever you want current numbers:
 
 ```bash
 rclone lsjson jotta:Archive -R > archive.json.tmp && mv archive.json.tmp archive.json
-python3 scripts/compare.py --db file_indexer.db --archive archive.json --out report
+bun scripts/compare.ts --db file_indexer.db --archive archive.json --out report
 ```
 
 Then restart the explorer, or leave it running and pass `--rebuild` on the next start. The

@@ -27,15 +27,14 @@ read-only.
 
 ## Quickstart
 
-Requirements: Bun 1.3+, Python 3.10+ (comparison scripts only), rclone, an index
-database, and a provider snapshot.
+Requirements: Bun 1.3+, rclone, an index database, and a provider snapshot.
 
 ```bash
 # Snapshot the cloud listing
 rclone lsjson jotta:Archive -R > archive.json
 
 # Compare with the local index
-python3 scripts/compare.py \
+bun scripts/compare.ts \
   --db file_indexer.db \
   --archive archive.json \
   --out report
@@ -84,12 +83,12 @@ The workflow derives the Pages origin and base path, builds Docusaurus with the 
 ## Repository layout
 
 ```text
-scripts/compare.py               comparison engine + report writer
+scripts/compare.ts               comparison engine + report writer
 scripts/fetch_google_drive.sh    Google Drive snapshot + comparison
 scripts/assemble-site.mjs        combined Pages artifact builder
 app/                             virtual two-pane explorer (Bun + React + TypeScript)
-explorer/                        original Python explorer, kept as the rendering reference
-tools/screenshots/               baseline/after screenshot harness
+run.command                      macOS double-click launcher
+tools/screenshots/               reference screenshots + comparison harness
 report/                          generated comparison outputs (git-ignored by default)
 marketing/                       static marketing site
 docs/                            Docusaurus documentation site
@@ -103,5 +102,6 @@ docs/                            Docusaurus documentation site
 - The reference comparison was performed against an index snapshot dated 2026-08-25.
 - "Missing" means absent from the index after all matching passes, not proof of deletion.
   See [What "missing" means](docs/docs/concepts/matching.md#what-missing-means).
-- The explorer is now `app/` (Bun + React + TypeScript). `bun run screenshots` renders
-  both implementations and compares them pixel by pixel; see [app/README.md](app/README.md).
+- Everything runs on Bun: the comparator (`scripts/compare.ts`), snapshot helpers, and the
+  explorer (`app/`, Bun + React + TypeScript). `bun run screenshots` captures the app and
+  compares it with the checked-in reference images; see [app/README.md](app/README.md).
