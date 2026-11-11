@@ -93,6 +93,25 @@
       <circle cx="6" cy="5" r="2"/><circle cx="18" cy="7" r="2"/><circle cx="6" cy="19" r="2"/><path d="M6 7v10M18 9c0 4-3 5-6 6-2.5.8-4 1.8-4 4"/>
     </symbol>
     <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24">
+      <rect x="4.5" y="10" width="15" height="10.5" rx="2.5"/><path d="M8 10V7.3a4 4 0 0 1 8 0V10"/>
+    </symbol>
+    <symbol id="i-info" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="8.5"/><path d="M12 11v5"/><circle cx="12" cy="7.7" r="1" fill="currentColor" stroke="none"/>
+    </symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="m14.5 5.5-6.5 6.5 6.5 6.5"/></symbol>
+    <symbol id="i-forward" viewBox="0 0 24 24"><path d="m9.5 5.5 6.5 6.5-6.5 6.5"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5"/><path d="m5.5 11.5 6.5-6.5 6.5 6.5"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24">
+      <path d="M5 19V12M12 19V8M19 19V4.5"/><path d="M3 19h18"/>
+    </symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="3.1"/><path d="M12 2.8v2.2M12 19v2.2M2.8 12h2.2M19 12h2.2M5.5 5.5 7 7M17 17l1.5 1.5M18.5 5.5 17 7M7 17l-1.5 1.5"/>
+    </symbol>
+    <symbol id="i-drop" viewBox="0 0 24 24">
+      <path d="M12 3s-6.4 6.4-6.4 10.6a6.4 6.4 0 0 0 12.8 0C18.4 9.4 12 3 12 3z"/><path d="M9 14.4a3 3 0 0 0 2.8 2.6"/>
+    </symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><path d="M3.5 5h17l-6.6 7.3v6.1l-3.8 2.2v-8.3z"/></symbol>
   </svg>
 
   <header class="site-header">
@@ -170,112 +189,232 @@
         </p>
 
         <div class="hero-visual reveal">
-          <div class="app-window" role="img" aria-label="Screenshot of the Data Cloud Compare two-pane explorer comparing a local index with Jottacloud">
-            <div class="app-titlebar">
-              <span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
-              <span class="app-title">Data Cloud Compare <span>/</span> Explorer</span>
-              <span class="app-titlebar-right"><span class="live-dot"></span> Local · read-only</span>
+          <div class="app-window" role="img" aria-label="Screenshot of the Tank and Jottacloud explorer. The left pane shows the local index at /mnt/tank and the right pane shows the Jottacloud Archive. README.md is selected as a moved match, found at archive/2024/Aurora/README.md.">
+            <div class="app-appbar">
+              <span class="app-brand">
+                <span class="app-brand-mark" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" fill="none">
+                    <rect x="2" y="7" width="12" height="18" rx="3" class="mark-a"/>
+                    <rect x="18" y="7" width="12" height="18" rx="3" class="mark-b"/>
+                    <path d="M12.5 16h7" class="mark-arrow"/>
+                    <path d="m16.6 13.8 2.2 2.2-2.2 2.2" class="mark-arrow"/>
+                  </svg>
+                </span>
+                <span class="app-brand-text"><b>Tank <i>⇄</i> Jottacloud</b><small>Two-pane filesystem explorer</small></span>
+              </span>
+
+              <span class="app-provider-switch" aria-hidden="true">
+                <span class="app-provider active"><i class="app-provider-dot jotta"></i>Jottacloud</span>
+                <span class="app-provider"><i class="app-provider-dot drive"></i>Google Drive</span>
+              </span>
+
+              <span class="appbar-actions" aria-hidden="true">
+                <span class="appbar-action icon-only"><svg class="icon"><use href="#i-chart"/></svg></span>
+                <span class="appbar-search"><svg class="icon"><use href="#i-search"/></svg><span>Search</span><kbd>⌘K</kbd></span>
+                <span class="appbar-action ghost">Legend</span>
+                <span class="appbar-toggle"><span class="appbar-toggle-track"><i></i></span>Hidden</span>
+                <span class="appbar-theme"><svg class="icon"><use href="#i-drop"/></svg><span>Water</span><svg class="icon chevron"><use href="#i-chevron"/></svg></span>
+                <span class="appbar-action icon-only"><svg class="icon"><use href="#i-gear"/></svg></span>
+              </span>
             </div>
 
-            <div class="app-toolbar">
-              <div class="provider-switch" aria-hidden="true">
-                <span class="provider active"><i class="provider-dot jotta"></i> Jottacloud</span>
-                <span class="provider"><i class="provider-dot drive"></i> Google Drive</span>
-              </div>
-              <div class="toolbar-actions" aria-hidden="true">
-                <span class="mini-button"><svg class="icon"><use href="#i-arrow-up-down"/></svg> Same path</span>
-                <span class="mini-button">Hidden</span>
-              </div>
-            </div>
+            <div class="app-panes">
+              <section class="app-pane local">
+                <div class="app-pane-head">
+                  <div class="app-pane-title">
+                    <span class="app-pane-glyph local" aria-hidden="true">
+                      <svg viewBox="0 0 20 20" fill="none">
+                        <rect x="2.2" y="4" width="15.6" height="4.6" rx="1.4" fill="currentColor" opacity=".9"/>
+                        <rect x="2.2" y="9.2" width="15.6" height="6.8" rx="1.6" fill="currentColor" opacity=".55"/>
+                        <circle cx="5" cy="6.3" r=".85" fill="#fff" opacity=".85"/>
+                      </svg>
+                    </span>
+                    <span class="app-pane-titles">
+                      <strong>Local index <code>/mnt/tank</code></strong>
+                      <span class="app-pane-flags"><span><svg class="icon"><use href="#i-database"/></svg>Snapshot</span><span><svg class="icon"><use href="#i-lock"/></svg>Read-only</span></span>
+                    </span>
+                  </div>
+                  <span class="app-pane-info" aria-hidden="true"><svg class="icon"><use href="#i-info"/></svg></span>
+                </div>
 
-            <div class="pane-grid">
-              <div class="pane">
-                <div class="pane-head">
-                  <div class="crumbs"><span>tank</span><b>/</b><span>Projects</span><b>/</b><span>Aurora</span><b>/</b><span class="current">web</span></div>
-                  <div class="pane-search"><svg class="icon"><use href="#i-search"/></svg><span>Search everywhere</span></div>
+                <div class="app-pane-toolbar">
+                  <span class="app-nav-btn" aria-hidden="true"><svg class="icon"><use href="#i-back"/></svg></span>
+                  <span class="app-nav-btn" aria-hidden="true"><svg class="icon"><use href="#i-forward"/></svg></span>
+                  <span class="app-nav-btn" aria-hidden="true"><svg class="icon"><use href="#i-up"/></svg></span>
+                  <span class="app-crumbs"><span>/mnt/tank</span><span class="crumb-sep">›</span><span>Projects</span><span class="crumb-sep">›</span><span>Aurora</span><span class="crumb-sep">›</span><span class="current">web</span></span>
+                  <span class="app-same-path" aria-hidden="true"><b>⇄</b> Same path</span>
                 </div>
-                <div class="pane-cols"><span>Name</span><span>Status</span><span>Size</span></div>
-                <div class="pane-rows">
-                  <div class="row folder">
-                    <span class="row-name"><svg class="icon folder-icon"><use href="#i-folder"/></svg>src</span>
-                    <span class="badge b-in">In Jottacloud</span><span class="size">—</span>
-                  </div>
-                  <div class="row folder">
-                    <span class="row-name"><svg class="icon folder-icon"><use href="#i-folder"/></svg>public</span>
-                    <span class="badge b-in">In Jottacloud</span><span class="size">—</span>
-                  </div>
-                  <div class="row">
-                    <span class="row-name"><svg class="icon file-icon"><use href="#i-file"/></svg>package.json</span>
-                    <span class="badge b-in">In Jottacloud</span><span class="size">2.1 KB</span>
-                  </div>
-                  <div class="row selected">
-                    <span class="row-name"><svg class="icon file-icon"><use href="#i-file"/></svg>README.md</span>
-                    <span class="badge b-moved">Moved match</span><span class="size">11.4 KB</span>
-                  </div>
-                  <div class="row folder">
-                    <span class="row-name"><svg class="icon folder-icon"><use href="#i-folder"/></svg>archive-2024</span>
-                    <span class="badge b-partial">In Jottacloud</span><span class="size">—</span>
-                  </div>
-                  <div class="row">
-                    <span class="row-name"><svg class="icon file-icon"><use href="#i-file"/></svg>legacy-build.sh</span>
-                    <span class="badge b-local">Local only</span><span class="size">1.8 KB</span>
-                  </div>
-                </div>
-                <div class="pane-foot">
-                  <span class="chip c-in"><i></i>In Jottacloud <b>4</b></span>
-                  <span class="chip c-moved"><i></i>Moved <b>1</b></span>
-                  <span class="chip c-local"><i></i>Local only <b>2</b></span>
-                </div>
-              </div>
 
-              <div class="pane">
-                <div class="pane-head">
-                  <div class="crumbs"><span>Archive</span><b>/</b><span>Projects</span><b>/</b><span>Aurora</span><b>/</b><span class="current">web</span></div>
-                  <div class="pane-search"><svg class="icon"><use href="#i-search"/></svg><span>Search everywhere</span></div>
+                <div class="app-searchbar">
+                  <svg class="icon"><use href="#i-search"/></svg>
+                  <span class="app-search-hint">Search local index…</span>
+                  <span class="app-scope" aria-hidden="true">Everywhere <svg class="icon"><use href="#i-chevron"/></svg></span>
+                  <span class="app-filter" aria-hidden="true"><svg class="icon"><use href="#i-filter"/></svg>Filter</span>
                 </div>
-                <div class="pane-cols"><span>Name</span><span>Status</span><span>Size</span></div>
-                <div class="pane-rows">
-                  <div class="row folder">
-                    <span class="row-name"><svg class="icon folder-icon"><use href="#i-folder"/></svg>src</span>
-                    <span class="badge b-same">Same</span><span class="size">—</span>
+
+                <div class="app-columns" aria-hidden="true">
+                  <span class="sorted">Name</span><span>Type</span><span>Status</span><span>Size</span><span>Modified</span>
+                </div>
+
+                <div class="app-rows">
+                  <div class="app-row">
+                    <span class="cell-name"><svg class="icon folder-icon"><use href="#i-folder"/></svg><span class="name">src</span></span>
+                    <span class="cell-type">Folder</span>
+                    <span class="cell-status"><span class="status-chip st-exact"><i></i>In Jottacloud</span></span>
+                    <span class="cell-size">—</span><span class="cell-mod">Jun 18, 2025</span>
                   </div>
-                  <div class="row folder">
-                    <span class="row-name"><svg class="icon folder-icon"><use href="#i-folder"/></svg>public</span>
-                    <span class="badge b-same">Same</span><span class="size">—</span>
+                  <div class="app-row">
+                    <span class="cell-name"><svg class="icon folder-icon"><use href="#i-folder"/></svg><span class="name">public</span></span>
+                    <span class="cell-type">Folder</span>
+                    <span class="cell-status"><span class="status-chip st-exact"><i></i>In Jottacloud</span></span>
+                    <span class="cell-size">—</span><span class="cell-mod">Jun 18, 2025</span>
                   </div>
-                  <div class="row">
-                    <span class="row-name"><svg class="icon file-icon"><use href="#i-file"/></svg>package.json</span>
-                    <span class="badge b-same">Same</span><span class="size">2.1 KB</span>
+                  <div class="app-row">
+                    <span class="cell-name"><svg class="icon folder-icon"><use href="#i-folder"/></svg><span class="name">docs</span></span>
+                    <span class="cell-type">Folder</span>
+                    <span class="cell-status"><span class="status-chip st-exact"><i></i>In Jottacloud</span></span>
+                    <span class="cell-size">—</span><span class="cell-mod">Jun 18, 2025</span>
                   </div>
-                  <div class="row selected">
-                    <span class="row-name"><svg class="icon file-icon"><use href="#i-file"/></svg>README.md</span>
-                    <span class="badge b-moved">Moved</span><span class="size">11.4 KB</span>
+                  <div class="app-row">
+                    <span class="cell-name"><svg class="icon file-icon"><use href="#i-file"/></svg><span class="name">package.json</span></span>
+                    <span class="cell-type">JSON</span>
+                    <span class="cell-status"><span class="status-chip st-exact"><i></i>In Jottacloud</span></span>
+                    <span class="cell-size">2.1 KB</span><span class="cell-mod">Jun 18, 2025</span>
                   </div>
-                  <div class="row folder">
-                    <span class="row-name"><svg class="icon folder-icon"><use href="#i-folder"/></svg>archive-2024</span>
-                    <span class="badge b-partial">Partial</span><span class="size">—</span>
+                  <div class="app-row selected">
+                    <span class="cell-name"><svg class="icon file-icon"><use href="#i-file"/></svg><span class="name">README.md</span></span>
+                    <span class="cell-type">Markdown</span>
+                    <span class="cell-status"><span class="status-chip st-moved"><i></i>Moved match</span></span>
+                    <span class="cell-size">11.4 KB</span><span class="cell-mod">Jun 18, 2025</span>
                   </div>
-                  <div class="row">
-                    <span class="row-name"><svg class="icon folder-icon dim"><use href="#i-folder"/></svg>node_modules</span>
-                    <span class="badge b-missing">Missing</span><span class="size">—</span>
+                  <div class="app-row">
+                    <span class="cell-name"><svg class="icon file-icon"><use href="#i-file"/></svg><span class="name">CHANGELOG.md</span></span>
+                    <span class="cell-type">Markdown</span>
+                    <span class="cell-status"><span class="status-chip st-exact"><i></i>In Jottacloud</span></span>
+                    <span class="cell-size">4.2 KB</span><span class="cell-mod">Jun 18, 2025</span>
                   </div>
-                  <div class="row">
-                    <span class="row-name"><svg class="icon folder-icon dim"><use href="#i-folder"/></svg>site-backup</span>
-                    <span class="badge b-missing">Missing</span><span class="size">—</span>
+                  <div class="app-row">
+                    <span class="cell-name"><svg class="icon folder-icon"><use href="#i-folder"/></svg><span class="name">archive-2024</span></span>
+                    <span class="cell-type">Folder</span>
+                    <span class="cell-status"><span class="status-chip st-partial"><i></i>Partial</span></span>
+                    <span class="cell-size">—</span><span class="cell-mod">Jun 18, 2025</span>
+                  </div>
+                  <div class="app-row">
+                    <span class="cell-name"><svg class="icon file-icon"><use href="#i-file"/></svg><span class="name">legacy-build.sh</span></span>
+                    <span class="cell-type">Shell</span>
+                    <span class="cell-status"><span class="status-chip st-local_only"><i></i>Local only</span></span>
+                    <span class="cell-size">1.8 KB</span><span class="cell-mod">May 2, 2025</span>
                   </div>
                 </div>
-                <div class="pane-foot">
-                  <span class="chip c-same"><i></i>Same <b>3</b></span>
-                  <span class="chip c-moved"><i></i>Moved <b>1</b></span>
-                  <span class="chip c-partial"><i></i>Partial <b>1</b></span>
-                  <span class="chip c-missing"><i></i>Missing <b>2</b></span>
+
+                <div class="app-pane-foot">
+                  <span class="app-pane-summary">8 items · 4 folders · 4 files · 18.9 MB</span>
+                  <span class="mini-chips"><span class="mini-chip st-moved"><i></i>Moved match 1</span><span class="mini-chip st-partial"><i></i>Partial 1</span><span class="mini-chip st-local_only"><i></i>Local only 1</span></span>
                 </div>
-              </div>
+              </section>
+
+              <section class="app-pane remote active">
+                <div class="app-pane-head">
+                  <div class="app-pane-title">
+                    <span class="app-pane-glyph remote" aria-hidden="true">
+                      <svg viewBox="0 0 20 20" fill="none">
+                        <path d="M10 2.2a5.7 5.7 0 0 1 5.6 4.7 3.9 3.9 0 0 1-.8 7.7H5.4a4.1 4.1 0 0 1-.7-8.1A5.7 5.7 0 0 1 10 2.2Z" fill="currentColor" opacity=".9"/>
+                        <path d="M10 12.4V8.2M7.9 10l2.1-2.1 2.1 2.1" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/>
+                      </svg>
+                    </span>
+                    <span class="app-pane-titles">
+                      <strong>Jottacloud <span class="pane-sep">·</span> <code>Archive</code></strong>
+                      <span class="app-pane-flags"><span><svg class="icon"><use href="#i-database"/></svg>Snapshot</span><span><svg class="icon"><use href="#i-lock"/></svg>Read-only</span></span>
+                    </span>
+                  </div>
+                  <span class="app-pane-info" aria-hidden="true"><svg class="icon"><use href="#i-info"/></svg></span>
+                </div>
+
+                <div class="app-pane-toolbar">
+                  <span class="app-nav-btn" aria-hidden="true"><svg class="icon"><use href="#i-back"/></svg></span>
+                  <span class="app-nav-btn" aria-hidden="true"><svg class="icon"><use href="#i-forward"/></svg></span>
+                  <span class="app-nav-btn" aria-hidden="true"><svg class="icon"><use href="#i-up"/></svg></span>
+                  <span class="app-crumbs"><span>Archive</span><span class="crumb-sep">›</span><span>Projects</span><span class="crumb-sep">›</span><span>Aurora</span><span class="crumb-sep">›</span><span class="current">web</span></span>
+                  <span class="app-same-path" aria-hidden="true"><b>⇄</b> Same path</span>
+                </div>
+
+                <div class="app-searchbar">
+                  <svg class="icon"><use href="#i-search"/></svg>
+                  <span class="app-search-hint">Search Jottacloud…</span>
+                  <span class="app-scope" aria-hidden="true">Everywhere <svg class="icon"><use href="#i-chevron"/></svg></span>
+                  <span class="app-filter" aria-hidden="true"><svg class="icon"><use href="#i-filter"/></svg>Filter</span>
+                </div>
+
+                <div class="app-columns" aria-hidden="true">
+                  <span class="sorted">Name</span><span>Type</span><span>Status</span><span>Size</span><span>Modified</span>
+                </div>
+
+                <div class="app-rows">
+                  <div class="app-row">
+                    <span class="cell-name"><svg class="icon folder-icon"><use href="#i-folder"/></svg><span class="name">src</span></span>
+                    <span class="cell-type">Folder</span>
+                    <span class="cell-status"><span class="status-chip st-exact"><i></i>Same</span></span>
+                    <span class="cell-size">—</span><span class="cell-mod">Jun 18, 2025</span>
+                  </div>
+                  <div class="app-row">
+                    <span class="cell-name"><svg class="icon folder-icon"><use href="#i-folder"/></svg><span class="name">public</span></span>
+                    <span class="cell-type">Folder</span>
+                    <span class="cell-status"><span class="status-chip st-exact"><i></i>Same</span></span>
+                    <span class="cell-size">—</span><span class="cell-mod">Jun 18, 2025</span>
+                  </div>
+                  <div class="app-row">
+                    <span class="cell-name"><svg class="icon folder-icon"><use href="#i-folder"/></svg><span class="name">docs</span></span>
+                    <span class="cell-type">Folder</span>
+                    <span class="cell-status"><span class="status-chip st-exact"><i></i>Same</span></span>
+                    <span class="cell-size">—</span><span class="cell-mod">Jun 18, 2025</span>
+                  </div>
+                  <div class="app-row">
+                    <span class="cell-name"><svg class="icon file-icon"><use href="#i-file"/></svg><span class="name">package.json</span></span>
+                    <span class="cell-type">JSON</span>
+                    <span class="cell-status"><span class="status-chip st-exact"><i></i>Same</span></span>
+                    <span class="cell-size">2.1 KB</span><span class="cell-mod">Jun 18, 2025</span>
+                  </div>
+                  <div class="app-row selected">
+                    <span class="cell-name"><svg class="icon file-icon"><use href="#i-file"/></svg><span class="name">README.md</span></span>
+                    <span class="cell-type">Markdown</span>
+                    <span class="cell-status"><span class="status-chip st-moved"><i></i>Moved</span></span>
+                    <span class="cell-size">11.4 KB</span><span class="cell-mod">Jun 18, 2025</span>
+                  </div>
+                  <div class="app-row">
+                    <span class="cell-name"><svg class="icon file-icon"><use href="#i-file"/></svg><span class="name">CHANGELOG.md</span></span>
+                    <span class="cell-type">Markdown</span>
+                    <span class="cell-status"><span class="status-chip st-exact"><i></i>Same</span></span>
+                    <span class="cell-size">4.2 KB</span><span class="cell-mod">Jun 18, 2025</span>
+                  </div>
+                  <div class="app-row">
+                    <span class="cell-name"><svg class="icon folder-icon"><use href="#i-folder"/></svg><span class="name">archive-2024</span></span>
+                    <span class="cell-type">Folder</span>
+                    <span class="cell-status"><span class="status-chip st-partial"><i></i>Partial</span></span>
+                    <span class="cell-size">—</span><span class="cell-mod">Jun 18, 2025</span>
+                  </div>
+                  <div class="app-row">
+                    <span class="cell-name"><svg class="icon folder-icon dim"><use href="#i-folder"/></svg><span class="name">node_modules</span></span>
+                    <span class="cell-type">Folder</span>
+                    <span class="cell-status"><span class="status-chip st-missing"><i></i>Missing</span></span>
+                    <span class="cell-size">—</span><span class="cell-mod">Jun 18, 2025</span>
+                  </div>
+                </div>
+
+                <div class="app-pane-foot">
+                  <span class="app-pane-summary">8 items · 5 folders · 3 files · 5.7 MB</span>
+                  <span class="mini-chips"><span class="mini-chip st-moved"><i></i>Moved 1</span><span class="mini-chip st-partial"><i></i>Partial 1</span><span class="mini-chip st-missing"><i></i>Missing 1</span></span>
+                </div>
+              </section>
             </div>
 
             <div class="app-statusbar">
-              <span><svg class="icon"><use href="#i-shield"/></svg> Virtual view — no files were read or changed</span>
-              <span class="status-right">1,434,971 files indexed <b>·</b> 87.7% verified</span>
+              <div class="app-selection">
+                <b>README.md</b>
+                <span class="sel-meta">File · 11.4 KB · Jun 18, 2025</span>
+                <span class="status-chip st-moved"><i></i>Moved</span>
+                <span class="sel-found">Found at: archive/2024/Aurora/README.md</span>
+              </div>
+              <span class="app-reveal">Show in local index</span>
             </div>
           </div>
           <div class="glow-under" aria-hidden="true"></div>
@@ -399,7 +538,7 @@
           <article class="feature-card reveal">
             <span class="feature-icon violet"><svg class="icon"><use href="#i-folder"/></svg></span>
             <h3>Virtual two-pane explorer</h3>
-            <p>A Finder-style view of both sides. Navigate, search, filter by status, and reveal the matching local item in one keystroke.</p>
+            <p>A Finder-style view of both sides. Jump anywhere with the command bar, filter by verdict, switch providers, and reveal the matching item in one keystroke.</p>
           </article>
 
           <article class="feature-card reveal">
@@ -506,11 +645,15 @@
             </li>
             <li>
               <span class="mini-icon"><svg class="icon"><use href="#i-search"/></svg></span>
-              <div><b>Search millions of names</b><span>Fast substring search across the current folder or the whole snapshot.</span></div>
+              <div><b>Search everywhere, fast</b><span>Open the ⌘K command bar for global search, or scope an in-pane search to the current folder.</span></div>
+            </li>
+            <li>
+              <span class="mini-icon"><svg class="icon"><use href="#i-filter"/></svg></span>
+              <div><b>Filter the noise</b><span>Tick any combination of verdicts. The filter follows you as you navigate, search, and switch providers.</span></div>
             </li>
             <li>
               <span class="mini-icon"><svg class="icon"><use href="#i-layers"/></svg></span>
-              <div><b>Filter the noise</b><span>Tick any combination of statuses. Filtering follows you as you navigate and search.</span></div>
+              <div><b>Shape the view</b><span>Choose columns, switch between byte and item-count sizes, and open detail, source, and analytics sidebars.</span></div>
             </li>
             <li>
               <span class="mini-icon"><svg class="icon"><use href="#i-shield"/></svg></span>
@@ -527,8 +670,8 @@
             <span class="badge b-moved">Moved</span>
           </div>
           <div class="path-block remote">
-            <span class="path-side">Cloud</span>
-            <code>Archive/Projects/Aurora/README.md</code>
+            <span class="path-side">Jottacloud · Archive</span>
+            <code>Projects/Aurora/README.md</code>
             <span class="path-meta">11.4 KB · file</span>
           </div>
           <div class="reveal-connector" aria-hidden="true">
@@ -538,7 +681,7 @@
           </div>
           <div class="path-block local">
             <span class="path-side">Local index</span>
-            <code>tank/archive/2024/Aurora/README.md</code>
+            <code>/mnt/tank/archive/2024/Aurora/README.md</code>
             <span class="path-meta">11.4 KB · 1 candidate</span>
           </div>
           <div class="reveal-note">
