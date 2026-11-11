@@ -18,11 +18,11 @@ or run the comparator with `--db` and copy the result, then restart from the rep
 ```bash
 cd data-cloud-compare
 ls -lh file_indexer.db
-python3 explorer/server.py --open
+bun run --cwd app start --open
 ```
 
 The explorer path is not configurable through a flag; the local index location is a constant
-in `explorer/server.py` and `explorer/cache.py`. See
+in `app/src/server/paths.ts` and `app/src/server/cache.ts`. See
 [The local index](/guides/local-index#the-mnttank-base-path).
 
 ## A provider is dimmed or unavailable
@@ -67,14 +67,14 @@ replaced a file while preserving its size and modification time, detection can m
 Force a rebuild:
 
 ```bash
-python3 explorer/server.py --rebuild --open
+bun run app/src/server/index.ts --rebuild --open
 ```
 
 Or delete the provider cache:
 
 ```bash
-rm explorer/.cache/explorer-google_drive.db
-rm explorer/.cache/search-google_drive.index*
+rm app/.cache/explorer-google_drive.db
+rm app/.cache/search-google_drive.index*
 ```
 
 The Jottacloud cache keeps the legacy name `explorer.db`.
@@ -97,7 +97,7 @@ OSError: [Errno 48] Address already in use
 Choose another port:
 
 ```bash
-python3 explorer/server.py --port 9000 --open
+bun run app/src/server/index.ts --port 9000 --open
 ```
 
 Find and stop the old process if needed:
@@ -164,7 +164,8 @@ RAM.
 
 Paths outside the base are normalized and kept rather than dropped. They usually will not
 match cloud-relative paths. If your index uses a different root, update the `BASE` constant
-consistently in `scripts/compare.py`, `explorer/server.py`, and `explorer/cache.py`.
+consistently in `scripts/compare.py`, `app/src/server/paths.ts`, and
+`app/src/server/cache.ts`.
 
 ## Exposing the explorer on a network
 

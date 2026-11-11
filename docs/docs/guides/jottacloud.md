@@ -26,7 +26,7 @@ rclone lsd jotta:Archive
 ```
 
 If your remote already has a different name, either rename it to `jotta`, update the
-`rclone_remote` field in `explorer/providers.py`, or pass the path explicitly when listing.
+`rcloneRemote` field in `app/src/server/providers.ts`, or pass the path explicitly when listing.
 
 ## Snapshot the Archive
 

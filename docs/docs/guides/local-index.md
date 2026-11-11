@@ -76,8 +76,8 @@ discarded, so nothing is silently lost.
 The base path is a constant (`BASE = "/mnt/tank"`) in:
 
 - `scripts/compare.py`
-- `explorer/server.py`
-- `explorer/cache.py` (via the shared normalization helpers)
+- `app/src/server/paths.ts`
+- `app/src/server/cache.ts` (via the shared normalization helpers)
 
 If your index uses a different root, change the constant consistently in those files before
 running the comparison or explorer. A path that is outside the base is compared using its

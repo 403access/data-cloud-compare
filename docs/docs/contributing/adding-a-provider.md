@@ -70,32 +70,34 @@ keeping the full set is useful.
 
 ## 3. Define the provider
 
-Edit `explorer/providers.py`:
+Edit `app/src/server/providers.ts`:
 
-```python
-MY_CLOUD = Provider(
-    key="my_cloud",
-    label="My Cloud",
-    archive_json=ROOT / "my_cloud.json",
-    report_dir=ROOT / "report" / "my_cloud",
-    rclone_remote="myremote",
-    root_label="My Drive",
-    subtitle="my_cloud.json snapshot · virtual read-only view",
-    accent="#e07a5f",
-    help=(
-        "Run: rclone lsjson myremote: -R > my_cloud.json && "
-        "python3 scripts/compare.py --db file_indexer.db "
-        "--archive my_cloud.json --out report/my_cloud "
-        "--label 'My Cloud' --no-strip-archive"
-    ),
-)
+```typescript
+const MY_CLOUD: Provider = {
+  key: "my_cloud",
+  label: "My Cloud",
+  archiveJson: resolve(ROOT, "my_cloud.json"),
+  reportDir: resolve(ROOT, "report", "my_cloud"),
+  rcloneRemote: "myremote",
+  rootLabel: "My Drive",
+  subtitle: "my_cloud.json snapshot · virtual read-only view",
+  accent: "#e07a5f",
+  help:
+    "Run: rclone lsjson myremote: -R > my_cloud.json && " +
+    "python3 scripts/compare.py --db file_indexer.db " +
+    "--archive my_cloud.json --out report/my_cloud " +
+    "--label 'My Cloud' --no-strip-archive",
+  snapshotVersion: "",
+  snapshotTime: null,
+};
 ```
 
 Then register it:
 
-```python
-def get_providers() -> list[Provider]:
-    return [JOTTACLOUD, GOOGLE_DRIVE, MY_CLOUD]
+```typescript
+export function getProviders(): Provider[] {
+  return [JOTTACLOUD, GOOGLE_DRIVE, MY_CLOUD];
+}
 ```
 
 ### Field reference
@@ -104,21 +106,21 @@ def get_providers() -> list[Provider]:
 | --- | --- | --- |
 | `key` | yes | Stable, lowercase identifier. Used in URLs and cache filenames. |
 | `label` | yes | Shown in the provider switch. |
-| `archive_json` | yes | Absolute path to the snapshot. |
-| `report_dir` | yes | Directory containing the report outputs. |
-| `rclone_remote` | yes | Used in help text and for documentation. |
-| `root_label` | yes | Display label for the cloud root. |
+| `archiveJson` | yes | Absolute path to the snapshot. |
+| `reportDir` | yes | Directory containing the report outputs. |
+| `rcloneRemote` | yes | Used in help text and for documentation. |
+| `rootLabel` | yes | Display label for the cloud root. |
 | `subtitle` | yes | Source description shown in the UI. |
 | `accent` | yes | CSS color used for the provider accent. |
 | `help` | yes | Commands shown when the provider is unavailable. |
 
-`report_data.json`, `local_only.csv`, and `summary.json` are derived properties and must not
-be set.
+`report_data.json`, `local_only.csv`, and `summary.json` are resolved from the report
+directory by the server; they are not provider fields.
 
 ## 4. Restart the explorer
 
 ```bash
-python3 explorer/server.py --open
+bun run app/src/server/index.ts --open
 ```
 
 The startup log lists each provider and whether it is ready. The new provider builds its own
@@ -126,9 +128,10 @@ cache on first use.
 
 Cache naming:
 
-- Jottacloud keeps the legacy `explorer/.cache/explorer.db`.
+- Jottacloud keeps the legacy `explorer.db` name.
 - Other providers use `explorer-<key>.db`.
 - Search indexes use `search-<key>.index*`.
+- All caches live in `app/.cache/`.
 
 ## Optional: add a fetch script
 

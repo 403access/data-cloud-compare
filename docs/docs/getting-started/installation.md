@@ -6,9 +6,9 @@ description: Install Python, rclone, and the repository, and confirm the expecte
 
 # Installation
 
-Data Cloud Compare runs from a checkout of the repository. There is no package to install
-and no Python virtual environment is required: the comparator and explorer use the standard
-library only.
+Data Cloud Compare runs from a checkout of the repository. The comparator uses only the
+Python standard library. The explorer is a Bun + React + TypeScript app with its own
+dependencies; no Python virtual environment is required.
 
 ## Prerequisites
 
@@ -22,6 +22,17 @@ python3 --version
 
 The code uses modern type-hint syntax and `from __future__ import annotations`. Python 3.10+
 is the supported baseline. No third-party Python packages are used.
+
+### Bun 1.3 or newer
+
+The explorer runs on [Bun](https://bun.sh/):
+
+```bash
+bun --version
+bun install --cwd app
+```
+
+The screenshot comparison tooling also needs the root dev dependencies (`bun install`).
 
 ### rclone
 
@@ -46,7 +57,7 @@ definitions. See [Jottacloud](/guides/jottacloud) and [Google Drive](/guides/goo
 ### Node.js (documentation only)
 
 Node.js 20+ is required **only** if you want to run or build this documentation site. The
-comparison tooling does not use Node.
+comparison tooling does not use Node; the explorer uses Bun.
 
 ## Clone the repository
 
@@ -97,18 +108,13 @@ snapshot, the report's `report_data.json`, and `local_only.csv`.
 scripts/
   compare.py                 comparison engine + report writer
   fetch_google_drive.sh      snapshot Google Drive, then compare
-explorer/
-  server.py                  CLI entry: cache/index bootstrap + HTTP server
-  webapp.py                  HTTP handler (JSON API + static files)
-  api.py                     provider/source metadata payloads
-  local.py                   local-index listings and search
-  remote.py                  remote-snapshot listings and search
-  model.py                   shared listing helpers
-  runtime.py                 shared constants and runtime state
-  providers.py               provider definitions
-  cache.py                   per-provider explorer cache builder
-  search_index.py            compact substring-search index
-  web/                       two-pane HTML/CSS/JS client
+app/
+  src/server/                Bun HTTP server, caches, listings and JSON API
+  src/web/                   React + TypeScript client
+  public/                    HTML shell and styles
+  .cache/                    generated explorer caches (git-ignored)
+explorer/                    legacy Python explorer (rendering reference)
+tools/screenshots/           baseline/after screenshot harness
 report/                      Jottacloud comparison output
 report/google_drive/         Google Drive comparison output
 marketing/                   static marketing site
@@ -121,14 +127,15 @@ snapshots and reports as private data.
 
 ## Verify the checkout
 
-Run the comparator's help output and the explorer's help output:
+Run the comparator's help output, the explorer's help output, and its type check:
 
 ```bash
 python3 scripts/compare.py --help
-python3 explorer/server.py --help
+bun run app/src/server/index.ts --help
+bun run --cwd app typecheck
 ```
 
-Both should print usage without importing anything outside the standard library.
+The comparator should print usage without importing anything outside the standard library.
 
 ## Next step
 

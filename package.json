@@ -2,16 +2,32 @@
   "name": "data-cloud-compare",
   "version": "1.0.0",
   "private": true,
-  "description": "Marketing site and documentation for Data Cloud Compare",
+  "description": "Data Cloud Compare: comparator, Bun + React explorer, marketing site and documentation",
   "scripts": {
+    "dev": "bun run --cwd app dev",
+    "start": "bun run --cwd app start",
     "dev:docs": "npm --prefix docs run start",
     "build": "npm run build:site",
     "build:docs": "npm --prefix docs run build",
     "build:site": "npm run build:docs && node scripts/assemble-site.mjs",
     "preview": "python3 -m http.server 4173 --directory dist",
-    "clean": "rm -rf dist docs/build docs/.docusaurus"
+    "clean": "rm -rf dist docs/build docs/.docusaurus",
+    "dev:explorer": "bun run --cwd app dev",
+    "start:explorer": "bun run --cwd app start",
+    "build:explorer": "bun run --cwd app build",
+    "typecheck:explorer": "bun run --cwd app typecheck",
+    "screenshots": "bun run tools/screenshots/run.ts",
+    "screenshots:baseline": "bun run tools/screenshots/run.ts --target baseline",
+    "screenshots:after": "bun run tools/screenshots/run.ts --target after",
+    "screenshots:compare": "bun run tools/screenshots/run.ts --target compare"
   },
   "engines": {
     "node": ">=20.0"
+  },
+  "devDependencies": {
+    "@types/pngjs": "^6.0.5",
+    "pixelmatch": "^8.0.0",
+    "playwright": "^1.65.0",
+    "pngjs": "^7.0.0"
   }
 }

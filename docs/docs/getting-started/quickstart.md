@@ -64,7 +64,9 @@ The exact counts depend on your index and snapshot. The four buckets are explain
 ## 3. Open the virtual explorer
 
 ```bash
-python3 explorer/server.py --open
+bun install --cwd app
+bun run --cwd app build
+bun run --cwd app start --open
 ```
 
 Then visit [http://127.0.0.1:8787/](http://127.0.0.1:8787/) if the browser does not open automatically.
@@ -89,7 +91,7 @@ Configure an rclone remote named `gdrive`, then run the included script:
 ```bash
 rclone config
 scripts/fetch_google_drive.sh
-python3 explorer/server.py --open
+bun run --cwd app start --open
 ```
 
 The script lists the drive, writes `google_drive.json`, and runs the comparison into

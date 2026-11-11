@@ -55,7 +55,7 @@ missing → partial → possible → moved / moved_match
 ```
 
 This puts the items that need attention first. The order is defined in
-`explorer/runtime.py` and mirrored in `explorer/web/js/pane.js`.
+`app/src/server/paths.ts` and mirrored in `app/src/web/hooks/usePane.ts`.
 
 ## Where statuses come from
 
@@ -63,7 +63,7 @@ This puts the items that need attention first. The order is defined in
 | --- | --- |
 | Cloud statuses | `report_data.json` `issues` and `folders`, built by `scripts/compare.py`. |
 | Local-only entries | `local_only.csv`. |
-| Local badges | Computed per listing by `explorer/server.py` from the cache and local index. |
+| Local badges | Computed per listing by `app/src/server/listings.ts` from the cache and local index. |
 
 The explorer does not re-run the comparison. If the underlying snapshot or report changes,
 restart the explorer (or run with `--rebuild`) so the cache reflects it.

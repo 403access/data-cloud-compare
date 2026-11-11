@@ -17,6 +17,9 @@
 
 # Explorer cache (generated from snapshots + report data)
 explorer/.cache/
+app/.cache/
+app/public/js/
+screenshots/
 
 # Python
 __pycache__/

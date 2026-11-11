@@ -6,8 +6,10 @@ description: Repository layout, data flow, caching, performance choices, and the
 
 # Architecture
 
-The project is deliberately small. There is no service to run, no Python dependency, no
-database migration, and no write path into the user's archive.
+The comparator is a small Python standard-library script. The explorer is a Bun + React +
+TypeScript app with a `bun:sqlite` backend. There is no external service, no database
+migration, and no write path into the user's archive. The original Python explorer remains
+in `explorer/` as the rendering reference for `bun run screenshots`.
 
 ## Repository layout
 
@@ -15,24 +17,27 @@ database migration, and no write path into the user's archive.
 .
 ├── scripts/
 │   ├── compare.py              comparison engine + report writer
-│   └── fetch_google_drive.sh   snapshot Drive, then compare
-├── explorer/
-│   ├── server.py               CLI entry: cache/index bootstrap + HTTP server
-│   ├── webapp.py               HTTP handler (JSON API + static files)
-│   ├── api.py                  provider/source metadata payloads
-│   ├── local.py                local-index listings and search
-│   ├── remote.py               remote-snapshot listings and search
-│   ├── model.py                shared listing helpers
-│   ├── runtime.py              shared constants and runtime state
-│   ├── providers.py            provider definitions
-│   ├── cache.py                per-provider SQLite tree/status cache
-│   ├── search_index.py         compact name index
-│   ├── web/
-│   │   ├── index.html          two-pane shell
-│   │   ├── style.css           stylesheet entry point
-│   │   ├── css/                sectioned stylesheets
-│   │   └── js/                 ES modules for the client
-│   └── run.command             macOS double-click launcher
+│   ├── fetch_google_drive.sh   snapshot Drive, then compare
+│   └── assemble-site.mjs       combined Pages artifact builder
+├── app/
+│   ├── src/server/             Bun HTTP server, caches, listings and JSON API
+│   │   ├── index.ts            CLI entry + HTTP server
+│   │   ├── providers.ts        provider definitions
+│   │   ├── cache.ts            per-provider SQLite tree/status cache
+│   │   ├── search-index.ts     compact name index
+│   │   ├── listings.ts         local/remote listings and search
+│   │   ├── api.ts              JSON API payloads
+│   │   └── paths.ts            shared constants and runtime state
+│   ├── src/web/                React + TypeScript client
+│   │   ├── App.tsx             application shell and shared state
+│   │   ├── components/         app bar, panes, command bar, status bar
+│   │   ├── hooks/usePane.ts    pane state, navigation, search and filters
+│   │   ├── panels/             columns, theme, detail, source, analytics
+│   │   └── lib/                API client, formatting, icons, water effects
+│   ├── public/                 HTML shell and styles (generated JS in public/js/)
+│   └── .cache/                 generated SQLite and search indexes
+├── explorer/                   legacy Python explorer + macOS launcher
+├── tools/screenshots/          baseline/after rendering comparison
 ├── report/                     Jottacloud outputs
 ├── report/google_drive/        Google Drive outputs
 ├── marketing/                  static marketing site
@@ -58,15 +63,16 @@ file_indexer.db (SQLite) ───────────────┤
               │                         │                      │
               └─────────────────────────┴──────────┬───────────┘
                                                    ▼
-                                         explorer/cache.py
+                                         app/src/server/cache.ts
                                          (per-provider SQLite)
                                                    │
                                                    ▼
-                                         explorer/server.py
-                                         (HTTP + JSON API)
+                                         app/src/server/index.ts
+                                         (Bun HTTP + JSON API)
                                                    │
                                                    ▼
-                                            explorer/web/
+                                            app/src/web/
+                                            (React client)
 ```
 
 The comparison is a batch step. The explorer is a read-only visualization of its outputs
@@ -95,7 +101,7 @@ million-row structure.
 
 ## Explorer cache
 
-Caches live in `explorer/.cache/` and are keyed by provider. Each cache is a SQLite database
+Caches live in `app/.cache/` and are keyed by provider. Each cache is a SQLite database
 with:
 
 | Table | Purpose |
@@ -115,7 +121,7 @@ copied into the cache.
 
 ## Search index
 
-`explorer/search_index.py` builds a compact name index per provider, combining the cloud
+`app/src/server/search-index.ts` builds a compact name index per provider, combining the cloud
 snapshot and local index. It stores paths and names in a form optimized for case-insensitive
 substring search, with a sidecar metadata file. The index signature includes the cache
 signature and the local database's size and modification time.
@@ -125,50 +131,57 @@ and include a `truncated` flag.
 
 ## HTTP server
 
-`explorer/webapp.py` extends `BaseHTTPRequestHandler` under
-`ThreadingHTTPServer`; `explorer/server.py` starts it. It has no framework and no external
-dependencies.
+`app/src/server/index.ts` uses Bun's built-in `Bun.serve` and `bun:sqlite`; it needs no
+web framework.
 
 | Route | Behavior |
 | --- | --- |
-| `/` | Serves `web/index.html`. |
+| `/` | Serves `app/public/index.html`. |
 | `/api/providers` | Provider list, readiness, summaries, source files. |
 | `/api/meta` | Metadata for one provider. |
 | `/api/list` | Directory listing for `local` or `remote`. |
 | `/api/search` | Substring search, whole snapshot or current folder. |
-| Other paths | Static files under `explorer/web/`, with traversal protection. |
+| Other paths | Static files under `app/public/`, with traversal protection. |
 
 Readiness is checked at startup. Missing snapshots or reports mark a provider unavailable
 with a human-readable reason; other providers continue to work.
 
 ## Provider abstraction
 
-A provider is a frozen dataclass in `explorer/providers.py`:
+A provider is a plain object in `app/src/server/providers.ts`:
 
 | Field | Purpose |
 | --- | --- |
 | `key` | Stable identifier used by the API and cache filenames. |
 | `label` | Display name. |
-| `archive_json` | Snapshot path. |
-| `report_dir` | Directory containing the comparison outputs. |
-| `rclone_remote` | Remote name used in help text and scripts. |
-| `root_label` | Display root (for example `Archive` or `My Drive`). |
+| `archiveJson` | Snapshot path. |
+| `reportDir` | Directory containing the comparison outputs. |
+| `rcloneRemote` | Remote name used in help text and scripts. |
+| `rootLabel` | Display root (for example `Archive` or `My Drive`). |
 | `subtitle` | Source description shown in the UI. |
 | `accent` | UI accent color. |
 | `help` | Command shown when the provider is unavailable. |
 
-Derived properties resolve `report_data.json`, `local_only.csv`, and `summary.json` inside
-the report directory. See [Adding a provider](/contributing/adding-a-provider).
+The server resolves `report_data.json`, `local_only.csv`, and `summary.json` inside the
+report directory. See [Adding a provider](/contributing/adding-a-provider).
 
 ## Security and privacy
 
 - The server binds to `127.0.0.1` by default.
-- SQLite is opened with `mode=ro` and `PRAGMA query_only`.
+- SQLite is opened read-only with `PRAGMA query_only`.
 - API paths reject `..` traversal and null bytes.
-- Static files are resolved under `explorer/web/` and rejected if they escape it.
+- Static files are resolved under `app/public/` and rejected if they escape it.
 - There is no authentication. Exposing the server with `--host 0.0.0.0` is an explicit
   choice on a trusted network.
 - No telemetry, no external asset requests, and no upload path exist in the tooling.
+
+## Rendering comparison
+
+`bun run screenshots` starts the legacy Python explorer and this app, captures the same UI
+states in Chromium, and writes pixel diffs and a pass/fail report under `screenshots/`.
+Animations are frozen and the water canvas is hidden so the comparison is deterministic.
+See [app/README.md](https://github.com/403access/data-cloud-compare/blob/main/app/README.md)
+for details.
 
 ## Deployment
 

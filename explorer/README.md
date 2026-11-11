@@ -1,5 +1,10 @@
 # Tank ⇄ cloud explorer
 
+> **Legacy implementation.** The active explorer is the Bun + React + TypeScript app in
+> [`../app/`](../app/README.md). This Python version is kept as the rendering reference for
+> `bun run screenshots`, which compares both implementations pixel by pixel. The behaviour
+> and UI descriptions below still apply to both.
+
 A Finder-style, two-pane explorer for the comparison data in this repository.
 It is **virtual**: neither pane touches a live filesystem.
 
@@ -19,6 +24,8 @@ Every row is annotated with the result of `scripts/compare.py`:
 The margin at the bottom of each pane summarises the visible statuses.
 
 ## Start
+
+This starts the legacy Python implementation:
 
 ```bash
 python3 explorer/server.py --open

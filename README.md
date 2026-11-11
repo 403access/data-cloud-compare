@@ -27,7 +27,8 @@ read-only.
 
 ## Quickstart
 
-Requirements: Python 3.10+, rclone, an index database, and a provider snapshot.
+Requirements: Bun 1.3+, Python 3.10+ (comparison scripts only), rclone, an index
+database, and a provider snapshot.
 
 ```bash
 # Snapshot the cloud listing
@@ -39,8 +40,9 @@ python3 scripts/compare.py \
   --archive archive.json \
   --out report
 
-# Browse the virtual explorer
-python3 explorer/server.py --open
+# Browse the virtual explorer (Bun + React)
+bun install --cwd app
+bun run --cwd app start --open
 ```
 
 Google Drive:
@@ -48,7 +50,7 @@ Google Drive:
 ```bash
 rclone config                 # create a remote named "gdrive"
 scripts/fetch_google_drive.sh
-python3 explorer/server.py --open
+bun run --cwd app start --open
 ```
 
 See the [documentation](docs/docs/intro.md) for the matching model, explorer guide, reports,
@@ -85,7 +87,9 @@ The workflow derives the Pages origin and base path, builds Docusaurus with the 
 scripts/compare.py               comparison engine + report writer
 scripts/fetch_google_drive.sh    Google Drive snapshot + comparison
 scripts/assemble-site.mjs        combined Pages artifact builder
-explorer/                        virtual two-pane explorer (stdlib only)
+app/                             virtual two-pane explorer (Bun + React + TypeScript)
+explorer/                        original Python explorer, kept as the rendering reference
+tools/screenshots/               baseline/after screenshot harness
 report/                          generated comparison outputs (git-ignored by default)
 marketing/                       static marketing site
 docs/                            Docusaurus documentation site
@@ -94,8 +98,10 @@ docs/                            Docusaurus documentation site
 ## Notes
 
 - Generated snapshots (`archive.json`, `google_drive.json`), the index database, reports,
-  and explorer caches are git-ignored. The reference run is summarised in
+  explorer caches, and screenshot captures are git-ignored. The reference run is summarised in
   [`report/SUMMARY.md`](report/SUMMARY.md); treat your own data as private.
 - The reference comparison was performed against an index snapshot dated 2026-08-25.
 - "Missing" means absent from the index after all matching passes, not proof of deletion.
   See [What "missing" means](docs/docs/concepts/matching.md#what-missing-means).
+- The explorer is now `app/` (Bun + React + TypeScript). `bun run screenshots` renders
+  both implementations and compares them pixel by pixel; see [app/README.md](app/README.md).

@@ -1,0 +1,25 @@
+{
+  "name": "tank-cloud-explorer",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Bun + React + TypeScript two-pane filesystem explorer",
+  "scripts": {
+    "dev": "bun run start",
+    "start": "bun run build:web && bun run src/server/index.ts",
+    "build": "bun run build:web",
+    "build:web": "bun build src/web/main.tsx --outdir public/js --target browser --minify --sourcemap=external --define 'process.env.NODE_ENV=\"production\"'",
+    "watch:web": "bun build src/web/main.tsx --outdir public/js --target browser --sourcemap=external --define 'process.env.NODE_ENV=\"production\"' --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "typescript": "^5.9.0"
+  }
+}

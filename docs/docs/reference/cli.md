@@ -52,12 +52,12 @@ python3 scripts/compare.py \
   --out /data/reports/jotta
 ```
 
-## `explorer/server.py`
+## `app/src/server/index.ts`
 
-Starts the virtual two-pane explorer.
+Starts the virtual two-pane explorer (Bun + React + TypeScript).
 
 ```bash
-python3 explorer/server.py --open
+bun run --cwd app start --open
 ```
 
 | Option | Default | Description |
@@ -72,19 +72,19 @@ Behavior notes:
 - Exits with status `1` if `file_indexer.db` is not found next to the repository root.
 - Unavailable providers are skipped with a reason printed at startup.
 - The first run builds caches and search indexes; later runs reuse them.
-- The server serves the static UI from `explorer/web/` and the JSON API under `/api/`.
+- The server serves the built UI from `app/public/` and the JSON API under `/api/`.
 
 Examples:
 
 ```bash
 # Different port
-python3 explorer/server.py --port 9000
+bun run --cwd app start --port 9000
 
 # LAN access (no authentication)
-python3 explorer/server.py --host 0.0.0.0 --port 8787
+bun run --cwd app start --host 0.0.0.0 --port 8787
 
 # Force a cache rebuild after changing snapshots
-python3 explorer/server.py --rebuild --open
+bun run --cwd app start --rebuild --open
 ```
 
 ## `scripts/fetch_google_drive.sh`

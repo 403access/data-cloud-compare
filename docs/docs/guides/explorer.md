@@ -13,8 +13,14 @@ selected provider snapshot.
 ## Start the server
 
 ```bash
-python3 explorer/server.py --open
+bun install --cwd app
+bun run --cwd app build
+bun run --cwd app start --open
 ```
+
+The explorer is the Bun + React + TypeScript app in [`app/`](https://github.com/403access/data-cloud-compare/tree/main/app).
+The original Python implementation remains in `explorer/` as the rendering reference used by
+the screenshot harness.
 
 Then open [http://127.0.0.1:8787/](http://127.0.0.1:8787/) if the browser did not open automatically.
 
@@ -34,10 +40,10 @@ The first start builds a cache per available provider (roughly 30 seconds each o
 index), a compact search index (roughly 20 seconds each), and a shared folder-size index for
 the local snapshot (roughly 15 seconds). Later starts are instant.
 
-Caches live in `explorer/.cache/` and are git-ignored:
+Caches live in `app/.cache/` and are git-ignored:
 
 ```text
-explorer/.cache/
+app/.cache/
   explorer-<provider>.db
   local-folder-sizes.db
   search-<provider>.index
@@ -173,13 +179,13 @@ The UI is backed by a small JSON API. All endpoints are GET requests.
 `sort` accepts `name`, `type`, `size`, `modified`, or `status`; `dir` accepts `asc` or
 `desc`. `sizemode` accepts `bytes` (default), `files`, or `both` and controls how folder
 sizes are sorted. Unknown providers or sides return an error. The server also serves the
-static files in `explorer/web/`.
+static files in `app/public/`.
 
 ## Security model
 
 - The default bind address is loopback only.
 - SQLite is opened read-only (`mode=ro`, `query_only`).
-- Static file resolution rejects paths outside `explorer/web/`.
+- Static file resolution rejects paths outside `app/public/`.
 - API paths are normalized and reject `..` traversal.
 - There is **no authentication**. If you use `--host 0.0.0.0`, anyone who can reach the
   port can browse the index and snapshots. Use it only on a trusted network.
