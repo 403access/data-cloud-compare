@@ -21,6 +21,65 @@
 }
 :root[data-theme="water"] .appbar { z-index: 20; }
 
+/* ------------------------------ sea background -------------------------- */
+
+#sea-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 900ms var(--ease-out);
+}
+:root[data-theme="water"][data-water-background="sea"] #sea-bg { opacity: 1; }
+
+#sea-bg::before {
+  content: "";
+  position: absolute;
+  inset: auto 0 -8% 0;
+  height: 78%;
+  background: radial-gradient(120% 100% at 50% 100%,
+    rgba(var(--water-accent-rgb), .26) 0%,
+    rgba(var(--water-accent-rgb), .09) 44%,
+    transparent 74%);
+}
+
+.sea-wave {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  display: block;
+  width: 200%;
+  height: 46vh;
+  will-change: transform;
+  animation: sea-roll calc(58s / var(--water-speed-factor)) linear infinite;
+  animation-delay: -24s;
+}
+.sea-wave path { fill: rgb(var(--water-accent-rgb)); }
+.sea-wave-far { opacity: .15; }
+.sea-wave-mid {
+  height: 33vh;
+  opacity: .22;
+  animation-duration: calc(42s / var(--water-speed-factor));
+  animation-direction: reverse;
+  animation-delay: -13s;
+}
+.sea-wave-near {
+  height: 22vh;
+  opacity: .3;
+  animation-duration: calc(31s / var(--water-speed-factor));
+  animation-delay: -6s;
+}
+
+:root[data-theme="water"][data-water-background="sea"][data-water-effects="off"] .sea-wave {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sea-wave { animation: none; }
+}
+
 :root[data-theme="water"] .pane {
   position: relative;
   isolation: isolate;
@@ -198,6 +257,24 @@
   backdrop-filter: blur(20px) saturate(150%);
   -webkit-backdrop-filter: blur(20px) saturate(150%);
 }
+/* Let the sea read through the panes when it is the chosen background. */
+:root[data-theme="water"][data-water-background="sea"] .pane,
+:root[data-theme="water"][data-water-background="sea"] .columns-panel,
+:root[data-theme="water"][data-water-background="sea"] .detail-panel,
+:root[data-theme="water"][data-water-background="sea"] .source-panel,
+:root[data-theme="water"][data-water-background="sea"] .analytics-panel,
+:root[data-theme="water"][data-water-background="sea"] .theme-panel {
+  background-color: color-mix(in srgb, var(--pane-bg) 62%, transparent);
+}
+:root[data-theme="water"][data-water-background="sea"][data-water-glass="on"] .pane,
+:root[data-theme="water"][data-water-background="sea"][data-water-glass="on"] .columns-panel,
+:root[data-theme="water"][data-water-background="sea"][data-water-glass="on"] .detail-panel,
+:root[data-theme="water"][data-water-background="sea"][data-water-glass="on"] .source-panel,
+:root[data-theme="water"][data-water-background="sea"][data-water-glass="on"] .analytics-panel,
+:root[data-theme="water"][data-water-background="sea"][data-water-glass="on"] .theme-panel {
+  backdrop-filter: blur(14px) saturate(145%);
+  -webkit-backdrop-filter: blur(14px) saturate(145%);
+}
 :root[data-theme="water"][data-water-effects="off"] .pane::before,
 :root[data-theme="water"][data-water-effects="off"] .row::before,
 :root[data-theme="water"][data-water-effects="off"] .brand-icon,
@@ -217,6 +294,10 @@
 @keyframes water-settle {
   from { opacity: 0; transform: translateY(16px) scale(.985); filter: blur(3px); }
   to { opacity: 1; transform: none; filter: none; }
+}
+@keyframes sea-roll {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-25%, 0, 0); }
 }
 @keyframes water-swirl {
   to { transform: rotate(360deg); }

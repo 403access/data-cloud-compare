@@ -38,7 +38,7 @@
   --gray-bg: rgba(120, 120, 128, 0.13);
   --row-h: 30px;
   --col-type: 72px;
-  --col-status: 98px;
+  --col-status: 116px;
   --col-size: 112px;
   --col-mod: 138px;
   --sidebar-w: 300px;
@@ -49,6 +49,7 @@
   --ease-out: cubic-bezier(.22, 1, .36, 1);
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI",
           "Helvetica Neue", Arial, sans-serif;
+  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' stroke='%239a9aa1' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
 :root[data-theme="dark"] {
@@ -83,6 +84,7 @@
   --purple-bg: rgba(191, 155, 255, 0.16);
   --gray: #a0a0a8;
   --gray-bg: rgba(160, 160, 168, 0.14);
+  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' stroke='%23787880' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
 @media (prefers-color-scheme: dark) {
@@ -118,6 +120,7 @@
     --purple-bg: rgba(191, 155, 255, 0.16);
     --gray: #a0a0a8;
     --gray-bg: rgba(160, 160, 168, 0.14);
+    --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' stroke='%23787880' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   }
 }
 
@@ -171,6 +174,7 @@
   --motion-base: 340ms;
   --motion-layout: 520ms;
   --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' stroke='%236ba9b6' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
 :root[data-theme="water"][data-water-tone="lagoon"] {
@@ -217,6 +221,7 @@
   --water-glow: rgba(72, 183, 255, 0.24);
   --brand-a: #2a9fe0;
   --brand-b: #4a6cff;
+  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' stroke='%235e93ad' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
 :root[data-theme="water"][data-water-speed="calm"] { --water-speed-factor: .65; }
@@ -258,6 +263,14 @@ body {
 button, input, select {
   font: inherit;
   color: inherit;
+}
+
+/* Draw our own chevron in every select. The native macOS/Chrome arrow forces
+   lopsided internal padding, so the controls use --select-chevron instead. */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
 }
 
 button { cursor: pointer; }

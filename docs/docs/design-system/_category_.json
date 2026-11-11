@@ -1,0 +1,8 @@
+{
+  "label": "Design system",
+  "position": 7,
+  "link": {
+    "type": "generated-index",
+    "description": "The water theme, its tokens, components, motion rules, and accessibility contract."
+  }
+}

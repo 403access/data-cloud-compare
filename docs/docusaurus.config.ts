@@ -60,6 +60,11 @@ const themeConfig: Preset.ThemeConfig = {
         position: "right",
       },
       {
+        href: `${marketingHref}design-system/`,
+        label: "Design",
+        position: "right",
+      },
+      {
         href: "https://github.com/403access/data-cloud-compare",
         label: "GitHub",
         position: "right",
@@ -73,6 +78,7 @@ const themeConfig: Preset.ThemeConfig = {
         items: [
           { label: "Website", href: marketingHref },
           { label: "Features", href: `${marketingHref}#features` },
+          { label: "Design system", href: `${marketingHref}design-system/` },
           { label: "GitHub", href: "https://github.com/403access/data-cloud-compare" },
         ],
       },

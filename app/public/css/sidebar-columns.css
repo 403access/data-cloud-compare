@@ -170,13 +170,16 @@
   flex: none;
   max-width: 136px;
   height: 26px;
-  padding: 0 6px;
+  padding: 0 23px 0 8px;
   border: 1px solid var(--line);
   border-radius: 7px;
   outline: none;
-  background: var(--pane-bg);
+  background: var(--pane-bg) var(--select-chevron) no-repeat right 6px center / 10px;
   color: var(--text);
   font-size: 11px;
+  /* Chrome places the text baseline a hair low in a 26px select; matching the
+     content height centres it against the chevron. Safari ignores this. */
+  line-height: 24px;
 }
 .columns-select:focus-visible {
   border-color: color-mix(in srgb, var(--accent) 55%, var(--line));

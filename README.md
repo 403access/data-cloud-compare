@@ -8,8 +8,10 @@ The repository also contains the product's public sites:
 
 - **Marketing site:** [`marketing/`](marketing/) — static HTML/CSS with TypeScript interactions.
 - **Documentation:** [`docs/`](docs/) — Docusaurus, deployed under `/docs/`.
+- **Design system:** [`design-system/`](design-system/) — the water theme's tokens,
+  components, effects, and an interactive component gallery at `/design-system/`.
 
-Both are assembled into one GitHub Pages artifact by
+All three are assembled into one GitHub Pages artifact by
 [`.github/workflows/pages.yml`](.github/workflows/pages.yml).
 
 ## What it does
@@ -61,6 +63,7 @@ provider setup, and troubleshooting.
 | --- | --- | --- |
 | Marketing | `marketing/` | `npm run build && npm run preview` |
 | Docs | `docs/docs/` | `npm run dev:docs` |
+| Design system | `design-system/` | `npm run preview` (after a build) |
 
 Build the combined Pages artifact:
 
@@ -77,8 +80,8 @@ npm run preview   # http://localhost:4173/
 3. Push to `main` or run the **Deploy site** workflow manually.
 
 The workflow derives the Pages origin and base path, builds Docusaurus with the correct
-`baseUrl`, copies the marketing site to the artifact root, and deploys the docs under
-`/docs/`.
+`baseUrl`, copies the marketing site to the artifact root, copies the design system to
+`/design-system/`, and deploys the docs under `/docs/`.
 
 ## Repository layout
 
@@ -90,8 +93,9 @@ app/                             virtual two-pane explorer (Bun + React + TypeSc
 run.command                      macOS double-click launcher
 tools/screenshots/               reference screenshots + comparison harness
 report/                          generated comparison outputs (git-ignored by default)
-marketing/                       static marketing site
+marketing/                       static marketing site (water theme)
 docs/                            Docusaurus documentation site
+design-system/                   shared water tokens, components, and gallery
 ```
 
 ## Notes

@@ -1,18 +1,18 @@
 /**
  * Data Cloud Compare documentation theme.
- * Mirrors the marketing site's slate + teal palette.
+ * Uses the shared water design system: deep-sea surfaces and a cyan current.
  */
 
 :root {
-  --ifm-color-primary: #0e9c8b;
-  --ifm-color-primary-dark: #0c8c7d;
-  --ifm-color-primary-darker: #0b8476;
-  --ifm-color-primary-darkest: #096d61;
-  --ifm-color-primary-light: #10ac99;
-  --ifm-color-primary-lighter: #11b4a0;
-  --ifm-color-primary-lightest: #22cbb7;
+  --ifm-color-primary: #067a99;
+  --ifm-color-primary-dark: #056d88;
+  --ifm-color-primary-darker: #05657f;
+  --ifm-color-primary-darkest: #045366;
+  --ifm-color-primary-light: #0687aa;
+  --ifm-color-primary-lighter: #078fb4;
+  --ifm-color-primary-lightest: #0aa6d1;
 
-  --ifm-background-color: #f6f8fc;
+  --ifm-background-color: #eef8fb;
   --ifm-background-surface-color: #ffffff;
   --ifm-font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter",
     Roboto, Helvetica, Arial, sans-serif;
@@ -23,31 +23,103 @@
   --ifm-code-font-size: 92%;
   --ifm-navbar-height: 64px;
   --ifm-navbar-background-color: rgba(255, 255, 255, 0.82);
-  --ifm-footer-background-color: #f0f4fa;
-  --ifm-toc-border-color: #dbe3ef;
-  --docusaurus-highlighted-code-line-bg: rgba(14, 156, 139, 0.1);
+  --ifm-footer-background-color: #e2f2f6;
+  --ifm-toc-border-color: rgba(8, 61, 75, 0.14);
+  --ifm-color-content-secondary: #416b76;
+  --docusaurus-highlighted-code-line-bg: rgba(6, 122, 153, 0.1);
 }
 
 [data-theme='dark'] {
-  --ifm-color-primary: #5eead4;
-  --ifm-color-primary-dark: #3fe4ca;
-  --ifm-color-primary-darker: #2ee0c4;
-  --ifm-color-primary-darkest: #1cbda4;
-  --ifm-color-primary-light: #7defdd;
-  --ifm-color-primary-lighter: #8ff1e2;
-  --ifm-color-primary-lightest: #b9f7ee;
+  --ifm-color-primary: #38d6ff;
+  --ifm-color-primary-dark: #22c8e8;
+  --ifm-color-primary-darker: #1bb8d6;
+  --ifm-color-primary-darkest: #159cb5;
+  --ifm-color-primary-light: #5adfff;
+  --ifm-color-primary-lighter: #70e3ff;
+  --ifm-color-primary-lightest: #a8efff;
 
-  --ifm-background-color: #070a11;
-  --ifm-background-surface-color: #0e1522;
-  --ifm-navbar-background-color: rgba(9, 13, 22, 0.78);
-  --ifm-footer-background-color: #0a0f19;
-  --ifm-toc-border-color: rgba(160, 185, 220, 0.13);
-  --ifm-color-content-secondary: #8998b0;
-  --docusaurus-highlighted-code-line-bg: rgba(94, 234, 212, 0.12);
+  --ifm-background-color: #04161f;
+  --ifm-background-surface-color: #072a38;
+  --ifm-navbar-background-color: rgba(4, 22, 31, 0.78);
+  --ifm-footer-background-color: #052530;
+  --ifm-toc-border-color: rgba(127, 230, 255, 0.15);
+  --ifm-color-content-secondary: #8fc4cf;
+  --docusaurus-highlighted-code-line-bg: rgba(56, 214, 255, 0.12);
 }
 
 html {
   scroll-behavior: smooth;
+}
+
+body {
+  background-image:
+    radial-gradient(1000px 600px at 12% -12%, rgba(111, 219, 233, 0.28) 0%, transparent 58%),
+    radial-gradient(900px 520px at 92% 6%, rgba(122, 164, 255, 0.16) 0%, transparent 62%),
+    linear-gradient(165deg, #f5fcfe 0%, #e9f6fa 48%, #e2f2f6 100%);
+  background-attachment: fixed;
+}
+
+[data-theme='dark'] body {
+  background-image:
+    radial-gradient(1100px 620px at 12% -12%, rgba(46, 196, 224, 0.22) 0%, transparent 58%),
+    radial-gradient(900px 560px at 92% 8%, rgba(45, 110, 230, 0.16) 0%, transparent 62%),
+    radial-gradient(1200px 900px at 50% 118%, rgba(18, 130, 160, 0.2) 0%, transparent 66%),
+    linear-gradient(165deg, #083545 0%, #052530 48%, #031922 100%);
+}
+
+/* --------------------------------------------------------------------------
+   Sea backdrop (see src/theme/Root.tsx)
+   -------------------------------------------------------------------------- */
+
+.docs-sea {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.5;
+  -webkit-mask-image: linear-gradient(to top, #000 0%, #000 48%, transparent 92%);
+  mask-image: linear-gradient(to top, #000 0%, #000 48%, transparent 92%);
+}
+
+.docs-sea__wave {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  display: block;
+  width: 200%;
+  height: 30vh;
+  animation: docs-sea-roll 58s linear infinite;
+  animation-delay: -24s;
+}
+
+.docs-sea__wave path { fill: #38d6ff; }
+.docs-sea__wave--far { height: 28vh; opacity: 0.12; }
+.docs-sea__wave--mid {
+  height: 22vh;
+  opacity: 0.16;
+  animation-duration: 42s;
+  animation-direction: reverse;
+  animation-delay: -13s;
+}
+.docs-sea__wave--near {
+  height: 16vh;
+  opacity: 0.2;
+  animation-duration: 31s;
+  animation-delay: -6s;
+}
+
+@keyframes docs-sea-roll {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-25%, 0, 0); }
+}
+
+.main-wrapper,
+.footer { position: relative; z-index: 1; }
+.navbar { z-index: 2; }
+
+@media (prefers-reduced-motion: reduce) {
+  .docs-sea__wave { animation: none; }
 }
 
 .navbar {
@@ -153,28 +225,28 @@ html {
 }
 .status-same,
 .status-in {
-  color: #0f9d6e;
-  background: rgba(15, 157, 110, 0.12);
+  color: #0a7a55;
+  background: rgba(10, 122, 85, 0.12);
 }
 .status-moved {
-  color: #2f6fe4;
-  background: rgba(47, 111, 228, 0.12);
+  color: #1f6fc4;
+  background: rgba(31, 111, 196, 0.12);
 }
 .status-possible {
-  color: #a97208;
-  background: rgba(169, 114, 8, 0.14);
+  color: #8a5c00;
+  background: rgba(138, 92, 0, 0.14);
 }
 .status-partial {
-  color: #c2571e;
-  background: rgba(194, 87, 30, 0.13);
+  color: #a94814;
+  background: rgba(169, 72, 20, 0.13);
 }
 .status-missing {
-  color: #d63b45;
-  background: rgba(214, 59, 69, 0.12);
+  color: #c73442;
+  background: rgba(199, 52, 66, 0.12);
 }
 .status-local {
-  color: #7c5ce0;
-  background: rgba(124, 92, 224, 0.13);
+  color: #6d4bd6;
+  background: rgba(109, 75, 214, 0.13);
 }
 .status-type {
   color: #b53d9b;
@@ -183,32 +255,32 @@ html {
 
 [data-theme='dark'] .status-same,
 [data-theme='dark'] .status-in {
-  color: #45e0a3;
-  background: rgba(69, 224, 163, 0.12);
+  color: #5ef2b0;
+  background: rgba(94, 242, 176, 0.14);
 }
 [data-theme='dark'] .status-moved {
-  color: #74a8ff;
-  background: rgba(116, 168, 255, 0.12);
+  color: #6fd5ff;
+  background: rgba(111, 213, 255, 0.14);
 }
 [data-theme='dark'] .status-possible {
-  color: #f3c969;
-  background: rgba(243, 201, 105, 0.13);
+  color: #ffd27a;
+  background: rgba(255, 210, 122, 0.14);
 }
 [data-theme='dark'] .status-partial {
-  color: #ffa26b;
-  background: rgba(255, 162, 107, 0.13);
+  color: #ffb072;
+  background: rgba(255, 176, 114, 0.14);
 }
 [data-theme='dark'] .status-missing {
-  color: #ff7d82;
-  background: rgba(255, 125, 130, 0.12);
+  color: #ff8a92;
+  background: rgba(255, 138, 146, 0.14);
 }
 [data-theme='dark'] .status-local {
-  color: #b49bff;
-  background: rgba(180, 155, 255, 0.13);
+  color: #c3a8ff;
+  background: rgba(195, 168, 255, 0.14);
 }
 [data-theme='dark'] .status-type {
-  color: #f08ad8;
-  background: rgba(240, 138, 216, 0.12);
+  color: #ff9ad5;
+  background: rgba(255, 154, 213, 0.14);
 }
 
 .doc-badge {

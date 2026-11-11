@@ -50,7 +50,7 @@ export function StatusBar({ side, entry, provider, sizeMode, onReveal }: Props) 
             </span>
             <span className={`status-chip st-${entry.status || "unmatched"}`} title={statusTitle(entry, provider) || undefined}>
               <span className="dot" />
-              <span>{statusLabel(entry, side, provider)}</span>
+              <span className="status-chip-label">{statusLabel(entry, side, provider)}</span>
             </span>
             {entry.found_at ? (
               <button

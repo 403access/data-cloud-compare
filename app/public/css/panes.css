@@ -263,10 +263,10 @@
 .searchbar input::-webkit-search-cancel-button { display: none; }
 .searchbar select {
   height: 22px;
-  padding: 0 2px;
+  padding: 0 20px 0 7px;
   border: 1px solid var(--line);
   border-radius: 6px;
-  background: transparent;
+  background: transparent var(--select-chevron) no-repeat right 5px center / 9px;
   color: var(--text-2);
   font-size: 10.5px;
   outline: none;

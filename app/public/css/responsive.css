@@ -3,7 +3,7 @@
 @media (max-width: 1080px) {
   :root {
     --col-type: 64px;
-    --col-status: 92px;
+    --col-status: 104px;
     --col-size: 100px;
     --col-mod: 112px;
     --sidebar-w: 260px;
@@ -59,11 +59,17 @@
   .panes > .analytics-panel { grid-column: 1; grid-row: 4; }
   :root {
     --col-type: 58px;
-    --col-status: 82px;
+    --col-status: 104px;
     --col-size: 92px;
     --col-mod: 96px;
   }
   .pane-titles p { display: none; }
+}
+
+@media (max-width: 520px) {
+  :root {
+    --col-status: 88px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

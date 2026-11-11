@@ -39,6 +39,10 @@ const TEXT = {
     title: "Glass surfaces",
     hint: "Frosted panes over the moving water.",
   },
+  background: {
+    title: "Background",
+    hint: "A still gradient or a living sea.",
+  },
 };
 
 function SwitchRow({
@@ -190,6 +194,21 @@ export function ThemePanel({
 
         <section className="theme-group">
           <h3>Look</h3>
+          <label className="theme-select-row">
+            <span className="theme-switch-text">
+              <span className="theme-switch-title">{TEXT.background.title}</span>
+              <span className="theme-switch-hint">{TEXT.background.hint}</span>
+            </span>
+            <select
+              id="water-background"
+              className="theme-select"
+              value={settings.background}
+              onChange={(event) => onChange({ background: event.target.value })}
+            >
+              <option value="still">Still gradient</option>
+              <option value="sea">Sea and waves</option>
+            </select>
+          </label>
           <label className="theme-select-row">
             <span className="theme-switch-text">
               <span className="theme-switch-title">Water tone</span>

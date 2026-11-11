@@ -2,8 +2,9 @@
 /**
  * Assemble the GitHub Pages artifact:
  *
- *   dist/            marketing site (served at /)
- *   dist/docs/       Docusaurus build (served at /docs/)
+ *   dist/                marketing site (served at /)
+ *   dist/docs/           Docusaurus build (served at /docs/)
+ *   dist/design-system/  shared water design system + component showcase
  *
  * The docs are built with DOCS_BASE_URL pointing at /docs/, so all of their
  * asset URLs already resolve inside dist/docs when the artifact is deployed.
@@ -16,11 +17,13 @@ import { join, resolve } from "node:path";
 const root = resolve(import.meta.dir, "..");
 const marketing = join(root, "marketing");
 const docsBuild = join(root, "docs", "build");
+const designSystem = join(root, "design-system");
 const dist = join(root, "dist");
 
 for (const [label, path] of [
   ["marketing/", marketing],
   ["docs/build/", docsBuild],
+  ["design-system/", designSystem],
 ] as const) {
   if (!existsSync(path)) {
     console.error(`Missing ${label} at ${path}`);
@@ -40,6 +43,10 @@ cpSync(marketing, dist, {
   filter: (source) => !source.endsWith(".ts"),
 });
 cpSync(docsBuild, join(dist, "docs"), { recursive: true });
+cpSync(designSystem, join(dist, "design-system"), {
+  recursive: true,
+  filter: (source) => !source.endsWith(".md"),
+});
 
 const result = await Bun.build({
   entrypoints: [join(marketing, "main.ts")],
@@ -56,5 +63,6 @@ if (!result.success) {
 writeFileSync(join(dist, ".nojekyll"), "");
 
 console.log(`Assembled ${dist}`);
-console.log(`  /        <- marketing/`);
-console.log(`  /docs/   <- docs/build/`);
+console.log(`  /                 <- marketing/`);
+console.log(`  /docs/            <- docs/build/`);
+console.log(`  /design-system/   <- design-system/`);

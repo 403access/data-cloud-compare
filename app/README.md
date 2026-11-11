@@ -102,6 +102,8 @@ and `screenshots/report.md`. Scenario names follow the UI state
 
 ## Notes
 
+- The water palette and interactions are distilled into the shared
+  [`../design-system/`](../design-system/) package, with a live component gallery.
 - Caches live under `app/.cache/` and stay compatible with the original schema
   and signatures.
 - The UI intentionally uses the original stylesheet unchanged so every visual

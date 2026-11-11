@@ -6,6 +6,7 @@ on:
     paths:
       - "marketing/**"
       - "docs/**"
+      - "design-system/**"
       - "scripts/assemble-site.ts"
       - ".github/workflows/pages.yml"
       - "package.json"

@@ -7,6 +7,7 @@ export interface WaterSettings {
   caustics: boolean;
   rowMotion: boolean;
   glass: boolean;
+  background: string;
   tone: string;
   speed: string;
   intensity: string;
@@ -21,10 +22,13 @@ export const WATER_DEFAULTS: WaterSettings = {
   caustics: true,
   rowMotion: true,
   glass: true,
+  background: "still",
   tone: "ocean",
   speed: "flowing",
   intensity: "subtle",
 };
+
+const WATER_BACKGROUNDS = ["still", "sea"];
 
 const WATER_TONES: Record<string, string> = {
   lagoon: "85, 240, 224",
@@ -60,6 +64,7 @@ export function readWaterSettings(): WaterSettings {
     caustics: saved.caustics !== false,
     rowMotion: saved.rowMotion !== false,
     glass: saved.glass !== false,
+    background: pick(saved.background, WATER_BACKGROUNDS, WATER_DEFAULTS.background),
     tone: pick(saved.tone, Object.keys(WATER_TONES), WATER_DEFAULTS.tone),
     speed: pick(saved.speed, Object.keys(WATER_SPEEDS), WATER_DEFAULTS.speed),
     intensity: pick(

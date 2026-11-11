@@ -1,5 +1,7 @@
 /* Data Cloud Compare — site interactions */
 
+import { WaterSurface } from "../design-system/water.js";
+
 const doc = document.documentElement;
 doc.classList.add("js");
 
@@ -16,7 +18,7 @@ function syncThemeLabel(): void {
     dark ? "Switch to light theme" : "Switch to dark theme",
   );
   const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
-  if (meta) meta.setAttribute("content", dark ? "#070a11" : "#f6f8fc");
+  if (meta) meta.setAttribute("content", dark ? "#04161f" : "#eef8fb");
 }
 
 if (themeToggle) {
@@ -190,4 +192,18 @@ if (header) {
   };
   onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });
+}
+
+/* --------------------------------------------------------- water current */
+const waterCanvas = document.querySelector<HTMLCanvasElement>("#site-water-fx");
+if (waterCanvas && !reduceMotion) {
+  new WaterSurface(waterCanvas, {
+    tone: doc.dataset.waterTone || "ocean",
+    speed: "flowing",
+    intensity: "subtle",
+    effects: true,
+    drips: true,
+    clickRipples: true,
+    caustics: true,
+  });
 }

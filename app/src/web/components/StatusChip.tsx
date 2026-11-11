@@ -16,7 +16,7 @@ export function StatusChip({ entry, side, provider, withTitle = false }: Props) 
   return (
     <span className={`status-chip st-${entry.status || "unmatched"}`} title={title || undefined}>
       <span className="dot" />
-      <span>{label}</span>
+      <span className="status-chip-label">{label}</span>
     </span>
   );
 }

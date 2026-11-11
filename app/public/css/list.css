@@ -112,6 +112,7 @@
   text-overflow: ellipsis;
 }
 .status-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
+.status-chip-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .st-exact { background: var(--green-bg); color: var(--green); }
 .st-moved, .st-moved_match { background: var(--blue-bg); color: var(--blue); }
 .st-possible { background: var(--amber-bg); color: var(--amber); }
