@@ -5,6 +5,7 @@ export type SortKey = "name" | "type" | "status" | "size" | "modified";
 export type SortDir = "asc" | "desc";
 export type SizeMode = "bytes" | "files" | "both";
 export type ThemeMode = "system" | "light" | "dark" | "water";
+export type SidebarMode = "columns" | "detail" | "source" | "analytics" | null;
 
 export interface FolderAgg {
   total: number;
