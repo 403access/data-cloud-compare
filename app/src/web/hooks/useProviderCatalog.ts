@@ -1,6 +1,6 @@
 /** Provider catalogue bootstrapping and per-provider metadata. */
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getJSON } from "../lib/api";
 import { FALLBACK_PROVIDER, readProviderKey } from "../lib/provider";
 import type { Meta, ProviderCatalog, ProviderInfo } from "../lib/types";
@@ -66,5 +66,23 @@ export function useProviderCatalog(toast: (message: string) => void) {
   const provider = catalog.byKey[providerKey] || FALLBACK_PROVIDER;
   const meta = metaCache[providerKey] || null;
 
-  return { catalog, providerKey, setProviderKey, booted, provider, meta };
+  const providerRef = useRef(provider);
+  providerRef.current = provider;
+  const providerKeyRef = useRef(providerKey);
+  providerKeyRef.current = providerKey;
+
+  const getProvider = useCallback(() => providerRef.current, []);
+  const getProviderKey = useCallback(() => providerKeyRef.current, []);
+
+  return {
+    catalog,
+    providerKey,
+    setProviderKey,
+    booted,
+    provider,
+    meta,
+    providerKeyRef,
+    getProvider,
+    getProviderKey,
+  };
 }

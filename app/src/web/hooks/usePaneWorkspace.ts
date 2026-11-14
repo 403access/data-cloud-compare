@@ -1,6 +1,6 @@
 /** Creates the two panes and wires their shared shell actions. */
 
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { baseOf, parentOf } from "../lib/format";
 import { counterpartTarget } from "../lib/status";
 import { usePane, type PaneApi } from "./usePane";
@@ -12,6 +12,7 @@ export interface PanesRef {
 
 interface Options {
   panesRef: PanesRef;
+  booted: boolean;
   getProvider: () => ProviderInfo;
   getProviderKey: () => string;
   isHidden: () => boolean;
@@ -23,6 +24,7 @@ interface Options {
 
 export function usePaneWorkspace({
   panesRef,
+  booted,
   getProvider,
   getProviderKey,
   isHidden,
@@ -49,6 +51,15 @@ export function usePaneWorkspace({
   const localPane = usePane("local", paneContext);
   const remotePane = usePane("remote", paneContext);
   panesRef.current = { local: localPane, remote: remotePane };
+
+  // Boot: navigate both panes to the provider root once the catalogue is ready.
+  const bootRan = useRef(false);
+  useEffect(() => {
+    if (!booted || bootRan.current) return;
+    bootRan.current = true;
+    void panesRef.current.local?.navigate("", { push: false });
+    void panesRef.current.remote?.navigate("", { push: false });
+  }, [booted, panesRef]);
 
   const revealCounterpart = useCallback(
     async (entry: Entry, side: Side) => {
