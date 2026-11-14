@@ -1,16 +1,16 @@
 /**
  * State and actions for one virtualised pane.
  *
- * This mirrors the legacy imperative Pane class: history, listings, debounced
- * search, status filters, sorting and per-pane selection.
+ * Local state covers history, selection, sorting and search input. Server
+ * responses come from TanStack Query so listings and search results are cached
+ * and deduplicated across panes.
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  SEARCH_MIN,
-} from "../lib/config";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { SEARCH_MIN } from "../lib/config";
+import { listQuery, searchQuery } from "../lib/queries";
 import type { SortDir, SortKey, Side, SizeMode } from "../lib/types";
-import { getJSON } from "../lib/api";
 import { entryType, parentOf, sizeSortValue } from "../lib/format";
 import { statusLabel } from "../lib/status";
 import type {
@@ -18,7 +18,6 @@ import type {
   Entry,
   ListResponse,
   ProviderInfo,
-  SearchResponse,
   Stats,
 } from "../lib/types";
 
@@ -28,9 +27,6 @@ export interface PaneState {
   path: string;
   history: string[];
   hIndex: number;
-  entries: Entry[];
-  results: Entry[];
-  crumbs: Crumb[];
   selected: string | null;
   sort: SortKey;
   dir: SortDir;
@@ -39,15 +35,18 @@ export interface PaneState {
   scope: "all" | "folder";
   statusFilters: Set<string>;
   searchMode: boolean;
-  truncated: boolean;
-  exists: boolean;
-  stats: Stats;
-  loading: boolean;
   scrollResetKey: number;
 }
 
 export interface PaneApi extends PaneState {
   side: Side;
+  entries: Entry[];
+  results: Entry[];
+  crumbs: Crumb[];
+  truncated: boolean;
+  exists: boolean;
+  stats: Stats;
+  loading: boolean;
   currentEntries: () => Entry[];
   baseEntries: () => Entry[];
   selectedEntry: () => Entry | null;
@@ -124,14 +123,12 @@ function sortResults(
   return results;
 }
 
-export function usePane(side: Side, ctx: PaneContext): PaneApi {
+export function usePane(side: Side, ctx: PaneContext, booted: boolean): PaneApi {
+  const queryClient = useQueryClient();
   const [state, setState] = useState<PaneState>({
     path: "",
     history: [""],
     hIndex: 0,
-    entries: [],
-    results: [],
-    crumbs: [],
     selected: null,
     sort: "name",
     dir: "asc",
@@ -140,10 +137,6 @@ export function usePane(side: Side, ctx: PaneContext): PaneApi {
     scope: "all",
     statusFilters: new Set(),
     searchMode: false,
-    truncated: false,
-    exists: true,
-    stats: EMPTY_STATS,
-    loading: false,
     scrollResetKey: 0,
   });
 
@@ -151,7 +144,6 @@ export function usePane(side: Side, ctx: PaneContext): PaneApi {
   stateRef.current = state;
   const ctxRef = useRef(ctx);
   ctxRef.current = ctx;
-  const reqSeq = useRef(0);
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mounted = useRef(true);
 
@@ -163,17 +155,124 @@ export function usePane(side: Side, ctx: PaneContext): PaneApi {
     };
   }, []);
 
-  const currentEntries = useCallback((): Entry[] => {
-    const current = stateRef.current;
-    const base = current.searchMode ? current.results : current.entries;
-    if (!current.statusFilters.size) return base;
-    return base.filter((entry) => current.statusFilters.has(entry.status));
+  const setPaneState = useCallback((updater: (prev: PaneState) => PaneState) => {
+    const next = updater(stateRef.current);
+    stateRef.current = next;
+    setState(next);
   }, []);
 
-  const baseEntries = useCallback((): Entry[] => {
+  const providerKey = ctx.getProviderKey();
+  const hidden = ctx.isHidden();
+  const sizeMode = ctx.getSizeMode();
+
+  const listResult = useQuery({
+    ...listQuery({
+      side,
+      providerKey,
+      path: state.path,
+      sort: state.sort,
+      dir: state.dir,
+      sizeMode,
+      hidden,
+    }),
+    enabled: booted && !state.searchMode,
+  });
+  const searchResult = useQuery({
+    ...searchQuery({
+      side,
+      providerKey,
+      query: state.query,
+      scope: state.scope,
+      path: state.path,
+      hidden,
+    }),
+    enabled: booted && state.searchMode && state.query.length >= SEARCH_MIN,
+  });
+
+  const listEntries = listResult.isError ? [] : listResult.data?.entries ?? [];
+  const results = useMemo(
+    () =>
+      searchResult.data
+        ? sortResults(
+            [...searchResult.data.entries],
+            state.sort,
+            state.dir,
+            sizeMode,
+          )
+        : [],
+    [searchResult.data, state.sort, state.dir, sizeMode],
+  );
+  const crumbs = listResult.data?.crumbs || [];
+  const stats = listResult.data?.stats || EMPTY_STATS;
+  const truncated = state.searchMode
+    ? (searchResult.data?.truncated ?? false)
+    : false;
+  const exists = listResult.isError ? false : listResult.data?.exists !== false;
+  const loading = state.searchMode
+    ? searchResult.isFetching
+    : listResult.isFetching;
+
+  // Reset the list scroll whenever a fresh listing or search result arrives.
+  const listData = listResult.data;
+  const searchData = searchResult.data;
+  useEffect(() => {
+    if (!listData && !searchData) return;
+    setPaneState((prev) => ({
+      ...prev,
+      scrollResetKey: prev.scrollResetKey + 1,
+    }));
+  }, [listData, searchData, setPaneState]);
+
+  // Drop the selection when it is no longer visible in the active result set.
+  const listReady = listData !== undefined && !listResult.isPlaceholderData;
+  const searchReady = searchData !== undefined && !searchResult.isPlaceholderData;
+  const selectionReady = state.searchMode
+    ? searchReady
+    : listReady || listResult.isError;
+  useEffect(() => {
+    if (!selectionReady) return;
+    setPaneState((prev) => {
+      if (!prev.selected) return prev;
+      const entries = prev.searchMode ? results : listEntries;
+      const visible = entries.some(
+        (entry) =>
+          entry.path === prev.selected &&
+          (!prev.statusFilters.size || prev.statusFilters.has(entry.status)),
+      );
+      return visible ? prev : { ...prev, selected: null };
+    });
+  }, [selectionReady, results, listEntries, state.searchMode, state.statusFilters, setPaneState]);
+
+  useEffect(() => {
+    if (!listResult.isError || !listResult.error) return;
+    if (!mounted.current) return;
+    const message =
+      listResult.error instanceof Error
+        ? listResult.error.message
+        : String(listResult.error);
+    ctxRef.current.toast(message);
+  }, [listResult.isError, listResult.error]);
+
+  useEffect(() => {
+    if (!searchResult.isError || !searchResult.error) return;
+    if (!mounted.current) return;
+    const message =
+      searchResult.error instanceof Error
+        ? searchResult.error.message
+        : String(searchResult.error);
+    ctxRef.current.toast(`Search failed: ${message}`);
+  }, [searchResult.isError, searchResult.error]);
+
+  const currentEntries = useCallback((): Entry[] => {
     const current = stateRef.current;
-    return current.searchMode ? current.results : current.entries;
-  }, []);
+    const base = current.searchMode ? results : listEntries;
+    if (!current.statusFilters.size) return base;
+    return base.filter((entry) => current.statusFilters.has(entry.status));
+  }, [listEntries, results]);
+
+  const baseEntries = useCallback((): Entry[] => {
+    return stateRef.current.searchMode ? results : listEntries;
+  }, [listEntries, results]);
 
   const selectedEntry = useCallback((): Entry | null => {
     const selected = stateRef.current.selected;
@@ -181,65 +280,29 @@ export function usePane(side: Side, ctx: PaneContext): PaneApi {
     return currentEntries().find((entry) => entry.path === selected) ?? null;
   }, [currentEntries]);
 
-  const fetchList = useCallback(async (pathOverride?: string) => {
-    const seq = ++reqSeq.current;
-    const current = stateRef.current;
-    const path = pathOverride ?? current.path;
-    const { getProviderKey, isHidden, getSizeMode } = ctxRef.current;
-    setState((prev) => ({ ...prev, loading: true }));
-    const url =
-      `/api/list?side=${side}` +
-      `&provider=${encodeURIComponent(getProviderKey())}` +
-      `&path=${encodeURIComponent(path)}` +
-      `&sort=${current.sort}&dir=${current.dir}` +
-      `&sizemode=${getSizeMode()}` +
-      `&hidden=${isHidden() ? 1 : 0}`;
-    try {
-      const data = await getJSON<ListResponse>(url);
-      if (seq !== reqSeq.current || !mounted.current) return null;
-      setState((prev) => {
-        const entries = data.entries || [];
-        let selected = prev.selected;
-        if (selected) {
-          const visible = prev.statusFilters.size
-            ? entries.some(
-                (entry) =>
-                  entry.path === selected && prev.statusFilters.has(entry.status),
-              )
-            : entries.some((entry) => entry.path === selected);
-          if (!visible) selected = null;
-        }
-        return {
-          ...prev,
-          path,
-          entries,
-          stats: data.stats || EMPTY_STATS,
-          exists: data.exists !== false,
-          crumbs: data.crumbs || [],
-          selected,
-          scrollResetKey: prev.scrollResetKey + 1,
-        };
-      });
-      return data;
-    } catch (error) {
-      if (seq === reqSeq.current && mounted.current) {
-        setState((prev) => ({
-          ...prev,
-          entries: [],
-          exists: false,
-          selected: null,
-          scrollResetKey: prev.scrollResetKey + 1,
-        }));
-        const message = error instanceof Error ? error.message : String(error);
-        ctxRef.current.toast(message);
+  const fetchList = useCallback(
+    async (pathOverride?: string): Promise<ListResponse | null> => {
+      const current = stateRef.current;
+      const path = pathOverride ?? current.path;
+      const { getProviderKey, isHidden, getSizeMode } = ctxRef.current;
+      try {
+        return await queryClient.fetchQuery(
+          listQuery({
+            side,
+            providerKey: getProviderKey(),
+            path,
+            sort: current.sort,
+            dir: current.dir,
+            sizeMode: getSizeMode(),
+            hidden: isHidden(),
+          }),
+        );
+      } catch {
+        return null;
       }
-      return null;
-    } finally {
-      if (seq === reqSeq.current && mounted.current) {
-        setState((prev) => ({ ...prev, loading: false }));
-      }
-    }
-  }, [side]);
+    },
+    [queryClient, side],
+  );
 
   const navigate = useCallback(
     async (
@@ -260,7 +323,7 @@ export function usePane(side: Side, ctx: PaneContext): PaneApi {
           hIndex = history.length - 1;
         }
       }
-      setState((prev) => ({
+      setPaneState((prev) => ({
         ...prev,
         path,
         history,
@@ -269,20 +332,18 @@ export function usePane(side: Side, ctx: PaneContext): PaneApi {
         searchMode: false,
         query: "",
         searchText: "",
-        results: [],
-        truncated: false,
       }));
       return fetchList(path);
     },
-    [fetchList],
+    [fetchList, setPaneState],
   );
 
   const resetTo = useCallback(
     async (path: string): Promise<ListResponse | null> => {
       if (searchTimer.current) clearTimeout(searchTimer.current);
       ctxRef.current.closeDetail();
-      const next: PaneState = {
-        ...stateRef.current,
+      setPaneState((prev) => ({
+        ...prev,
         path,
         history: [path],
         hIndex: 0,
@@ -290,33 +351,27 @@ export function usePane(side: Side, ctx: PaneContext): PaneApi {
         searchMode: false,
         query: "",
         searchText: "",
-        results: [],
-        truncated: false,
-      };
-      stateRef.current = next;
-      setState(next);
+      }));
       return fetchList(path);
     },
-    [fetchList],
+    [fetchList, setPaneState],
   );
 
   const back = useCallback(() => {
     const current = stateRef.current;
     if (current.hIndex <= 0) return;
     const hIndex = current.hIndex - 1;
-    stateRef.current = { ...current, hIndex };
-    setState((prev) => ({ ...prev, hIndex }));
+    setPaneState((prev) => ({ ...prev, hIndex }));
     void navigate(current.history[hIndex], { push: false });
-  }, [navigate]);
+  }, [navigate, setPaneState]);
 
   const forward = useCallback(() => {
     const current = stateRef.current;
     if (current.hIndex >= current.history.length - 1) return;
     const hIndex = current.hIndex + 1;
-    stateRef.current = { ...current, hIndex };
-    setState((prev) => ({ ...prev, hIndex }));
+    setPaneState((prev) => ({ ...prev, hIndex }));
     void navigate(current.history[hIndex], { push: false });
-  }, [navigate]);
+  }, [navigate, setPaneState]);
 
   const up = useCallback(() => {
     const current = stateRef.current;
@@ -334,73 +389,55 @@ export function usePane(side: Side, ctx: PaneContext): PaneApi {
           `${side === "local" ? ctxRef.current.getProvider().label : "local"} side.`,
       );
     }
-  }, [navigate, side]);
-
-  const runSearch = useCallback(async (q: string) => {
-    const seq = ++reqSeq.current;
-    const current = stateRef.current;
-    const { getProviderKey, isHidden } = ctxRef.current;
-    setState((prev) => ({
-      ...prev,
-      searchMode: true,
-      query: q,
-      selected: null,
-      loading: true,
-    }));
-    const url =
-      `/api/search?side=${side}` +
-      `&provider=${encodeURIComponent(getProviderKey())}` +
-      `&q=${encodeURIComponent(q)}` +
-      `&scope=${current.scope}&path=${encodeURIComponent(current.path)}` +
-      `&hidden=${isHidden() ? 1 : 0}`;
-    try {
-      const data = await getJSON<SearchResponse>(url);
-      if (seq !== reqSeq.current || !mounted.current) return;
-      const results = sortResults(
-        data.entries || [],
-        stateRef.current.sort,
-        stateRef.current.dir,
-        ctxRef.current.getSizeMode(),
-      );
-      setState((prev) => ({
-        ...prev,
-        results,
-        truncated: Boolean(data.truncated),
-        scrollResetKey: prev.scrollResetKey + 1,
-      }));
-    } catch (error) {
-      if (seq === reqSeq.current) {
-        const message = error instanceof Error ? error.message : String(error);
-        ctxRef.current.toast(`Search failed: ${message}`);
-      }
-    } finally {
-      if (seq === reqSeq.current && mounted.current) {
-        setState((prev) => ({ ...prev, loading: false }));
-      }
-    }
   }, [side]);
+
+  const runSearch = useCallback(
+    async (q: string): Promise<void> => {
+      const current = stateRef.current;
+      setPaneState((prev) => ({
+        ...prev,
+        searchMode: true,
+        query: q,
+        selected: null,
+      }));
+      const { getProviderKey, isHidden } = ctxRef.current;
+      try {
+        await queryClient.fetchQuery(
+          searchQuery({
+            side,
+            providerKey: getProviderKey(),
+            query: q,
+            scope: current.scope,
+            path: current.path,
+            hidden: isHidden(),
+          }),
+        );
+      } catch {
+        /* error surfaced by the query state */
+      }
+    },
+    [queryClient, setPaneState, side],
+  );
 
   const exitSearch = useCallback(
     (reload: boolean) => {
       const wasSearching = stateRef.current.searchMode;
       if (searchTimer.current) clearTimeout(searchTimer.current);
-      setState((prev) => ({
+      setPaneState((prev) => ({
         ...prev,
         searchMode: false,
         query: "",
-        results: [],
-        truncated: false,
         searchText: "",
       }));
       if (reload && wasSearching) void fetchList();
     },
-    [fetchList],
+    [fetchList, setPaneState],
   );
 
   const onSearchInput = useCallback(
     (value: string) => {
       const q = value.trim();
-      setState((prev) => ({ ...prev, searchText: value }));
+      setPaneState((prev) => ({ ...prev, searchText: value }));
       if (searchTimer.current) clearTimeout(searchTimer.current);
       if (!q) {
         if (stateRef.current.searchMode) {
@@ -418,7 +455,7 @@ export function usePane(side: Side, ctx: PaneContext): PaneApi {
       }
       searchTimer.current = setTimeout(() => void runSearch(q), 260);
     },
-    [exitSearch, runSearch],
+    [exitSearch, fetchList, runSearch, setPaneState],
   );
 
   const clearSearch = useCallback(() => {
@@ -429,29 +466,17 @@ export function usePane(side: Side, ctx: PaneContext): PaneApi {
 
   const setScope = useCallback(
     (scope: "all" | "folder") => {
-      stateRef.current = { ...stateRef.current, scope };
-      setState((prev) => ({ ...prev, scope }));
+      setPaneState((prev) => ({ ...prev, scope }));
       const current = stateRef.current;
       if (current.searchMode && current.query) void runSearch(current.query);
     },
-    [runSearch],
+    [runSearch, setPaneState],
   );
 
   const refreshSizeDisplay = useCallback(() => {
     const current = stateRef.current;
-    if (current.searchMode) {
-      setState((prev) => ({
-        ...prev,
-        results: sortResults(
-          [...prev.results],
-          prev.sort,
-          prev.dir,
-          ctxRef.current.getSizeMode(),
-        ),
-      }));
-    } else if (current.sort === "size") {
-      void fetchList();
-    }
+    if (current.searchMode) return;
+    if (current.sort === "size") void fetchList();
   }, [fetchList]);
 
   const setSort = useCallback(
@@ -459,29 +484,17 @@ export function usePane(side: Side, ctx: PaneContext): PaneApi {
       const current = stateRef.current;
       const nextDir: SortDir =
         dir ?? (current.sort === sort ? (current.dir === "asc" ? "desc" : "asc") : "asc");
-      stateRef.current = { ...current, sort, dir: nextDir };
-      setState((prev) => {
-        if (!prev.searchMode) return { ...prev, sort, dir: nextDir };
-        return {
-          ...prev,
-          sort,
-          dir: nextDir,
-          results: sortResults(
-            [...prev.results],
-            sort,
-            nextDir,
-            ctxRef.current.getSizeMode(),
-          ),
-        };
-      });
-      if (!current.searchMode) void fetchList();
+      setPaneState((prev) => ({ ...prev, sort, dir: nextDir }));
     },
-    [fetchList],
+    [setPaneState],
   );
 
-  const select = useCallback((path: string | null) => {
-    setState((prev) => ({ ...prev, selected: path || null }));
-  }, []);
+  const select = useCallback(
+    (path: string | null) => {
+      setPaneState((prev) => ({ ...prev, selected: path || null }));
+    },
+    [setPaneState],
+  );
 
   const activate = useCallback(
     (entry: Entry) => {
@@ -531,33 +544,35 @@ export function usePane(side: Side, ctx: PaneContext): PaneApi {
       .join(", ");
   }, [activeStatusFilters, side]);
 
-  const toggleStatusFilter = useCallback((status: string) => {
-    setState((prev) => {
-      const next = new Set(prev.statusFilters);
-      if (next.has(status)) next.delete(status);
-      else next.add(status);
-      let selected = prev.selected;
-      if (selected) {
-        const entries = prev.searchMode ? prev.results : prev.entries;
-        const visible = entries.some(
-          (entry) => entry.path === selected && next.has(entry.status),
-        );
-        if (next.size && !visible) selected = null;
-      }
-      return { ...prev, statusFilters: next, selected };
-    });
-  }, []);
+  const toggleStatusFilter = useCallback(
+    (status: string) => {
+      setPaneState((prev) => {
+        const next = new Set(prev.statusFilters);
+        if (next.has(status)) next.delete(status);
+        else next.add(status);
+        return { ...prev, statusFilters: next };
+      });
+    },
+    [setPaneState],
+  );
 
   const clearStatusFilters = useCallback(() => {
-    setState((prev) => {
+    setPaneState((prev) => {
       if (!prev.statusFilters.size) return prev;
-      return { ...prev, statusFilters: new Set(), selected: prev.selected };
+      return { ...prev, statusFilters: new Set() };
     });
-  }, []);
+  }, [setPaneState]);
 
   return {
     ...state,
     side,
+    entries: listEntries,
+    results,
+    crumbs,
+    truncated,
+    exists,
+    stats,
+    loading,
     currentEntries,
     baseEntries,
     selectedEntry,

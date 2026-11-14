@@ -1,9 +1,10 @@
 /** The ⌘K command bar: fuzzy commands plus a cross-pane file search. */
 
 import { Fragment, useEffect, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { BASE, SEARCH_MIN } from "../lib/config";
 import { COLUMN_DEFS } from "../lib/columns";
-import { getJSON } from "../lib/api";
+import { searchQuery } from "../lib/queries";
 import { baseOf, entryType, fmtBytes, parentOf } from "../lib/format";
 import { commandIcon, iconFor } from "../lib/icons";
 import { counterpartTarget, statusLabel } from "../lib/status";
@@ -159,6 +160,7 @@ export function CommandBar(props: Props) {
     columns,
   } = props;
 
+  const queryClient = useQueryClient();
   const [mounted, setMounted] = useState(open);
   const [isOpen, setIsOpen] = useState(open);
   const [query, setQuery] = useState("");
@@ -605,16 +607,18 @@ export function CommandBar(props: Props) {
   }
 
   async function searchFiles(search: string, seq: number): Promise<void> {
-    const url = (side: Side) =>
-      `/api/search?side=${side}` +
-      `&provider=${encodeURIComponent(provider.key)}` +
-      `&q=${encodeURIComponent(search)}` +
-      `&scope=all&path=` +
-      `&hidden=${hidden ? 1 : 0}`;
+    const params = (side: Side) => ({
+      side,
+      providerKey: provider.key,
+      query: search,
+      scope: "all" as const,
+      path: "",
+      hidden,
+    });
     try {
       const [local, remote] = await Promise.allSettled([
-        getJSON(url("local")),
-        getJSON(url("remote")),
+        queryClient.fetchQuery(searchQuery(params("local"))),
+        queryClient.fetchQuery(searchQuery(params("remote"))),
       ]);
       if (seq !== requestSeq.current) return;
       setFiles({

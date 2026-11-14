@@ -48,8 +48,8 @@ export function usePaneWorkspace({
       (side === "local" ? panesRef.current.remote : panesRef.current.local)!,
   };
 
-  const localPane = usePane("local", paneContext);
-  const remotePane = usePane("remote", paneContext);
+  const localPane = usePane("local", paneContext, booted);
+  const remotePane = usePane("remote", paneContext, booted);
   panesRef.current = { local: localPane, remote: remotePane };
 
   // Boot: navigate both panes to the provider root once the catalogue is ready.
