@@ -10,8 +10,10 @@ The repository also contains the product's public sites:
 - **Documentation:** [`docs/`](docs/) — Docusaurus, deployed under `/docs/`.
 - **Design system:** [`design-system/`](design-system/) — the water theme's tokens,
   components, effects, and an interactive component gallery at `/design-system/`.
+- **Live demo:** [`app/`](app/) — the explorer UI running on a generated synthetic dataset,
+  assembled into `/demo/` with no server or SQLite.
 
-All three are assembled into one GitHub Pages artifact by
+All four are assembled into one GitHub Pages artifact by
 [`.github/workflows/pages.yml`](.github/workflows/pages.yml).
 
 ## What it does
@@ -64,6 +66,7 @@ provider setup, and troubleshooting.
 | Marketing | `marketing/` | `npm run build && npm run preview` |
 | Docs | `docs/docs/` | `npm run dev:docs` |
 | Design system | `design-system/` | `npm run preview` (after a build) |
+| Live demo | `app/` + `scripts/build-demo.ts` | `npm run build && npm run preview` |
 
 Build the combined Pages artifact:
 
@@ -87,6 +90,7 @@ The workflow derives the Pages origin and base path, builds Docusaurus with the 
 
 ```text
 scripts/compare.ts               comparison engine + report writer
+scripts/build-demo.ts            deterministic synthetic data for the static demo
 scripts/fetch_google_drive.sh    Google Drive snapshot + comparison
 scripts/assemble-site.ts         combined Pages artifact builder
 app/                             virtual two-pane explorer (Bun + React + TypeScript)

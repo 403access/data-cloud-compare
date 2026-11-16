@@ -6,19 +6,22 @@ description: How the marketing site and these docs are built and deployed togeth
 
 # Deploying the site
 
-The marketing site and the documentation are two static sites deployed together as **one
-GitHub Pages artifact**:
+The marketing site, the documentation, the design-system gallery, and a read-only demo are
+deployed together as **one GitHub Pages artifact**:
 
 | Path | Source | Served at |
 | --- | --- | --- |
 | `/` | `marketing/` | The marketing landing page. |
 | `/docs/` | `docs/` (Docusaurus build) | This documentation. |
+| `/design-system/` | `design-system/` | The component gallery. |
+| `/demo/` | `app/` + `scripts/build-demo.ts` | The explorer on synthetic data. |
 
 For a project repository named `data-cloud-compare` under the `403access` account, the
 deployed URLs are:
 
 - Marketing: `https://403access.github.io/data-cloud-compare/`
 - Docs: `https://403access.github.io/data-cloud-compare/docs/`
+- Demo: `https://403access.github.io/data-cloud-compare/demo/`
 
 For a `<user>.github.io` repository or a custom domain, the repository segment disappears
 and the docs stay at `/docs/`.
@@ -39,7 +42,11 @@ Steps:
 6. Install docs dependencies with `npm ci`.
 7. Build Docusaurus with the derived base URL.
 8. Assemble `dist/`: copy the marketing files, compile `marketing/main.ts` to
-   `dist/main.js`, and copy `docs/build/` to `dist/docs/`.
+   `dist/main.js`, copy `docs/build/` to `dist/docs/`, copy the design system, and build
+   the static demo. The demo compiles the explorer bundle, generates
+   `dist/demo/demo-data.json` from `scripts/build-demo.ts`, and injects
+   `window.__DCA_DEMO__` so the client answers `/api/*` from that dataset instead of a
+   server.
 9. Upload the Pages artifact and deploy it.
 
 The assembly script also writes `.nojekyll` so Pages serves the files directly.

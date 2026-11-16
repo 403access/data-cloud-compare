@@ -15,15 +15,3 @@ export const BASE = "/mnt/tank";
 export const LOCAL_DB = resolve(ROOT, "file_indexer.db");
 export const SEARCH_LIMIT = 400;
 export const SIZE_MODES = ["bytes", "files", "both"] as const;
-
-export const STATUS_ORDER: Record<string, number> = {
-  missing: 0,
-  partial: 1,
-  possible: 2,
-  moved: 3,
-  moved_match: 3,
-  type_mismatch: 4,
-  exact: 5,
-  local_only: 6,
-  unmatched: 7,
-};

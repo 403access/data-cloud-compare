@@ -45,6 +45,22 @@ The first start builds the provider caches, folder-size indexes and compact
 search indexes in `app/.cache/` (git-ignored). Later starts reuse them. Add
 `--rebuild` after regenerating a snapshot, report or the local index.
 
+## Static demo
+
+The public site ships the same client at `/demo/` with no server behind it. The
+marketing site links there, and `scripts/assemble-site.ts` builds it during the
+Pages deployment:
+
+```bash
+npm run build     # docs + assemble dist/, including dist/demo/
+npm run preview   # http://localhost:4173/demo/
+```
+
+`scripts/build-demo.ts` generates a deterministic synthetic dataset covering
+both providers and every verdict. The demo `index.html` sets
+`window.__DCA_DEMO__`, and `src/web/lib/demo.ts` answers the four `/api/*`
+requests from that dataset. No SQLite, archive, or index file is involved.
+
 ## Google Drive
 
 Google Drive uses the versioned snapshots written by
@@ -71,7 +87,9 @@ app/
     components/       app bar, panes, command bar, status bar
     hooks/usePane.ts  pane state, navigation, search and filters
     panels/           columns, theme, detail, source, analytics sidebars
-    lib/              API client, formatting, icons, water effects
+    lib/              API client, demo dataset adapter, formatting, icons
+  src/shared/
+    entry.ts          pure path/status/sorting helpers shared with the server
   public/
     index.html        static document shell (theme bootstrap + CSS links)
     style.css/css/    stylesheet, preserved from the original explorer

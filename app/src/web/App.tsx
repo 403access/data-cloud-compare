@@ -11,6 +11,7 @@ import { useProviderSwitch } from "./hooks/useProviderSwitch";
 import { useThemeMode } from "./hooks/useThemeMode";
 import { useToast } from "./hooks/useToast";
 import { useWaterSettings } from "./hooks/useWaterSettings";
+import { isDemo } from "./lib/demo";
 import { AppBar } from "./components/AppBar";
 import { CommandBar } from "./components/CommandBar";
 import { PanePair } from "./components/PanePair";
@@ -71,7 +72,7 @@ export function App() {
   const currentProvider = provider;
 
   useEffect(() => {
-    document.title = `Tank ⇄ ${currentProvider.label}`;
+    document.title = `${isDemo() ? "Demo · " : ""}Tank ⇄ ${currentProvider.label}`;
   }, [currentProvider.label]);
 
   // Close the details sidebar when the active selection disappears.

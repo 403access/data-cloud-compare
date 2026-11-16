@@ -44,6 +44,8 @@ added with a small provider definition.
   SHA-256, so the reference workflow matches on path, name, and size. Read
   [the matching model](/concepts/matching) before treating a result as proof.
 - **Not a hosted service.** The explorer binds to `127.0.0.1` and reads local files only.
+  The live demo linked from the marketing site runs the same interface on synthetic data
+  in your browser; it cannot read or upload your files.
 - **Not a backup.** It verifies the relationship between two existing records.
 
 ## How a comparison runs

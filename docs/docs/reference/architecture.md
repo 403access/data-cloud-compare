@@ -35,6 +35,7 @@ and no write path into the user's archive.
 │   │   └── lib/                API client, formatting, icons, water effects
 │   ├── public/                 HTML shell and styles (generated JS in public/js/)
 │   └── .cache/                 generated SQLite and search indexes
+├── scripts/build-demo.ts       deterministic synthetic dataset for the static demo
 ├── run.command                 macOS double-click launcher
 ├── tools/screenshots/          reference screenshots + rendering comparison
 ├── report/                     Jottacloud outputs
@@ -184,7 +185,8 @@ comparison is deterministic. See
 
 ## Deployment
 
-The marketing site and these docs are static builds assembled into one GitHub Pages
-artifact. The workflow builds Docusaurus with a base URL derived from the Pages
-configuration, copies it under `docs/`, and places the marketing files at the root. See
+The marketing site, these docs, the design-system gallery, and a read-only demo built
+from synthetic data are assembled into one GitHub Pages artifact. The workflow builds
+Docusaurus with a base URL derived from the Pages configuration, copies it under `docs/`,
+places the marketing files at the root, and builds the demo under `demo/`. See
 [Deploying the site](/contributing/deploying-the-site).

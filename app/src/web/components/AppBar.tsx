@@ -1,6 +1,7 @@
 /** App bar: brand, provider switch, search trigger, legend, theme controls. */
 
 import type { ProviderInfo, ThemeMode } from "../lib/types";
+import { isDemo } from "../lib/demo";
 
 const BRAND_ICON = `<svg viewBox="0 0 32 32" fill="none">
   <rect x="2" y="7" width="12" height="18" rx="3" fill="var(--brand-a)"/>
@@ -141,8 +142,20 @@ export function AppBar({
         <div className="brand-text">
           <h1>
             Tank <span className="arrow">⇄</span> <span id="brand-provider">{provider.label}</span>
+            {isDemo() ? (
+              <>
+                {" "}
+                <span className="demo-badge" title="Synthetic data, served from this page">
+                  Demo
+                </span>
+              </>
+            ) : null}
           </h1>
-          <p id="brand-sub">Two-pane filesystem explorer</p>
+          <p id="brand-sub">
+            {isDemo()
+              ? "Synthetic snapshot · nothing leaves this page"
+              : "Two-pane filesystem explorer"}
+          </p>
         </div>
       </div>
 
