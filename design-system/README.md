@@ -169,6 +169,13 @@ of the real explorer application.
   agenda). All three are also in the Window menu and command bar. Tray and app
   share in-session state, so joining a network or changing an energy mode is
   reflected in both.
+- The menu bar also carries three resource meters: CPU usage, RAM usage, and
+  free storage in GB. They are computed from the Task Manager's process table,
+  update with each sample, and open the Task Manager when clicked. The group
+  hides below 1100px so the remaining tray items keep their space.
+- **Task Manager** shows CPU, memory, and storage cards above a process table.
+  It samples every six seconds (or on demand), updates rows in place, and lets
+  you select and end a process, which recalculates the totals and meters.
 - Appearance preferences use the same storage keys as the app
   (`explorer-theme`, `explorer-water-settings`, `explorer-provider`) and also
   write `dcc-design-prefs` so the gallery follows the same tone and theme.

@@ -4382,14 +4382,17 @@ body.os code { font-family: var(--ds-font-mono); }
   font-weight: 650;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .os-tm-card header b {
+  flex: none;
   color: var(--ds-text);
   font-size: 16px;
   font-weight: 720;
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .os-tm-meter {
