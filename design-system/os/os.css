@@ -1919,14 +1919,6 @@ body.os code { font-family: var(--ds-font-mono); }
   background: var(--ds-line-strong);
 }
 
-.os-dock__hint {
-  margin: 0;
-  color: var(--ds-text-3);
-  font-size: 9px;
-  text-shadow: 0 1px 8px rgba(0, 8, 14, 0.6);
-  white-space: nowrap;
-}
-
 /* -------------------------------------------------------- command overlay */
 
 .os-overlay {
@@ -2075,7 +2067,7 @@ body.os code { font-family: var(--ds-font-mono); }
   .os-dock__item { width: 40px; height: 40px; }
   .os-dock__tile { width: 33px; height: 33px; }
   .os-dock__tile .icon { width: 16px; height: 16px; }
-  .os-dock__hint { display: none; }
+  
   .os-toast-host { right: 12px; bottom: 78px; }
 }
 
@@ -2093,7 +2085,7 @@ body.os code { font-family: var(--ds-font-mono); }
   .os-widget__time { font-size: 1.6rem; }
   .os-dock__item { width: 36px; height: 36px; }
   .os-dock__tile { width: 29px; height: 29px; border-radius: 8px; }
-  .os-dock__hint { display: none; }
+  
   .os-player { gap: 10px; padding: 10px; }
   .os-player__art { width: 82px; height: 82px; }
   .os-about { padding: 16px; }
