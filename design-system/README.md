@@ -158,6 +158,17 @@ of the real explorer application.
 - The command bar mirrors the app's command catalog and file search: Navigation,
   Search, View, Columns, Sort, Filters, Appearance, and Provider groups, `>`
   commands-only mode, fuzzy matching, and local/remote file results.
+- Menu bar tray items open their own popovers: Wi-Fi (current network, known
+  networks, signal strength, VPN), Battery (level, time, energy mode, low-power
+  mode), Sound (volume, mute, output, now playing), and Calendar (month grid,
+  event dots, day selection). One shared controller keeps a single panel open
+  and closes it on outside click, `Esc`, a menu, or the command bar.
+- Each popover opens a dedicated system app: **Network** (Wi-Fi/VPN switches,
+  networks, connection details), **Battery** (charge gauge, energy and charging
+  controls, health, consumers), and **Calendar** (month navigation and a day
+  agenda). All three are also in the Window menu and command bar. Tray and app
+  share in-session state, so joining a network or changing an energy mode is
+  reflected in both.
 - Appearance preferences use the same storage keys as the app
   (`explorer-theme`, `explorer-water-settings`, `explorer-provider`) and also
   write `dcc-design-prefs` so the gallery follows the same tone and theme.
@@ -165,7 +176,7 @@ of the real explorer application.
   tokens.
 - Keyboard: `⌘K` / `Ctrl K` opens the command bar, `⌘F` focuses the explorer
   search, `⌘1` / `⌘2` focus a pane, `⌘,` opens water settings, and `Esc`
-  closes menus and overlays.
+  closes tray panels, menus, and overlays.
 
 ## Files
 
