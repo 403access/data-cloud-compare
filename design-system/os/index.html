@@ -168,6 +168,7 @@
               <button type="button" role="menuitem" data-cmd="open-settings"><svg class="icon"><use href="#i-drop"/></svg>Water settings</button>
               <button type="button" role="menuitem" data-cmd="open-network"><svg class="icon"><use href="#i-globe"/></svg>Network</button>
               <button type="button" role="menuitem" data-cmd="open-battery"><svg class="icon"><use href="#i-battery"/></svg>Battery</button>
+              <button type="button" role="menuitem" data-cmd="open-calendar"><svg class="icon"><use href="#i-calendar"/></svg>Calendar</button>
               <button type="button" role="menuitem" data-cmd="open-terminal"><svg class="icon"><use href="#i-terminal"/></svg>Terminal</button>
               <button type="button" role="menuitem" data-cmd="open-music"><svg class="icon"><use href="#i-volume"/></svg>Tide Radio</button>
               <button type="button" role="menuitem" data-cmd="open-shortcuts"><svg class="icon"><use href="#i-keyboard"/></svg>Keyboard shortcuts</button>
@@ -281,8 +282,11 @@
             <div class="os-calendar__weekdays" data-calendar-weekdays aria-hidden="true"></div>
             <div class="os-calendar__grid" data-calendar-grid role="group" aria-label="Days"></div>
             <footer class="os-calendar__foot">
-              <button class="os-calendar__today-btn" type="button" data-calendar-today-btn>Today</button>
               <span data-calendar-selected>Today · Tue 17 Nov</span>
+              <span class="os-calendar__foot-actions">
+                <button class="os-calendar__today-btn" type="button" data-calendar-today-btn>Today</button>
+                <button class="os-calendar__open" type="button" data-calendar-open-app>Open Calendar…</button>
+              </span>
             </footer>
           </div>
         </div>
@@ -824,6 +828,44 @@
               <span class="os-consumer__bar" aria-hidden="true"><i style="--value:9%"></i></span>
             </div>
           </section>
+        </div>
+      </section>
+
+      <!-- ------------------------------------------------------------- calendar -->
+      <section class="os-window os-window--calendar" id="win-calendar" data-window="calendar" data-title="Calendar" role="dialog" aria-label="Calendar" tabindex="-1" hidden>
+        <header class="os-titlebar" data-drag-handle>
+          <div class="os-lights">
+            <button class="os-light os-light--close" type="button" data-window-action="close" aria-label="Close Calendar" title="Close"></button>
+            <button class="os-light os-light--min" type="button" data-window-action="minimize" aria-label="Minimise Calendar" title="Minimise"></button>
+            <button class="os-light os-light--max" type="button" data-window-action="maximize" aria-label="Maximise Calendar" title="Maximise"></button>
+          </div>
+          <div class="os-titlebar__title">
+            <span class="os-app-mark os-app-mark--calendar"><svg class="icon"><use href="#i-calendar"/></svg></span>
+            <b>Calendar</b>
+            <span class="os-titlebar__sub">Month and agenda</span>
+          </div>
+          <div class="os-titlebar__actions">
+            <span class="ds-badge ds-badge--muted" data-calendar-app-badge><span class="ds-dot"></span><span data-calendar-app-badge-text>Today</span></span>
+          </div>
+        </header>
+        <div class="os-calendar-app">
+          <section class="os-calendar-app__month" aria-label="Month">
+            <header class="os-calendar-app__toolbar">
+              <button class="os-calendar-app__nav" type="button" data-calendar-app-prev aria-label="Previous month"><svg class="icon"><use href="#i-chevron-left"/></svg></button>
+              <h2 data-calendar-app-month>November 2026</h2>
+              <button class="os-calendar-app__nav" type="button" data-calendar-app-next aria-label="Next month"><svg class="icon"><use href="#i-chevron-right"/></svg></button>
+              <button class="os-calendar-app__today" type="button" data-calendar-app-today>Today</button>
+            </header>
+            <div class="os-calendar-app__weekdays" data-calendar-app-weekdays aria-hidden="true"></div>
+            <div class="os-calendar-app__grid" data-calendar-app-grid role="group" aria-label="Days"></div>
+          </section>
+          <aside class="os-calendar-app__agenda" aria-label="Agenda">
+            <header class="os-agenda__head">
+              <span class="os-agenda__date" data-calendar-app-selected>Tuesday, 17 November</span>
+              <b class="os-agenda__clock" data-calendar-app-time>09:41</b>
+            </header>
+            <div class="os-agenda__events" data-calendar-app-events></div>
+          </aside>
         </div>
       </section>
 
