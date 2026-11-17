@@ -167,6 +167,7 @@
               <button type="button" role="menuitem" data-cmd="open-explorer"><svg class="icon"><use href="#i-folder"/></svg>Explorer</button>
               <button type="button" role="menuitem" data-cmd="open-settings"><svg class="icon"><use href="#i-drop"/></svg>Water settings</button>
               <button type="button" role="menuitem" data-cmd="open-network"><svg class="icon"><use href="#i-globe"/></svg>Network</button>
+              <button type="button" role="menuitem" data-cmd="open-battery"><svg class="icon"><use href="#i-battery"/></svg>Battery</button>
               <button type="button" role="menuitem" data-cmd="open-terminal"><svg class="icon"><use href="#i-terminal"/></svg>Terminal</button>
               <button type="button" role="menuitem" data-cmd="open-music"><svg class="icon"><use href="#i-volume"/></svg>Tide Radio</button>
               <button type="button" role="menuitem" data-cmd="open-shortcuts"><svg class="icon"><use href="#i-keyboard"/></svg>Keyboard shortcuts</button>
@@ -221,9 +222,43 @@
             </footer>
           </div>
         </div>
-        <span class="os-status os-status--icon" title="Battery 78%" aria-label="Battery 78%">
-          <svg class="icon"><use href="#i-battery"/></svg><span class="os-status__value">78%</span>
-        </span>
+        <div class="os-tray-wrap">
+          <button class="os-status os-status--icon" type="button" data-tray-toggle="battery" aria-haspopup="dialog" aria-expanded="false" title="Battery 78%" aria-label="Battery">
+            <svg class="icon"><use href="#i-battery"/></svg><span class="os-status__value" data-battery-tray-value>78%</span>
+          </button>
+          <div class="os-tray os-tray--battery" data-tray="battery" hidden role="dialog" aria-label="Battery" tabindex="-1">
+            <header class="os-tray__head">
+              <span class="os-tray__title"><svg class="icon"><use href="#i-battery"/></svg><b>Battery</b></span>
+              <span class="os-tray__state" data-battery-state>On battery</span>
+            </header>
+            <div class="os-battery-summary">
+              <div class="os-battery-figure" data-battery-level-figure>
+                <span class="os-battery-figure__shell" aria-hidden="true"><i data-battery-fill style="width:78%"></i></span>
+                <b data-battery-level>78%</b>
+              </div>
+              <p class="os-battery-time" data-battery-time>About 4h 12m remaining</p>
+            </div>
+            <div class="os-battery-modes">
+              <span class="os-tray__section-title">Energy mode</span>
+              <div class="ds-segmented os-energy-segments" role="group" aria-label="Energy mode">
+                <button class="ds-segment" type="button" data-battery-mode="low" aria-selected="false">Low</button>
+                <button class="ds-segment is-active" type="button" data-battery-mode="balanced" aria-selected="true">Balanced</button>
+                <button class="ds-segment" type="button" data-battery-mode="high" aria-selected="false">High</button>
+              </div>
+            </div>
+            <label class="os-tray__row">
+              <span class="os-tray__rowtext">
+                <b>Low power mode</b>
+                <small>Reduce background activity.</small>
+              </span>
+              <span class="ds-switch"><input type="checkbox" data-battery-lowpower aria-label="Low power mode"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+            </label>
+            <footer class="os-tray__foot">
+              <span class="os-tray__hint">Health <b data-battery-health-label>96%</b></span>
+              <button class="os-tray__link" type="button" data-cmd="open-battery">Battery Settings…</button>
+            </footer>
+          </div>
+        </div>
         <div class="os-tray-wrap">
           <button class="os-clock" type="button" data-tray-toggle="calendar" aria-haspopup="dialog" aria-expanded="false" aria-label="Calendar">
             <span data-clock-date>Tue 17 Nov</span>
@@ -705,6 +740,89 @@
               <dt>Band</dt><dd data-network-band>5 GHz</dd>
               <dt>Security</dt><dd data-network-security>WPA3</dd>
             </dl>
+          </section>
+        </div>
+      </section>
+
+      <!-- -------------------------------------------------------------- battery -->
+      <section class="os-window os-window--battery" id="win-battery" data-window="battery" data-title="Battery" role="dialog" aria-label="Battery" tabindex="-1" hidden>
+        <header class="os-titlebar" data-drag-handle>
+          <div class="os-lights">
+            <button class="os-light os-light--close" type="button" data-window-action="close" aria-label="Close Battery" title="Close"></button>
+            <button class="os-light os-light--min" type="button" data-window-action="minimize" aria-label="Minimise Battery" title="Minimise"></button>
+            <button class="os-light os-light--max" type="button" data-window-action="maximize" aria-label="Maximise Battery" title="Maximise"></button>
+          </div>
+          <div class="os-titlebar__title">
+            <span class="os-app-mark os-app-mark--battery"><svg class="icon"><use href="#i-battery"/></svg></span>
+            <b>Battery</b>
+            <span class="os-titlebar__sub">Power, health, and energy</span>
+          </div>
+          <div class="os-titlebar__actions">
+            <span class="ds-badge ds-badge--muted" data-battery-app-badge><span class="ds-dot"></span><span data-battery-app-badge-text>On battery</span></span>
+          </div>
+        </header>
+        <div class="os-app-body">
+          <header class="os-app-hero">
+            <span class="os-app-hero__mark os-app-hero__mark--battery"><svg class="icon"><use href="#i-bolt"/></svg></span>
+            <div class="os-app-hero__text">
+              <h2 data-battery-app-level>78%</h2>
+              <p data-battery-app-time>About 4h 12m remaining</p>
+            </div>
+          </header>
+
+          <section class="os-app-section">
+            <div class="os-battery-gauge">
+              <span class="os-battery-gauge__shell" aria-hidden="true"><i data-battery-app-fill style="width:78%"></i></span>
+              <span class="os-battery-gauge__label" data-battery-source>Battery</span>
+            </div>
+          </section>
+
+          <section class="os-app-section">
+            <h3>Energy mode</h3>
+            <div class="ds-segmented os-energy-segments os-energy-segments--full" role="group" aria-label="Energy mode">
+              <button class="ds-segment" type="button" data-battery-mode="low" aria-selected="false">Low power</button>
+              <button class="ds-segment is-active" type="button" data-battery-mode="balanced" aria-selected="true">Balanced</button>
+              <button class="ds-segment" type="button" data-battery-mode="high" aria-selected="false">High performance</button>
+            </div>
+            <label class="os-setting-row">
+              <span class="os-setting-row__text"><b>Low power mode</b><small>Reduce background activity when unplugged.</small></span>
+              <span class="ds-switch"><input type="checkbox" data-battery-lowpower aria-label="Low power mode"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+            </label>
+            <label class="os-setting-row">
+              <span class="os-setting-row__text"><b>Optimised charging</b><small>Finish charging closer to when you unplug.</small></span>
+              <span class="ds-switch"><input type="checkbox" data-battery-optimized checked aria-label="Optimised charging"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+            </label>
+          </section>
+
+          <section class="os-app-section">
+            <h3>Battery health</h3>
+            <dl class="os-detail-grid">
+              <dt>Condition</dt><dd>Normal</dd>
+              <dt>Maximum capacity</dt><dd>96%</dd>
+              <dt>Cycle count</dt><dd>214</dd>
+              <dt>Temperature</dt><dd>31 °C</dd>
+              <dt>Charging</dt><dd data-battery-charging>Not charging</dd>
+            </dl>
+          </section>
+
+          <section class="os-app-section">
+            <h3>Largest consumers</h3>
+            <div class="os-consumer">
+              <div class="os-consumer__row"><span>Explorer</span><b>34%</b></div>
+              <span class="os-consumer__bar" aria-hidden="true"><i style="--value:34%"></i></span>
+            </div>
+            <div class="os-consumer">
+              <div class="os-consumer__row"><span>Tide Radio</span><b>21%</b></div>
+              <span class="os-consumer__bar" aria-hidden="true"><i style="--value:21%"></i></span>
+            </div>
+            <div class="os-consumer">
+              <div class="os-consumer__row"><span>Terminal</span><b>12%</b></div>
+              <span class="os-consumer__bar" aria-hidden="true"><i style="--value:12%"></i></span>
+            </div>
+            <div class="os-consumer">
+              <div class="os-consumer__row"><span>WindowServer</span><b>9%</b></div>
+              <span class="os-consumer__bar" aria-hidden="true"><i style="--value:9%"></i></span>
+            </div>
           </section>
         </div>
       </section>

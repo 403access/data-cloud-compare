@@ -555,6 +555,13 @@ body.os code { font-family: var(--ds-font-mono); }
   height: min(600px, calc(100dvh - 150px));
 }
 
+.os-window--battery {
+  top: 66px;
+  left: calc(50% - 245px);
+  width: min(490px, calc(100vw - 32px));
+  height: min(650px, calc(100dvh - 150px));
+}
+
 .os-window--terminal {
   top: 96px;
   left: calc(50% - 268px);
@@ -684,6 +691,7 @@ body.os code { font-family: var(--ds-font-mono); }
 .os-app-mark--terminal { --app: var(--ds-blue); }
 .os-app-mark--music { --app: var(--ds-pink); }
 .os-app-mark--network { --app: var(--ds-accent); }
+.os-app-mark--battery { --app: var(--ds-green); }
 
 .os-icon-button {
   display: inline-grid;
@@ -3967,6 +3975,165 @@ body.os code { font-family: var(--ds-font-mono); }
   color: var(--ds-text-2);
   font-variant-numeric: tabular-nums;
 }
+
+/* -------------------------------------------------------------- battery */
+
+.os-tray--battery { width: 286px; padding: 9px; }
+
+.os-battery-summary { padding: 10px 6px 0; }
+
+.os-battery-figure {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.os-battery-figure__shell {
+  position: relative;
+  width: 58px;
+  height: 25px;
+  padding: 2px;
+  border: 1.5px solid var(--ds-text-2);
+  border-radius: 6px;
+}
+
+.os-battery-figure__shell::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -4px;
+  width: 3px;
+  height: 9px;
+  border-radius: 0 2px 2px 0;
+  background: var(--ds-text-2);
+  transform: translateY(-50%);
+}
+
+.os-battery-figure__shell i {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--ds-green), var(--ds-accent));
+  transition: width var(--ds-motion-base) var(--ds-ease-out);
+}
+
+.os-battery-figure b {
+  color: var(--ds-text);
+  font-size: 20px;
+  font-weight: 720;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.os-battery-time {
+  margin: 6px 0 0;
+  color: var(--ds-text-3);
+  font-size: 9px;
+}
+
+.os-battery-modes {
+  display: grid;
+  gap: 5px;
+  margin-top: 9px;
+  padding: 7px 0 4px;
+  border-top: 1px solid var(--ds-line);
+}
+
+.os-battery-modes .os-tray__section-title { padding-left: 1px; }
+
+.os-energy-segments { width: 100%; }
+.os-energy-segments .ds-segment {
+  flex: 1;
+  justify-content: center;
+  height: 22px;
+  padding: 0 5px;
+  font-size: 8.5px;
+}
+
+.os-energy-segments--full .ds-segment { height: 25px; font-size: 9px; }
+
+.os-battery-gauge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.os-battery-gauge__shell {
+  position: relative;
+  flex: 1;
+  height: 18px;
+  padding: 2px;
+  border: 1.5px solid var(--ds-text-3);
+  border-radius: 5px;
+}
+
+.os-battery-gauge__shell::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -4px;
+  width: 3px;
+  height: 7px;
+  border-radius: 0 2px 2px 0;
+  background: var(--ds-text-3);
+  transform: translateY(-50%);
+}
+
+.os-battery-gauge__shell i {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--ds-green), var(--ds-accent));
+  transition: width var(--ds-motion-base) var(--ds-ease-out);
+}
+
+.os-battery-gauge__label {
+  flex: none;
+  color: var(--ds-text-3);
+  font-size: 9px;
+}
+
+.os-consumer {
+  display: grid;
+  gap: 3px;
+  padding: 5px 0;
+}
+
+.os-consumer + .os-consumer { border-top: 1px solid var(--ds-line); }
+
+.os-consumer__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--ds-text-2);
+  font-size: 9.5px;
+}
+
+.os-consumer__row b {
+  color: var(--ds-text-3);
+  font-size: 8.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.os-consumer__bar {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--ds-gray-bg);
+  overflow: hidden;
+}
+
+.os-consumer__bar i {
+  display: block;
+  width: var(--value, 0%);
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--ds-accent), var(--ds-green));
+}
+
+.os-app-hero__mark--battery { --app: var(--ds-green); }
 
 @media (max-width: 560px) {
   .os-tray {
