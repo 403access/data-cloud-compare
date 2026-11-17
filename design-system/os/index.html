@@ -192,6 +192,23 @@
         <button class="os-status os-status--sync" type="button" data-cmd="verify" title="Snapshot health">
           <span class="os-live-dot"></span><span>Synced</span>
         </button>
+        <button class="os-resources" type="button" data-resource-group data-cmd="open-taskmanager" title="Task Manager" aria-label="Open Task Manager">
+          <span class="os-resource" data-resource="cpu">
+            <span class="os-resource__label">CPU</span>
+            <span class="os-resource__meter" aria-hidden="true"><i data-resource-fill="cpu" style="width:25%"></i></span>
+            <b class="os-resource__value" data-resource-value="cpu">25%</b>
+          </span>
+          <span class="os-resource" data-resource="memory">
+            <span class="os-resource__label">RAM</span>
+            <span class="os-resource__meter" aria-hidden="true"><i data-resource-fill="memory" style="width:61%"></i></span>
+            <b class="os-resource__value" data-resource-value="memory">61%</b>
+          </span>
+          <span class="os-resource" data-resource="storage">
+            <span class="os-resource__label">STORAGE</span>
+            <span class="os-resource__meter" aria-hidden="true"><i data-resource-fill="storage" style="width:79%"></i></span>
+            <b class="os-resource__value" data-resource-value="storage">812 GB</b>
+          </span>
+        </button>
         <div class="os-tray-wrap">
           <button class="os-status os-status--icon" type="button" data-tray-toggle="network" aria-haspopup="dialog" aria-expanded="false" title="Wi-Fi: Harbour 5G" aria-label="Wi-Fi">
             <svg class="icon"><use href="#i-wifi"/></svg>
