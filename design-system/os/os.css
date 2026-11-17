@@ -569,6 +569,13 @@ body.os code { font-family: var(--ds-font-mono); }
   height: min(590px, calc(100dvh - 140px));
 }
 
+.os-window--taskmanager {
+  top: 62px;
+  left: calc(50% - 320px);
+  width: min(640px, calc(100vw - 32px));
+  height: min(640px, calc(100dvh - 150px));
+}
+
 .os-window--terminal {
   top: 96px;
   left: calc(50% - 268px);
@@ -700,6 +707,7 @@ body.os code { font-family: var(--ds-font-mono); }
 .os-app-mark--network { --app: var(--ds-accent); }
 .os-app-mark--battery { --app: var(--ds-green); }
 .os-app-mark--calendar { --app: var(--ds-violet); }
+.os-app-mark--taskmanager { --app: var(--ds-amber); }
 
 .os-icon-button {
   display: inline-grid;
@@ -4272,6 +4280,242 @@ body.os code { font-family: var(--ds-font-mono); }
 .os-output-row__text b { color: var(--ds-text); font-size: 9px; font-weight: 600; }
 .os-output-row__text small { color: var(--ds-text-3); font-size: 8px; }
 .os-output-row .os-output-row__check { color: var(--ds-accent); }
+
+/* ---------------------------------------------------------- task manager */
+
+.os-taskmanager {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.os-tm-overview {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  flex: none;
+  padding: 12px 14px 10px;
+}
+
+.os-tm-card {
+  padding: 8px 10px 9px;
+  border: 1px solid var(--ds-line);
+  border-radius: var(--ds-radius-md);
+  background: color-mix(in srgb, var(--ds-surface) 52%, transparent);
+}
+
+.os-tm-card header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.os-tm-card header span {
+  color: var(--ds-text-3);
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.os-tm-card header b {
+  color: var(--ds-text);
+  font-size: 16px;
+  font-weight: 720;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.os-tm-meter {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--ds-gray-bg);
+  overflow: hidden;
+}
+
+.os-tm-meter i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--ds-accent);
+  transition: width 600ms var(--ds-ease-out);
+}
+
+.os-tm-card[data-resource-card="memory"] .os-tm-meter i { background: var(--ds-violet); }
+.os-tm-card[data-resource-card="storage"] .os-tm-meter i { background: var(--ds-green); }
+
+.os-tm-card small {
+  display: block;
+  margin-top: 5px;
+  overflow: hidden;
+  color: var(--ds-text-3);
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.os-tm-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  padding: 0 14px 8px;
+}
+
+.os-tm-toolbar h3 {
+  margin: 0;
+  flex: 1;
+  color: var(--ds-text);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.os-tm-updated {
+  color: var(--ds-text-3);
+  font-size: 8px;
+  white-space: nowrap;
+}
+
+.os-tm-sample {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  padding: 0 8px;
+  border: 1px solid var(--ds-line);
+  border-radius: var(--ds-radius-xs);
+  color: var(--ds-text-2);
+  font-size: 8.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.os-tm-sample:hover { background: var(--ds-hover); color: var(--ds-text); }
+.os-tm-sample .icon { width: 11px; height: 11px; }
+
+.os-tm-list {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  margin: 0 14px;
+  border: 1px solid var(--ds-line);
+  border-radius: var(--ds-radius-md);
+  background: color-mix(in srgb, var(--ds-surface) 44%, transparent);
+  overflow: hidden;
+}
+
+.os-tm-head,
+.os-tm-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 54px 74px 62px;
+  align-items: center;
+  gap: 8px;
+}
+
+.os-tm-head {
+  flex: none;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--ds-line);
+  background: color-mix(in srgb, var(--ds-sidebar) 55%, transparent);
+  color: var(--ds-text-3);
+  font-size: 7.5px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.os-tm-head span:nth-child(n + 2) { text-align: right; }
+
+.os-tm-rows {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.os-tm-row {
+  width: 100%;
+  min-height: 31px;
+  padding: 6px 10px;
+  border: 0;
+  border-bottom: 1px solid var(--ds-line);
+  background: transparent;
+  color: var(--ds-text-2);
+  font: inherit;
+  font-size: 9px;
+  text-align: left;
+  transition: background var(--ds-motion-fast) ease;
+}
+
+.os-tm-row:last-child { border-bottom: 0; }
+.os-tm-row:hover { background: var(--ds-hover); }
+.os-tm-row.is-selected { background: var(--ds-selection); }
+
+.os-tm-name {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.os-tm-name .icon { width: 13px; height: 13px; flex: none; color: var(--ds-text-3); }
+
+.os-tm-name span {
+  overflow: hidden;
+  color: var(--ds-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.os-tm-cpu,
+.os-tm-mem,
+.os-tm-status {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.os-tm-cpu { color: var(--ds-text); }
+.os-tm-mem { color: var(--ds-text-2); }
+.os-tm-status { color: var(--ds-text-3); font-size: 8px; }
+.os-tm-status.is-app { color: var(--ds-text-2); }
+.os-tm-status.is-system { color: var(--ds-violet); }
+
+.os-tm-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex: none;
+  padding: 8px 14px 12px;
+  color: var(--ds-text-3);
+  font-size: 8.5px;
+}
+
+.os-tm-foot > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.os-tm-foot .ds-btn { flex: none; min-height: 24px; }
+
+@media (max-width: 700px) {
+  .os-tm-overview { gap: 6px; padding: 10px 12px 8px; }
+  .os-tm-card { padding: 7px 8px 8px; }
+  .os-tm-card header b { font-size: 14px; }
+  .os-tm-head,
+  .os-tm-row { grid-template-columns: minmax(0, 1fr) 46px 62px; }
+  .os-tm-head span:last-child,
+  .os-tm-status { display: none; }
+  .os-tm-updated { display: none; }
+  .os-tm-list { margin: 0 12px; }
+  .os-tm-foot { padding: 8px 12px 10px; }
+}
 
 /* ----------------------------------------------------------- calendar app */
 

@@ -2075,6 +2075,7 @@ function commandIcon(name) {
     network: "i-globe",
     battery: "i-battery",
     calendar: "i-calendar",
+    taskmanager: "i-activity",
   };
   return ids[name] || "i-command";
 }
@@ -2417,6 +2418,13 @@ function commandCatalog() {
     subtitle: calendarDayFormat.format(calendarAppSelected),
     keywords: "date time month agenda events schedule",
     run: () => openCalendarApp(),
+  });
+  addCommand(items, groups, "System", "Open Task Manager", {
+    key: "open-taskmanager",
+    icon: "taskmanager",
+    subtitle: `CPU ${Math.round(taskTotals().cpu)}% · Memory ${Math.round(taskTotals().memory)}% · ${STORAGE_FREE_GB} GB left`,
+    keywords: "activity monitor processes cpu memory ram storage resources performance",
+    run: () => openTaskManager(),
   });
 
   Object.values(PROVIDERS).forEach((info) => {
@@ -2827,6 +2835,166 @@ soundPlayButton?.addEventListener("click", () => togglePlay());
 registerTray("sound", { open: syncSoundUi });
 syncSoundUi();
 
+/* -------------------------------------------------------- task manager */
+
+const MEMORY_TOTAL_GB = 16;
+const STORAGE_TOTAL_GB = 1024;
+const STORAGE_FREE_GB = 812;
+
+const PROCESS_SEED = [
+  { name: "Explorer", icon: "i-folder-open", cpu: 4.8, memory: 1.2, status: "App" },
+  { name: "Tide Radio", icon: "i-volume", cpu: 2.2, memory: 0.5, status: "App" },
+  { name: "Terminal", icon: "i-terminal", cpu: 0.6, memory: 0.2, status: "App" },
+  { name: "WindowServer", icon: "i-grid", cpu: 3.4, memory: 0.8, status: "System" },
+  { name: "Network", icon: "i-globe", cpu: 0.4, memory: 0.1, status: "System" },
+  { name: "Calendar", icon: "i-calendar", cpu: 0.3, memory: 0.15, status: "App" },
+  { name: "Task Manager", icon: "i-activity", cpu: 0.7, memory: 0.12, status: "App" },
+  { name: "Photos", icon: "i-sparkle", cpu: 0.2, memory: 0.4, status: "App" },
+  { name: "jottacloud-sync", icon: "i-cloud", cpu: 4.1, memory: 2.1, status: "Background" },
+  { name: "kernel_task", icon: "i-layers", cpu: 3.2, memory: 1.5, status: "System" },
+  { name: "mds", icon: "i-database", cpu: 2.4, memory: 1.0, status: "System" },
+  { name: "indexer", icon: "i-search", cpu: 1.6, memory: 1.1, status: "Background" },
+  { name: "backupd", icon: "i-archive", cpu: 1.1, memory: 0.6, status: "Background" },
+];
+
+let taskProcesses = PROCESS_SEED.map((task) => ({ ...task }));
+let selectedTask = null;
+
+function taskTotals() {
+  const cpu = taskProcesses.reduce((sum, task) => sum + task.cpu, 0);
+  const memory = taskProcesses.reduce((sum, task) => sum + task.memory, 0);
+  return {
+    cpu: Math.min(100, cpu),
+    memory: Math.min(100, (memory / MEMORY_TOTAL_GB) * 100),
+    memoryGb: memory,
+    storage: (STORAGE_FREE_GB / STORAGE_TOTAL_GB) * 100,
+    storageFree: STORAGE_FREE_GB,
+  };
+}
+
+const taskMemoryLabel = (gb) => (gb >= 1 ? `${gb.toFixed(1)} GB` : `${Math.round(gb * 1024)} MB`);
+
+function taskRowHtml(task) {
+  const selected = selectedTask === task.name;
+  const statusClass = task.status === "App" ? "is-app" : task.status === "System" ? "is-system" : "";
+  return `<button type="button" class="os-tm-row${selected ? " is-selected" : ""}" data-task-row="${esc(task.name)}" role="option" aria-selected="${selected}">
+    <span class="os-tm-name"><svg class="icon"><use href="#${task.icon}"/></svg><span>${esc(task.name)}</span></span>
+    <span class="os-tm-cpu">${task.cpu.toFixed(1)}%</span>
+    <span class="os-tm-mem">${taskMemoryLabel(task.memory)}</span>
+    <span class="os-tm-status ${statusClass}">${task.status}</span>
+  </button>`;
+}
+
+function renderTaskRows() {
+  const host = document.querySelector("[data-task-rows]");
+  if (host) host.innerHTML = taskProcesses.map(taskRowHtml).join("");
+  renderTaskSelection();
+}
+
+function updateTaskRows() {
+  taskProcesses.forEach((task) => {
+    const row = document.querySelector(`[data-task-row="${CSS.escape(task.name)}"]`);
+    if (!row) return;
+    row.querySelector(".os-tm-cpu").textContent = `${task.cpu.toFixed(1)}%`;
+    row.querySelector(".os-tm-mem").textContent = taskMemoryLabel(task.memory);
+  });
+}
+
+function renderTaskSelection() {
+  const selected = taskProcesses.find((task) => task.name === selectedTask) || null;
+  document.querySelectorAll("[data-task-row]").forEach((row) => {
+    const active = row.dataset.taskRow === selectedTask;
+    row.classList.toggle("is-selected", active);
+    row.setAttribute("aria-selected", String(active));
+  });
+  const endButton = document.querySelector("[data-task-end]");
+  if (endButton) endButton.disabled = !selected;
+  const label = document.querySelector("[data-task-selection]");
+  if (label) {
+    label.textContent = selected
+      ? `${selected.name} · ${selected.status} · ${taskMemoryLabel(selected.memory)}`
+      : "Select a process to see actions.";
+  }
+}
+
+function syncResourceUi() {
+  const totals = taskTotals();
+  const cpu = Math.round(totals.cpu);
+  const ram = Math.round(totals.memory);
+  const free = Math.round(totals.storageFree);
+
+  document.querySelectorAll('[data-resource-fill="cpu"]').forEach((node) => (node.style.width = `${totals.cpu}%`));
+  document.querySelectorAll('[data-resource-fill="memory"]').forEach((node) => (node.style.width = `${totals.memory}%`));
+  document.querySelectorAll('[data-resource-fill="storage"]').forEach((node) => (node.style.width = `${totals.storage}%`));
+  document.querySelectorAll('[data-resource-value="cpu"]').forEach((node) => (node.textContent = `${cpu}%`));
+  document.querySelectorAll('[data-resource-value="memory"]').forEach((node) => (node.textContent = `${ram}%`));
+  document.querySelectorAll('[data-resource-value="storage"]').forEach((node) => (node.textContent = `${free} GB`));
+
+  document.querySelectorAll("[data-resource-group]").forEach((node) => {
+    const label = `Open Task Manager. CPU ${cpu}%, memory ${ram}%, storage ${free} GB left.`;
+    node.setAttribute("title", `Task Manager · CPU ${cpu}% · Memory ${ram}% · ${free} GB left`);
+    node.setAttribute("aria-label", label);
+  });
+
+  document.querySelectorAll("[data-tm-cpu]").forEach((node) => (node.textContent = `${cpu}%`));
+  document.querySelectorAll("[data-tm-memory]").forEach((node) => (node.textContent = `${ram}%`));
+  document.querySelectorAll("[data-tm-storage]").forEach((node) => (node.textContent = `${free} GB`));
+  document.querySelectorAll("[data-tm-cpu-detail]").forEach((node) => {
+    node.textContent = `${taskProcesses.length} processes · 8 cores`;
+  });
+  document.querySelectorAll("[data-tm-memory-detail]").forEach((node) => {
+    node.textContent = `${totals.memoryGb.toFixed(1)} GB of ${MEMORY_TOTAL_GB} GB`;
+  });
+  document.querySelectorAll("[data-tm-storage-detail]").forEach((node) => {
+    node.textContent = `left of ${STORAGE_TOTAL_GB / 1024} TB`;
+  });
+}
+
+function sampleResources() {
+  taskProcesses.forEach((task) => {
+    task.cpu = Math.max(0.1, Math.min(9, task.cpu + (Math.random() - 0.5) * 0.8));
+    task.memory = Math.max(0.05, task.memory + (Math.random() - 0.5) * 0.08);
+  });
+  updateTaskRows();
+  syncResourceUi();
+}
+
+function openTaskManager() {
+  openWindow("taskmanager");
+  renderTaskRows();
+  syncResourceUi();
+}
+
+document.addEventListener("click", (event) => {
+  const row = event.target.closest("[data-task-row]");
+  if (!row) return;
+  selectedTask = row.dataset.taskRow;
+  renderTaskSelection();
+});
+
+document.querySelector("[data-task-end]")?.addEventListener("click", () => {
+  const index = taskProcesses.findIndex((task) => task.name === selectedTask);
+  if (index === -1) return;
+  const [ended] = taskProcesses.splice(index, 1);
+  selectedTask = null;
+  renderTaskRows();
+  syncResourceUi();
+  toast(`Ended ${ended.name}`);
+});
+
+document.querySelector("[data-task-sample]")?.addEventListener("click", () => {
+  sampleResources();
+  toast("Resource sample refreshed");
+});
+
+renderTaskRows();
+syncResourceUi();
+
+window.setInterval(() => {
+  if (document.hidden) return;
+  sampleResources();
+}, 6000);
+
 /* ------------------------------------------------------------ terminal */
 
 function rerunTerminal() {
@@ -2884,6 +3052,9 @@ function runCommand(command) {
       break;
     case "open-calendar":
       openCalendarApp();
+      break;
+    case "open-taskmanager":
+      openTaskManager();
       break;
     case "open-terminal":
       openWindow("terminal");

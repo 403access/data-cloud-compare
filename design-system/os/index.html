@@ -79,6 +79,7 @@
     <symbol id="i-terminal" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path d="m7 9 3 3-3 3M12.5 15H17"/></symbol>
     <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.1"/><path d="M12 2.8v2.2M12 19v2.2M2.8 12h2.2M19 12h2.2M5.5 5.5 7 7M17 17l1.5 1.5M18.5 5.5 17 7M7 17l-1.5 1.5"/></symbol>
     <symbol id="i-chart" viewBox="0 0 24 24"><path d="M5 19V12M12 19V8M19 19V4.5"/><path d="M3 19h18"/></symbol>
+    <symbol id="i-activity" viewBox="0 0 24 24"><path d="M3 12h4l2.5-6 4 12 2.5-6h5"/></symbol>
     <symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="7.5" ry="3"/><path d="M4.5 5.5v6c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-6"/><path d="M4.5 11.5v6c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-6"/></symbol>
     <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 6.5h15M9.5 6.5V4.8a1.3 1.3 0 0 1 1.3-1.3h2.4a1.3 1.3 0 0 1 1.3 1.3v1.7"/><path d="M6.5 6.5 7.4 20h9.2l.9-13.5"/><path d="M10 10v6M14 10v6"/></symbol>
     <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M3.5 8.8a13 13 0 0 1 17 0M6.7 12.3a8.4 8.4 0 0 1 10.6 0M9.8 15.7a3.8 3.8 0 0 1 4.4 0"/><circle cx="12" cy="19" r="1.1" fill="currentColor" stroke="none"/></symbol>
@@ -170,6 +171,7 @@
               <button type="button" role="menuitem" data-cmd="open-network"><svg class="icon"><use href="#i-globe"/></svg>Network</button>
               <button type="button" role="menuitem" data-cmd="open-battery"><svg class="icon"><use href="#i-battery"/></svg>Battery</button>
               <button type="button" role="menuitem" data-cmd="open-calendar"><svg class="icon"><use href="#i-calendar"/></svg>Calendar</button>
+              <button type="button" role="menuitem" data-cmd="open-taskmanager"><svg class="icon"><use href="#i-activity"/></svg>Task Manager</button>
               <button type="button" role="menuitem" data-cmd="open-terminal"><svg class="icon"><use href="#i-terminal"/></svg>Terminal</button>
               <button type="button" role="menuitem" data-cmd="open-music"><svg class="icon"><use href="#i-volume"/></svg>Tide Radio</button>
               <button type="button" role="menuitem" data-cmd="open-shortcuts"><svg class="icon"><use href="#i-keyboard"/></svg>Keyboard shortcuts</button>
@@ -904,6 +906,62 @@
             </header>
             <div class="os-agenda__events" data-calendar-app-events></div>
           </aside>
+        </div>
+      </section>
+
+      <!-- -------------------------------------------------------- task manager -->
+      <section class="os-window os-window--taskmanager" id="win-taskmanager" data-window="taskmanager" data-title="Task Manager" role="dialog" aria-label="Task Manager" tabindex="-1" hidden>
+        <header class="os-titlebar" data-drag-handle>
+          <div class="os-lights">
+            <button class="os-light os-light--close" type="button" data-window-action="close" aria-label="Close Task Manager" title="Close"></button>
+            <button class="os-light os-light--min" type="button" data-window-action="minimize" aria-label="Minimise Task Manager" title="Minimise"></button>
+            <button class="os-light os-light--max" type="button" data-window-action="maximize" aria-label="Maximise Task Manager" title="Maximise"></button>
+          </div>
+          <div class="os-titlebar__title">
+            <span class="os-app-mark os-app-mark--taskmanager"><svg class="icon"><use href="#i-activity"/></svg></span>
+            <b>Task Manager</b>
+            <span class="os-titlebar__sub">Processes and resources</span>
+          </div>
+          <div class="os-titlebar__actions">
+            <span class="ds-badge ds-badge--same"><span class="ds-dot"></span>Live</span>
+          </div>
+        </header>
+        <div class="os-taskmanager">
+          <section class="os-tm-overview" aria-label="Resource usage">
+            <article class="os-tm-card" data-resource-card="cpu">
+              <header><span>CPU</span><b data-tm-cpu>25%</b></header>
+              <div class="os-tm-meter" aria-hidden="true"><i data-resource-fill="cpu" style="width:25%"></i></div>
+              <small data-tm-cpu-detail>13 processes · 8 cores</small>
+            </article>
+            <article class="os-tm-card" data-resource-card="memory">
+              <header><span>Memory</span><b data-tm-memory>61%</b></header>
+              <div class="os-tm-meter" aria-hidden="true"><i data-resource-fill="memory" style="width:61%"></i></div>
+              <small data-tm-memory-detail>9.8 GB of 16 GB</small>
+            </article>
+            <article class="os-tm-card" data-resource-card="storage">
+              <header><span>Storage</span><b data-tm-storage>812 GB</b></header>
+              <div class="os-tm-meter" aria-hidden="true"><i data-resource-fill="storage" style="width:79%"></i></div>
+              <small data-tm-storage-detail>left of 1 TB</small>
+            </article>
+          </section>
+
+          <div class="os-tm-toolbar">
+            <h3>Processes</h3>
+            <span class="os-tm-updated">Live · updates every 6s</span>
+            <button class="os-tm-sample" type="button" data-task-sample><svg class="icon"><use href="#i-sync"/></svg>Sample</button>
+          </div>
+
+          <div class="os-tm-list">
+            <div class="os-tm-head" aria-hidden="true">
+              <span>Process</span><span>CPU</span><span>Memory</span><span>Status</span>
+            </div>
+            <div class="os-tm-rows" data-task-rows role="listbox" aria-label="Processes"></div>
+          </div>
+
+          <footer class="os-tm-foot">
+            <span data-task-selection>Select a process to see actions.</span>
+            <button class="ds-btn ds-btn--small ds-btn--ghost" type="button" data-task-end disabled>End task</button>
+          </footer>
         </div>
       </section>
 
