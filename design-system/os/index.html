@@ -188,10 +188,33 @@
         <span class="os-status os-status--icon" title="Battery 78%" aria-label="Battery 78%">
           <svg class="icon"><use href="#i-battery"/></svg><span class="os-status__value">78%</span>
         </span>
-        <button class="os-clock" type="button" data-cmd="open-about" aria-label="Date and time">
-          <span data-clock-date>Tue 17 Nov</span>
-          <b data-clock-time>09:41</b>
-        </button>
+        <div class="os-calendar-wrap">
+          <button class="os-clock" type="button" data-calendar-toggle aria-haspopup="dialog" aria-expanded="false" aria-label="Open calendar">
+            <span data-clock-date>Tue 17 Nov</span>
+            <b data-clock-time>09:41</b>
+          </button>
+          <div class="os-calendar" data-calendar hidden role="dialog" aria-label="Calendar">
+            <header class="os-calendar__head">
+              <span class="os-calendar__date" data-calendar-today-label>Tuesday, 17 November</span>
+              <b class="os-calendar__time" data-calendar-time>09:41</b>
+            </header>
+            <div class="os-calendar__toolbar">
+              <button class="os-calendar__nav" type="button" data-calendar-prev aria-label="Previous month">
+                <svg class="icon"><use href="#i-chevron-left"/></svg>
+              </button>
+              <span class="os-calendar__month" data-calendar-month>November 2026</span>
+              <button class="os-calendar__nav" type="button" data-calendar-next aria-label="Next month">
+                <svg class="icon"><use href="#i-chevron-right"/></svg>
+              </button>
+            </div>
+            <div class="os-calendar__weekdays" data-calendar-weekdays aria-hidden="true"></div>
+            <div class="os-calendar__grid" data-calendar-grid role="group" aria-label="Days"></div>
+            <footer class="os-calendar__foot">
+              <button class="os-calendar__today-btn" type="button" data-calendar-today-btn>Today</button>
+              <span data-calendar-selected>Today · Tue 17 Nov</span>
+            </footer>
+          </div>
+        </div>
         <button class="os-menubar__icon" type="button" data-theme-toggle aria-label="Switch appearance" aria-pressed="false">
           <svg class="icon"><use href="#i-moon"/></svg>
         </button>
