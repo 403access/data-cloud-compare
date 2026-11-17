@@ -420,10 +420,69 @@ function tickClock() {
 tickClock();
 window.setInterval(tickClock, 20_000);
 
+/* ------------------------------------------------------------ tray menus */
+
+const trayPanels = Array.from(document.querySelectorAll("[data-tray]"));
+const trayToggles = new Map();
+const trayHooks = new Map();
+let openTrayName = null;
+
+trayPanels.forEach((panel) => {
+  const toggle = document.querySelector(`[data-tray-toggle="${panel.dataset.tray}"]`);
+  if (toggle) trayToggles.set(panel.dataset.tray, toggle);
+});
+
+function registerTray(name, hooks = {}) {
+  trayHooks.set(name, hooks);
+}
+
+function setTrayOpen(name, open) {
+  const panel = trayPanels.find((item) => item.dataset.tray === name);
+  if (!panel) return;
+  const toggle = trayToggles.get(name);
+  if (open) {
+    trayPanels.forEach((other) => {
+      if (other === panel || other.hidden) return;
+      other.hidden = true;
+      trayToggles.get(other.dataset.tray)?.setAttribute("aria-expanded", "false");
+      trayHooks.get(other.dataset.tray)?.close?.();
+    });
+    panel.hidden = false;
+    toggle?.setAttribute("aria-expanded", "true");
+    openTrayName = name;
+    trayHooks.get(name)?.open?.();
+    panel.focus({ preventScroll: true });
+  } else {
+    panel.hidden = true;
+    toggle?.setAttribute("aria-expanded", "false");
+    if (openTrayName === name) openTrayName = null;
+    trayHooks.get(name)?.close?.();
+  }
+}
+
+function closeTrays() {
+  if (openTrayName) setTrayOpen(openTrayName, false);
+}
+
+trayPanels.forEach((panel) => {
+  const name = panel.dataset.tray;
+  const toggle = trayToggles.get(name);
+  toggle?.addEventListener("click", (event) => {
+    event.stopPropagation();
+    closeMenus();
+    setTrayOpen(name, panel.hidden);
+  });
+});
+
+document.addEventListener("click", (event) => {
+  if (!openTrayName) return;
+  if (event.target.closest(".os-tray-wrap")) return;
+  closeTrays();
+});
+
 /* ------------------------------------------------------------ calendar */
 
 const calendarPop = document.querySelector("[data-calendar]");
-const calendarToggle = document.querySelector("[data-calendar-toggle]");
 const calendarGrid = document.querySelector("[data-calendar-grid]");
 const calendarWeekdays = document.querySelector("[data-calendar-weekdays]");
 const calendarMonth = document.querySelector("[data-calendar-month]");
@@ -442,7 +501,6 @@ const calendarDayFormat = new Intl.DateTimeFormat(undefined, {
 });
 const calendarWeekdayFormat = new Intl.DateTimeFormat(undefined, { weekday: "short" });
 
-let calendarOpen = false;
 let calendarView = startOfMonth(new Date());
 let calendarSelectedDate = new Date();
 
@@ -507,21 +565,14 @@ function renderCalendar() {
   }
 }
 
-function setCalendarOpen(open) {
-  if (!calendarPop || !calendarToggle) return;
-  calendarOpen = Boolean(open);
-  calendarPop.hidden = !calendarOpen;
-  calendarToggle.setAttribute("aria-expanded", String(calendarOpen));
-  calendarToggle.setAttribute("aria-label", calendarOpen ? "Close calendar" : "Open calendar");
-  if (calendarOpen) {
+registerTray("calendar", {
+  open() {
     const now = new Date();
     calendarView = startOfMonth(now);
     calendarSelectedDate = now;
     renderCalendar();
-  }
-}
-
-calendarToggle?.addEventListener("click", () => setCalendarOpen(!calendarOpen));
+  },
+});
 
 calendarGrid?.addEventListener("click", (event) => {
   const button = event.target.closest("[data-calendar-day]");
@@ -546,12 +597,6 @@ document.querySelector("[data-calendar-today-btn]")?.addEventListener("click", (
   calendarView = startOfMonth(now);
   calendarSelectedDate = now;
   renderCalendar();
-});
-
-document.addEventListener("click", (event) => {
-  if (!calendarOpen) return;
-  if (event.target.closest(".os-calendar-wrap")) return;
-  setCalendarOpen(false);
 });
 
 /* ------------------------------------------------------------- toasts */
@@ -806,6 +851,7 @@ function toggleMenu(wrap) {
   const button = wrap.querySelector(".os-menu");
   const pop = wrap.querySelector(".os-menu__pop");
   if (!button || !pop) return;
+  closeTrays();
   if (pop.hidden) {
     closeMenus(wrap);
     pop.hidden = false;
@@ -820,6 +866,7 @@ function openMenu(wrap) {
   const button = wrap.querySelector(".os-menu");
   const pop = wrap.querySelector(".os-menu__pop");
   if (!button || !pop || !pop.hidden) return;
+  closeTrays();
   closeMenus(wrap);
   pop.hidden = false;
   button.setAttribute("aria-expanded", "true");
@@ -2189,7 +2236,7 @@ function runCommandItem(item) {
 
 function openCommand() {
   if (!overlay) return;
-  setCalendarOpen(false);
+  closeTrays();
   previousFocus = document.activeElement;
   overlay.hidden = false;
   state.command.query = "";
@@ -2496,6 +2543,7 @@ document.addEventListener("click", (event) => {
   if (!commandButton) return;
   if (commandButton.tagName === "BUTTON") event.preventDefault();
   runCommand(commandButton.dataset.cmd);
+  closeTrays();
   closeMenus();
 });
 
@@ -2610,7 +2658,7 @@ document.addEventListener("keydown", (event) => {
       closeCommand();
       return;
     }
-    setCalendarOpen(false);
+    closeTrays();
     closeMenus();
     document.querySelectorAll("[data-filter-pop]").forEach((pop) => (pop.hidden = true));
     const legend = document.querySelector("[data-legend]");
