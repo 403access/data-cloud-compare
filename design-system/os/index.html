@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="en" data-water-tone="ocean" data-water-background="sea" data-water-effects="on" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Water OS — a desktop concept · Data Cloud Compare</title>
+  <meta name="description" content="A concept desktop environment built entirely from the Water design system: glass windows, a two-pane file explorer, a dock, menus, and a command bar.">
+  <meta name="theme-color" content="#031922">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <script>
+    /* Apply saved preferences before paint so the desktop never flashes. */
+    (function () {
+      try {
+        var root = document.documentElement;
+        var prefs = JSON.parse(localStorage.getItem("dcc-design-prefs") || "null") || {};
+        var water = JSON.parse(localStorage.getItem("explorer-water-settings") || "null") || {};
+        var mode = localStorage.getItem("explorer-theme") || "water";
+        if (["system", "light", "dark", "water"].indexOf(mode) === -1) mode = "water";
+        var light = mode === "light" || (mode === "system" && window.matchMedia && !window.matchMedia("(prefers-color-scheme: dark)").matches);
+        root.dataset.waterMode = mode;
+        root.dataset.theme = light ? "light" : "dark";
+        var tone = water.tone || prefs.tone;
+        if (["lagoon", "ocean", "deep"].indexOf(tone) !== -1) root.dataset.waterTone = tone;
+        var speed = water.speed || prefs.speed;
+        if (["calm", "flowing", "rapid"].indexOf(speed) !== -1) root.dataset.waterSpeed = speed;
+        var background = water.background || prefs.background;
+        if (background === "still" || background === "sea") root.dataset.waterBackground = background;
+        var effects = water.effects !== false && (typeof water.effects === "boolean" || prefs.effects !== false);
+        root.dataset.waterEffects = effects && mode === "water" ? "on" : "off";
+        root.dataset.waterGlass = water.glass === false ? "off" : "on";
+        root.dataset.waterRowMotion = water.rowMotion === false ? "off" : "on";
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="../components.css">
+  <link rel="stylesheet" href="os.css">
+  <script type="module" src="os.js"></script>
+</head>
+<body class="ds-scope os">
+
+  <a class="skip-link" href="#os-desktop">Skip to desktop</a>
+
+  <div class="ds-sea" aria-hidden="true">
+    <svg class="ds-wave ds-wave--far" viewBox="0 0 2880 320" preserveAspectRatio="none" focusable="false">
+      <path d="M0 150 C 240 96 480 204 720 150 C 960 96 1200 204 1440 150 C 1680 96 1920 204 2160 150 C 2400 96 2640 204 2880 150 L 2880 320 L 0 320 Z"/>
+    </svg>
+    <svg class="ds-wave ds-wave--mid" viewBox="0 0 2880 320" preserveAspectRatio="none" focusable="false">
+      <path d="M0 170 C 240 126 480 214 720 170 C 960 126 1200 214 1440 170 C 1680 126 1920 214 2160 170 C 2400 126 2640 214 2880 170 L 2880 320 L 0 320 Z"/>
+    </svg>
+    <svg class="ds-wave ds-wave--near" viewBox="0 0 2880 320" preserveAspectRatio="none" focusable="false">
+      <path d="M0 190 C 240 156 480 224 720 190 C 960 156 1200 224 1440 190 C 1680 156 1920 224 2160 190 C 2400 156 2640 224 2880 190 L 2880 320 L 0 320 Z"/>
+    </svg>
+  </div>
+  <canvas id="os-water" class="os-water" aria-hidden="true"></canvas>
+  <div class="os-vignette" aria-hidden="true"></div>
+
+  <svg class="sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7.5A2.5 2.5 0 0 1 6 5h3.2c.5 0 1 .2 1.4.6l1.2 1.1c.3.3.8.5 1.3.5H18a2.5 2.5 0 0 1 2.5 2.5v6.8A2.5 2.5 0 0 1 18 19H6a2.5 2.5 0 0 1-2.5-2.5z"/></symbol>
+    <symbol id="i-folder-open" viewBox="0 0 24 24"><path d="M3.5 8V7a2 2 0 0 1 2-2h3.1c.5 0 1 .2 1.3.5l1.3 1.2c.3.3.8.5 1.3.5H18a2 2 0 0 1 2 2v.8"/><path d="M3 9.5h16.9a1.6 1.6 0 0 1 1.5 2l-1.5 6a1.6 1.6 0 0 1-1.5 1.2H5.1a1.6 1.6 0 0 1-1.6-1.6z"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3.5h7l5 5v12H6z"/><path d="M13 3.5v5h5"/></symbol>
+    <symbol id="i-file-text" viewBox="0 0 24 24"><path d="M6 3.5h7l5 5v12H6z"/><path d="M13 3.5v5h5"/><path d="M9 12.5h6M9 15.5h6M9 18h4"/></symbol>
+    <symbol id="i-code-file" viewBox="0 0 24 24"><path d="M6 3.5h7l5 5v12H6z"/><path d="M13 3.5v5h5"/><path d="m10 13-1.8 2 1.8 2M14 13l1.8 2-1.8 2"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4.5 4.5"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.2 4.2L19 6.5"/></symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M4 12h15"/><path d="m13 6 6 6-6 6"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m14.5 5.5-6.5 6.5 6.5 6.5"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9.5 5.5 6.5 6.5-6.5 6.5"/></symbol>
+    <symbol id="i-chevron-up" viewBox="0 0 24 24"><path d="m5.5 14.5 6.5-6.5 6.5 6.5"/></symbol>
+    <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m5.5 9.5 6.5 6.5 6.5-6.5"/></symbol>
+    <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3s-6 6.2-6 10.4a6 6 0 0 0 12 0C18 9.2 12 3 12 3Z"/><path d="M9.4 13.6a2.7 2.7 0 0 0 2.6 2.4"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/><path d="m3 17.5 9 5 9-5"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.5 19 6v5.4c0 4.4-2.9 7.5-7 9.1-4.1-1.6-7-4.7-7-9.1V6z"/><path d="m9 12 2 2 4-4.5"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M6.5 18.5a4 4 0 0 1-.6-7.9A6 6 0 0 1 17.5 9a4.8 4.8 0 0 1-.5 9.5z"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><path d="m8.5 7-5 5 5 5"/><path d="m15.5 7 5 5-5 5"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.2A8.5 8.5 0 0 1 9.8 4a8.5 8.5 0 1 0 10.2 10.2z"/></symbol>
+    <symbol id="i-terminal" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path d="m7 9 3 3-3 3M12.5 15H17"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.1"/><path d="M12 2.8v2.2M12 19v2.2M2.8 12h2.2M19 12h2.2M5.5 5.5 7 7M17 17l1.5 1.5M18.5 5.5 17 7M7 17l-1.5 1.5"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M5 19V12M12 19V8M19 19V4.5"/><path d="M3 19h18"/></symbol>
+    <symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="7.5" ry="3"/><path d="M4.5 5.5v6c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-6"/><path d="M4.5 11.5v6c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-6"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 6.5h15M9.5 6.5V4.8a1.3 1.3 0 0 1 1.3-1.3h2.4a1.3 1.3 0 0 1 1.3 1.3v1.7"/><path d="M6.5 6.5 7.4 20h9.2l.9-13.5"/><path d="M10 10v6M14 10v6"/></symbol>
+    <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M3.5 8.8a13 13 0 0 1 17 0M6.7 12.3a8.4 8.4 0 0 1 10.6 0M9.8 15.7a3.8 3.8 0 0 1 4.4 0"/><circle cx="12" cy="19" r="1.1" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-battery" viewBox="0 0 24 24"><rect x="2.5" y="8" width="16.5" height="8" rx="2"/><path d="M21.5 10.5v3"/><rect x="4.5" y="10" width="11.5" height="4" rx="1" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-volume" viewBox="0 0 24 24"><path d="M4 9.5h3l4-3.5v12l-4-3.5H4z"/><path d="M14.5 9a4.2 4.2 0 0 1 0 6M17 6.5a7.8 7.8 0 0 1 0 11"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.2 19 12 8 18.8z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><rect x="7" y="5" width="3.5" height="14" rx="1" fill="currentColor" stroke="none"/><rect x="13.5" y="5" width="3.5" height="14" rx="1" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-skip" viewBox="0 0 24 24"><path d="M6 5.5 15 12l-9 6.5z" fill="currentColor" stroke="none"/><path d="M17.5 5.5v13"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5"/><circle cx="12" cy="7.7" r="1" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4.2" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="4.2" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="4.2" cy="18" r="1" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><path d="M3.5 5h17l-6.6 7.3v6.1l-3.8 2.2v-8.3z"/></symbol>
+    <symbol id="i-sync" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 13.6-5.7L20 8.5"/><path d="M20 4.5v4h-4"/><path d="M20 12a8 8 0 0 1-13.6 5.7L4 15.5"/><path d="M4 19.5v-4h4"/></symbol>
+    <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="m12 3 1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="m18.5 15.5.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-archive" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="4.5" rx="1.4"/><path d="M4.5 9v9a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5V9"/><path d="M9.5 13h5"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="10" width="15" height="10.5" rx="2.5"/><path d="M8 10V7.3a4 4 0 0 1 8 0V10"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4.5h5.5V10"/><path d="m19.5 4.5-8 8"/><path d="M18 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H10"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-command" viewBox="0 0 24 24"><path d="M9 6.5a2.5 2.5 0 1 0-2.5 2.5H9m6 0h2.5A2.5 2.5 0 1 0 15 6.5V9m0 6v2.5a2.5 2.5 0 1 0 2.5-2.5H15m-6 0H6.5A2.5 2.5 0 1 0 9 17.5V15m0-6h6v6H9z"/></symbol>
+    <symbol id="i-local" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="7" rx="2" fill="currentColor" stroke="none" opacity=".92"/><rect x="3" y="11.6" width="18" height="8.4" rx="2" fill="currentColor" stroke="none" opacity=".55"/><circle cx="6.4" cy="7.5" r="1" fill="var(--ds-surface-solid)" stroke="none"/></symbol>
+    <symbol id="i-keyboard" viewBox="0 0 24 24"><rect x="2.5" y="5.5" width="19" height="13" rx="2.4"/><path d="M5.8 9h.01M8.8 9h.01M11.8 9h.01M14.8 9h.01M17.8 9h.01M5.8 12h.01M8.8 12h.01M11.8 12h.01M14.8 12h.01M17.8 12h.01M7.4 15h9.2"/></symbol>
+    <symbol id="i-columns" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="2"/><path d="M9 4.5v15M15 4.5v15"/></symbol>
+    <symbol id="i-sort" viewBox="0 0 24 24"><path d="M7 4v16m0 0-3-3m3 3 3-3"/><path d="M14 7h7M14 12h5M14 17h3"/></symbol>
+  </svg>
+
+  <div class="os-shell">
+
+    <header class="os-menubar" aria-label="System menu bar">
+      <div class="os-menubar__group">
+        <button class="os-logo" type="button" data-cmd="open-about" aria-label="About Water OS">
+          <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <rect x="2.5" y="6.5" width="18" height="13" rx="4" class="logo-back"/>
+            <rect x="11.5" y="12.5" width="18" height="13" rx="4" class="logo-front"/>
+            <path d="m15.5 19 2.2 2.2 4.4-4.8" class="logo-check"/>
+          </svg>
+        </button>
+        <span class="os-menubar__app" data-active-app>Explorer</span>
+
+        <nav class="os-menus" aria-label="Application menus">
+          <div class="os-menu-wrap">
+            <button class="os-menu" type="button" aria-haspopup="menu" aria-expanded="false">File</button>
+            <div class="os-menu__pop" role="menu" hidden>
+              <button type="button" role="menuitem" data-cmd="open-explorer"><svg class="icon"><use href="#i-folder"/></svg>New Explorer window</button>
+              <button type="button" role="menuitem" data-cmd="verify"><svg class="icon"><use href="#i-shield"/></svg>Verify snapshot</button>
+              <button type="button" role="menuitem" data-cmd="toggle-hidden"><svg class="icon"><use href="#i-file"/></svg>Toggle dotfiles</button>
+              <hr>
+              <button type="button" role="menuitem" data-cmd="open-settings"><svg class="icon"><use href="#i-drop"/></svg>Water settings</button>
+              <button type="button" role="menuitem" data-cmd="close-focused"><svg class="icon"><use href="#i-x"/></svg>Close window</button>
+            </div>
+          </div>
+
+          <div class="os-menu-wrap">
+            <button class="os-menu" type="button" aria-haspopup="menu" aria-expanded="false">View</button>
+            <div class="os-menu__pop" role="menu" hidden>
+              <button type="button" role="menuitem" data-cmd="toggle-legend"><svg class="icon"><use href="#i-info"/></svg>Toggle legend</button>
+              <button type="button" role="menuitem" data-cmd="columns"><svg class="icon"><use href="#i-columns"/></svg>Columns sidebar</button>
+              <button type="button" role="menuitem" data-cmd="analytics"><svg class="icon"><use href="#i-chart"/></svg>Analytics view</button>
+              <hr>
+              <button type="button" role="menuitem" data-cmd="toggle-theme"><svg class="icon"><use href="#i-sun"/></svg>Toggle appearance</button>
+              <button type="button" role="menuitem" data-cmd="toggle-effects"><svg class="icon"><use href="#i-drop"/></svg>Toggle water effects</button>
+              <button type="button" role="menuitem" data-cmd="shortcuts"><svg class="icon"><use href="#i-keyboard"/></svg>Keyboard shortcuts</button>
+            </div>
+          </div>
+
+          <div class="os-menu-wrap">
+            <button class="os-menu" type="button" aria-haspopup="menu" aria-expanded="false">Go</button>
+            <div class="os-menu__pop" role="menu" hidden>
+              <button type="button" role="menuitem" data-cmd="local-root"><svg class="icon"><use href="#i-folder"/></svg>Local root</button>
+              <button type="button" role="menuitem" data-cmd="remote-root"><svg class="icon"><use href="#i-cloud"/></svg><span data-provider-label>Jottacloud</span> root</button>
+              <hr>
+              <button type="button" role="menuitem" data-cmd="open-selected"><svg class="icon"><use href="#i-arrow-right"/></svg>Open selected item</button>
+              <button type="button" role="menuitem" data-cmd="reveal-selected"><svg class="icon"><use href="#i-sync"/></svg>Reveal counterpart</button>
+            </div>
+          </div>
+
+          <div class="os-menu-wrap">
+            <button class="os-menu" type="button" aria-haspopup="menu" aria-expanded="false">Window</button>
+            <div class="os-menu__pop" role="menu" hidden>
+              <button type="button" role="menuitem" data-cmd="open-explorer"><svg class="icon"><use href="#i-folder"/></svg>Explorer</button>
+              <button type="button" role="menuitem" data-cmd="open-settings"><svg class="icon"><use href="#i-drop"/></svg>Water settings</button>
+              <button type="button" role="menuitem" data-cmd="open-terminal"><svg class="icon"><use href="#i-terminal"/></svg>Terminal</button>
+              <button type="button" role="menuitem" data-cmd="open-music"><svg class="icon"><use href="#i-volume"/></svg>Tide Radio</button>
+              <button type="button" role="menuitem" data-cmd="open-shortcuts"><svg class="icon"><use href="#i-keyboard"/></svg>Keyboard shortcuts</button>
+            </div>
+          </div>
+
+          <div class="os-menu-wrap">
+            <button class="os-menu" type="button" aria-haspopup="menu" aria-expanded="false">Help</button>
+            <div class="os-menu__pop" role="menu" hidden>
+              <button type="button" role="menuitem" data-cmd="open-about"><svg class="icon"><use href="#i-drop"/></svg>About Water OS</button>
+              <a role="menuitem" href="../"><svg class="icon"><use href="#i-grid"/></svg>Design system gallery<span class="ds-kbd">↗</span></a>
+            </div>
+          </div>
+        </nav>
+      </div>
+
+      <div class="os-menubar__group os-menubar__group--right">
+        <button class="os-status os-status--sync" type="button" data-cmd="verify" title="Snapshot health">
+          <span class="os-live-dot"></span><span>Synced</span>
+        </button>
+        <span class="os-status os-status--icon" title="Wi-Fi: Harbour 5G" aria-label="Wi-Fi: Harbour 5G">
+          <svg class="icon"><use href="#i-wifi"/></svg>
+        </span>
+        <span class="os-status os-status--icon" title="Battery 78%" aria-label="Battery 78%">
+          <svg class="icon"><use href="#i-battery"/></svg><span class="os-status__value">78%</span>
+        </span>
+        <button class="os-clock" type="button" data-cmd="open-about" aria-label="Date and time">
+          <span data-clock-date>Tue 17 Nov</span>
+          <b data-clock-time>09:41</b>
+        </button>
+        <button class="os-menubar__icon" type="button" data-theme-toggle aria-label="Switch appearance" aria-pressed="false">
+          <svg class="icon"><use href="#i-moon"/></svg>
+        </button>
+        <a class="os-menubar__icon" href="../" title="Design system gallery" aria-label="Design system gallery">
+          <svg class="icon"><use href="#i-grid"/></svg>
+        </a>
+      </div>
+    </header>
+
+    <main class="os-desktop" id="os-desktop">
+      <div class="os-rail" aria-label="Desktop widgets">
+        <div class="os-desk-icons">
+          <button class="os-desk-icon" type="button" data-cmd="open-explorer">
+            <span class="os-desk-icon__tile" style="--tile:#38d6ff"><svg class="icon"><use href="#i-folder"/></svg></span>
+            <span>Tank ⇄ Archive</span>
+            <small>Two-pane explorer</small>
+          </button>
+          <button class="os-desk-icon" type="button" data-cmd="open-explorer">
+            <span class="os-desk-icon__tile" style="--tile:#c3a8ff"><svg class="icon"><use href="#i-cloud"/></svg></span>
+            <span>Jottacloud</span>
+            <small>Archive snapshot</small>
+          </button>
+          <button class="os-desk-icon" type="button" data-cmd="open-settings">
+            <span class="os-desk-icon__tile" style="--tile:#5ef2b0"><svg class="icon"><use href="#i-gear"/></svg></span>
+            <span>Settings</span>
+            <small>Water &amp; display</small>
+          </button>
+          <a class="os-desk-icon" href="../">
+            <span class="os-desk-icon__tile" style="--tile:#ffd27a"><svg class="icon"><use href="#i-layers"/></svg></span>
+            <span>Design system</span>
+            <small>Gallery</small>
+          </a>
+        </div>
+
+        <div class="os-widget">
+          <div class="os-widget__clock">
+            <span class="os-widget__time" data-clock-big>09:41</span>
+            <span class="os-widget__date" data-clock-long>Tuesday, 17 November</span>
+            <span class="ds-chip ds-chip--accent"><span class="ds-dot"></span><span data-tone-label>Ocean</span> current</span>
+          </div>
+          <div class="os-widget__rule"></div>
+          <div class="os-widget__verify">
+            <div class="os-widget__row">
+              <span class="ds-stat">
+                <span class="ds-stat__value is-accent" data-verify-value>87.7%</span>
+                <span class="ds-stat__label">archive verified</span>
+              </span>
+              <span class="ds-badge ds-badge--same"><span class="ds-dot"></span>Healthy</span>
+            </div>
+            <div class="os-meter" aria-hidden="true"><i data-verify-fill style="width:87.7%"></i></div>
+            <div class="os-widget__chips">
+              <span class="ds-chip">1.43M files</span>
+              <span class="ds-chip">7.1 TB</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ------------------------------------------------------------ explorer -->
+      <section class="os-window os-window--explorer is-open is-focused" id="win-explorer" data-window="explorer" data-title="Tank ⇄ Jottacloud" role="dialog" aria-label="Tank ⇄ Jottacloud explorer" tabindex="-1">
+        <header class="os-titlebar" data-drag-handle>
+          <div class="os-lights">
+            <button class="os-light os-light--close" type="button" data-window-action="close" aria-label="Close explorer" title="Close"></button>
+            <button class="os-light os-light--min" type="button" data-window-action="minimize" aria-label="Minimise explorer" title="Minimise"></button>
+            <button class="os-light os-light--max" type="button" data-window-action="maximize" aria-label="Maximise explorer" title="Maximise"></button>
+          </div>
+          <div class="os-titlebar__title">
+            <span class="os-app-mark os-app-mark--explorer"><svg class="icon"><use href="#i-folder-open"/></svg></span>
+            <b>Tank ⇄ Jottacloud</b>
+            <span class="os-titlebar__sub">Two-pane filesystem explorer</span>
+          </div>
+          <div class="os-titlebar__actions">
+            <span class="ds-badge ds-badge--same"><span class="ds-dot"></span>Live</span>
+          </div>
+        </header>
+
+        <div class="osx-app" data-explorer>
+          <header class="osx-appbar">
+            <div class="osx-brand">
+              <span class="osx-brand-icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" fill="none">
+                  <rect x="2" y="7" width="12" height="18" rx="3" class="brand-a"/>
+                  <rect x="18" y="7" width="12" height="18" rx="3" class="brand-b"/>
+                  <path d="M12.5 16h7" class="brand-line"/>
+                  <path d="m16.6 13.8 2.2 2.2-2.2 2.2" class="brand-line"/>
+                </svg>
+              </span>
+              <div class="osx-brand-text">
+                <h1>Tank <span>⇄</span> <span data-provider-label>Jottacloud</span></h1>
+                <p>Two-pane filesystem explorer</p>
+              </div>
+            </div>
+
+            <div class="osx-provider-switch" role="tablist" aria-label="Remote provider">
+              <button class="osx-provider-choice is-active" type="button" data-provider="jottacloud" role="tab" aria-selected="true">
+                <span class="osx-provider-dot jottacloud"></span>Jottacloud
+              </button>
+              <button class="osx-provider-choice" type="button" data-provider="google_drive" role="tab" aria-selected="false">
+                <span class="osx-provider-dot google"></span>Google Drive
+              </button>
+            </div>
+
+            <div class="osx-actions">
+              <button class="osx-btn osx-btn--icon" type="button" data-cmd="analytics" title="Analytics" aria-label="Analytics">
+                <svg class="icon"><use href="#i-chart"/></svg>
+              </button>
+              <button class="osx-btn osx-command-trigger" type="button" data-cmd="open-command" title="Search files and folders, or run a command (⌘K)" aria-haspopup="dialog">
+                <svg class="icon"><use href="#i-search"/></svg>
+                <span>Search</span>
+                <kbd>⌘K</kbd>
+              </button>
+              <button class="osx-btn osx-btn--ghost osx-legend-trigger" type="button" data-legend-toggle aria-expanded="false">Legend</button>
+              <label class="osx-toggle" title="Show dotfiles">
+                <input type="checkbox" data-hidden-toggle>
+                <span class="osx-toggle-track"><span class="osx-toggle-thumb"></span></span>
+                <span>Hidden</span>
+              </label>
+              <div class="osx-theme-picker">
+                <svg class="icon osx-theme-icon"><use href="#i-drop"/></svg>
+                <select data-theme-select aria-label="Theme">
+                  <option value="system">System</option>
+                  <option value="light">Light</option>
+                  <option value="dark">Dark</option>
+                  <option value="water" selected>Water</option>
+                </select>
+                <svg class="icon osx-theme-chevron"><use href="#i-chevron-down"/></svg>
+              </div>
+              <button class="osx-btn osx-btn--icon" type="button" data-cmd="shortcuts" title="Keyboard shortcuts" aria-label="Keyboard shortcuts">
+                <svg class="icon"><use href="#i-keyboard"/></svg>
+              </button>
+              <button class="osx-btn osx-btn--icon" type="button" data-cmd="open-settings" title="Water theme settings" aria-label="Water theme settings">
+                <svg class="icon"><use href="#i-gear"/></svg>
+              </button>
+            </div>
+
+            <div class="osx-legend" data-legend hidden>
+              <h4><span data-provider-label>Jottacloud</span> side</h4>
+              <div class="osx-legend-row"><span class="osx-status-chip st-exact"><span class="dot"></span></span><span><b>Same</b> — This path exists in the local index at the same path.</span></div>
+              <div class="osx-legend-row"><span class="osx-status-chip st-moved"><span class="dot"></span></span><span><b>Moved</b> — Found in the local index under a different path (same name and size).</span></div>
+              <div class="osx-legend-row"><span class="osx-status-chip st-possible"><span class="dot"></span></span><span><b>Maybe</b> — A file with the same name exists locally, but the size differs.</span></div>
+              <div class="osx-legend-row"><span class="osx-status-chip st-partial"><span class="dot"></span></span><span><b>Partial</b> — Folder has a mix of present and missing children.</span></div>
+              <div class="osx-legend-row"><span class="osx-status-chip st-missing"><span class="dot"></span></span><span><b>Missing</b> — No matching path, name or size was found in the local index.</span></div>
+              <h4>Local side</h4>
+              <div class="osx-legend-row"><span class="osx-status-chip st-exact"><span class="dot"></span></span><span><b>In <span data-provider-label>Jottacloud</span></b> — This local item exists at the same path in Jottacloud.</span></div>
+              <div class="osx-legend-row"><span class="osx-status-chip st-moved"><span class="dot"></span></span><span><b>Moved match</b> — This local item is the match for a moved Jottacloud item.</span></div>
+              <div class="osx-legend-row"><span class="osx-status-chip st-local_only"><span class="dot"></span></span><span><b>Local only</b> — Present in the index but not found anywhere in Jottacloud.</span></div>
+              <div class="osx-legend-row"><span class="osx-status-chip st-unmatched"><span class="dot"></span></span><span><b>Not in <span data-provider-label>Jottacloud</span></b> — No same-path counterpart in Jottacloud; it may still have matched another item.</span></div>
+              <div class="osx-legend-row"><span class="osx-status-chip st-type_mismatch"><span class="dot"></span></span><span><b>Type differs</b> — A file/folder with the same name exists on the other side.</span></div>
+            </div>
+          </header>
+
+          <div class="osx-body">
+            <div class="osx-panes" data-panes>
+              <section class="osx-pane is-active" data-pane="local" aria-label="Local index pane">
+                <header class="osx-pane-head">
+                  <div class="osx-pane-title">
+                    <span class="osx-pane-icon osx-pane-icon--local"><svg class="icon"><use href="#i-local"/></svg></span>
+                    <div class="osx-pane-titles">
+                      <h2>Local index <span class="osx-root">/mnt/tank</span></h2>
+                      <div class="osx-source-flags">
+                        <span class="osx-source-flag"><svg class="icon"><use href="#i-database"/></svg>Snapshot</span>
+                        <span class="osx-source-flag"><svg class="icon"><use href="#i-lock"/></svg>Read-only</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="osx-pane-actions">
+                    <button class="osx-btn osx-btn--icon" type="button" data-source-panel="local" title="About the local index" aria-label="About the local index">
+                      <svg class="icon"><use href="#i-info"/></svg>
+                    </button>
+                  </div>
+                </header>
+
+                <div class="osx-pane-toolbar">
+                  <div class="osx-nav">
+                    <button class="osx-btn osx-btn--icon" type="button" data-nav="back" title="Back" aria-label="Back" disabled><svg class="icon"><use href="#i-chevron-left"/></svg></button>
+                    <button class="osx-btn osx-btn--icon" type="button" data-nav="forward" title="Forward" aria-label="Forward" disabled><svg class="icon"><use href="#i-chevron-right"/></svg></button>
+                    <button class="osx-btn osx-btn--icon" type="button" data-nav="up" title="Up one folder" aria-label="Up one folder"><svg class="icon"><use href="#i-chevron-up"/></svg></button>
+                  </div>
+                  <nav class="osx-breadcrumbs" data-crumbs="local" aria-label="Path">
+                    <button type="button" data-crumb="local">/mnt/tank</button>
+                  </nav>
+                  <button class="osx-btn osx-btn--subtle osx-mirror" type="button" data-cmd="mirror" title="Show the same path in the other pane">
+                    <span class="osx-mirror-icon">⇄</span><span class="osx-mirror-text">Same path</span>
+                  </button>
+                </div>
+
+                <div class="osx-searchbar">
+                  <svg class="icon osx-search-icon"><use href="#i-search"/></svg>
+                  <input type="search" data-search="local" placeholder="Search local index…" aria-label="Search local index" autocomplete="off" spellcheck="false">
+                  <select data-scope="local" aria-label="Search scope">
+                    <option value="all">Everywhere</option>
+                    <option value="folder">This folder</option>
+                  </select>
+                  <div class="osx-filter-wrap">
+                    <button class="osx-filter-btn" type="button" data-filter-toggle="local" aria-haspopup="true" aria-expanded="false">
+                      <svg class="icon"><use href="#i-filter"/></svg><span>Filter</span>
+                    </button>
+                    <div class="osx-filter-pop" data-filter-pop="local" hidden></div>
+                  </div>
+                </div>
+
+                <div class="osx-column-head" data-column-head="local">
+                  <button type="button" data-sort="name" class="is-sorted">Name</button>
+                  <button type="button" data-sort="type">Type</button>
+                  <button type="button" data-sort="status">Status</button>
+                  <button type="button" data-sort="size">Size</button>
+                  <button type="button" data-sort="modified">Modified</button>
+                </div>
+                <div class="osx-rows" data-rows="local" tabindex="0" role="listbox" aria-label="Local index files"></div>
+                <footer class="osx-pane-foot">
+                  <span data-pane-summary="local">16 items · 12 folders · 4 files · 6.41 TB</span>
+                  <span class="osx-mini-chips" data-pane-chips="local"></span>
+                </footer>
+              </section>
+
+              <section class="osx-pane" data-pane="remote" aria-label="Jottacloud Archive pane">
+                <header class="osx-pane-head">
+                  <div class="osx-pane-title">
+                    <span class="osx-pane-icon osx-pane-icon--remote"><svg class="icon"><use href="#i-cloud"/></svg></span>
+                    <div class="osx-pane-titles">
+                      <h2><span data-provider-name>Jottacloud</span> <span class="osx-pane-sep">·</span> <span class="osx-root" data-provider-root>Archive</span></h2>
+                      <div class="osx-source-flags">
+                        <span class="osx-source-flag"><svg class="icon"><use href="#i-database"/></svg>Snapshot</span>
+                        <span class="osx-source-flag"><svg class="icon"><use href="#i-lock"/></svg>Read-only</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="osx-pane-actions">
+                    <button class="osx-btn osx-btn--icon" type="button" data-source-panel="remote" title="About the remote snapshot" aria-label="About the remote snapshot">
+                      <svg class="icon"><use href="#i-info"/></svg>
+                    </button>
+                  </div>
+                </header>
+
+                <div class="osx-pane-toolbar">
+                  <div class="osx-nav">
+                    <button class="osx-btn osx-btn--icon" type="button" data-nav="back" title="Back" aria-label="Back" disabled><svg class="icon"><use href="#i-chevron-left"/></svg></button>
+                    <button class="osx-btn osx-btn--icon" type="button" data-nav="forward" title="Forward" aria-label="Forward" disabled><svg class="icon"><use href="#i-chevron-right"/></svg></button>
+                    <button class="osx-btn osx-btn--icon" type="button" data-nav="up" title="Up one folder" aria-label="Up one folder"><svg class="icon"><use href="#i-chevron-up"/></svg></button>
+                  </div>
+                  <nav class="osx-breadcrumbs" data-crumbs="remote" aria-label="Path">
+                    <button type="button" data-crumb="remote">Archive</button>
+                  </nav>
+                  <button class="osx-btn osx-btn--subtle osx-mirror" type="button" data-cmd="mirror" title="Show the same path in the other pane">
+                    <span class="osx-mirror-icon">⇄</span><span class="osx-mirror-text">Same path</span>
+                  </button>
+                </div>
+
+                <div class="osx-searchbar">
+                  <svg class="icon osx-search-icon"><use href="#i-search"/></svg>
+                  <input type="search" data-search="remote" placeholder="Search Jottacloud…" aria-label="Search Jottacloud" autocomplete="off" spellcheck="false">
+                  <select data-scope="remote" aria-label="Search scope">
+                    <option value="all">Everywhere</option>
+                    <option value="folder">This folder</option>
+                  </select>
+                  <div class="osx-filter-wrap">
+                    <button class="osx-filter-btn" type="button" data-filter-toggle="remote" aria-haspopup="true" aria-expanded="false">
+                      <svg class="icon"><use href="#i-filter"/></svg><span>Filter</span>
+                    </button>
+                    <div class="osx-filter-pop" data-filter-pop="remote" hidden></div>
+                  </div>
+                </div>
+
+                <div class="osx-column-head" data-column-head="remote">
+                  <button type="button" data-sort="name" class="is-sorted">Name</button>
+                  <button type="button" data-sort="type">Type</button>
+                  <button type="button" data-sort="status">Status</button>
+                  <button type="button" data-sort="size">Size</button>
+                  <button type="button" data-sort="modified">Modified</button>
+                </div>
+                <div class="osx-rows" data-rows="remote" tabindex="0" role="listbox" aria-label="Jottacloud files"></div>
+                <footer class="osx-pane-foot">
+                  <span data-pane-summary="remote">16 items · 13 folders · 3 files · 6.50 TB</span>
+                  <span class="osx-mini-chips" data-pane-chips="remote"></span>
+                </footer>
+              </section>
+            </div>
+
+            <aside class="osx-side" data-side-panel hidden aria-label="Side panel">
+              <header class="osx-side-head">
+                <div>
+                  <h2 data-side-title>Columns</h2>
+                  <p data-side-subtitle>Choose what both panes show and how folder sizes read.</p>
+                </div>
+                <button class="osx-btn osx-btn--icon" type="button" data-side-close aria-label="Close side panel" title="Close">
+                  <svg class="icon"><use href="#i-x"/></svg>
+                </button>
+              </header>
+              <div class="osx-side-body" data-side-body></div>
+            </aside>
+          </div>
+
+          <footer class="osx-statusbar">
+            <div class="osx-selection" data-selection><span class="muted">Select an item to see details.</span></div>
+            <button class="osx-btn osx-btn--primary" type="button" data-cmd="reveal-selected" disabled>Reveal counterpart</button>
+          </footer>
+        </div>
+      </section>
+
+      <!-- ------------------------------------------------------------- settings -->
+      <section class="os-window os-window--settings" id="win-settings" data-window="settings" data-title="Water settings" role="dialog" aria-label="Water settings" tabindex="-1" hidden>
+        <header class="os-titlebar" data-drag-handle>
+          <div class="os-lights">
+            <button class="os-light os-light--close" type="button" data-window-action="close" aria-label="Close water settings" title="Close"></button>
+            <button class="os-light os-light--min" type="button" data-window-action="minimize" aria-label="Minimise water settings" title="Minimise"></button>
+            <button class="os-light os-light--max" type="button" data-window-action="maximize" aria-label="Maximise water settings" title="Maximise"></button>
+          </div>
+          <div class="os-titlebar__title">
+            <span class="os-app-mark os-app-mark--settings"><svg class="icon"><use href="#i-drop"/></svg></span>
+            <b>Water settings</b>
+            <span class="os-titlebar__sub">Shape the current and the calm.</span>
+          </div>
+          <div class="os-titlebar__actions"></div>
+        </header>
+
+        <div class="osx-theme-panel">
+          <div class="osx-theme-body">
+          <div class="osx-theme-status" data-theme-status>
+            <span class="osx-theme-status-dot" aria-hidden="true"></span>
+            <p data-theme-status-text>Water effects are active. Drips follow your cursor.</p>
+            <button type="button" class="osx-theme-status-action" data-cmd="use-water-theme" hidden>Use Water</button>
+          </div>
+
+          <section class="osx-theme-group">
+            <h3>Effects</h3>
+            <label class="osx-theme-row">
+              <span class="osx-theme-text"><b>Water effects</b><small>Master switch for ripples and shimmer.</small></span>
+              <span class="ds-switch"><input type="checkbox" data-water-setting="effects" checked><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+            </label>
+            <label class="osx-theme-row">
+              <span class="osx-theme-text"><b>Drips follow the cursor</b><small>Small, soft rings trail your pointer.</small></span>
+              <span class="ds-switch"><input type="checkbox" data-water-setting="drips" checked><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+            </label>
+            <label class="osx-theme-row">
+              <span class="osx-theme-text"><b>Ripples on click</b><small>Clicking sends one larger ring outward.</small></span>
+              <span class="ds-switch"><input type="checkbox" data-water-setting="clickRipples" checked><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+            </label>
+            <label class="osx-theme-row">
+              <span class="osx-theme-text"><b>Caustic shimmer</b><small>Slow light patterns drift behind the app.</small></span>
+              <span class="ds-switch"><input type="checkbox" data-water-setting="caustics" checked><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+            </label>
+            <label class="osx-theme-row">
+              <span class="osx-theme-text"><b>Animated row highlights</b><small>Hover and selection colours flow between states.</small></span>
+              <span class="ds-switch"><input type="checkbox" data-water-setting="rowMotion" checked><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+            </label>
+          </section>
+
+          <section class="osx-theme-group">
+            <h3>Current</h3>
+            <label class="osx-theme-row osx-theme-row--select">
+              <span class="osx-theme-text"><b>Flow speed</b><small>How quickly the water moves.</small></span>
+              <select class="osx-select" data-water-setting="speed" aria-label="Flow speed">
+                <option value="calm">Calm</option>
+                <option value="flowing" selected>Flowing</option>
+                <option value="rapid">Rapid</option>
+              </select>
+            </label>
+            <label class="osx-theme-row osx-theme-row--select">
+              <span class="osx-theme-text"><b>Drip energy</b><small>How lively cursor drips feel.</small></span>
+              <select class="osx-select" data-water-setting="intensity" aria-label="Drip energy">
+                <option value="subtle" selected>Subtle</option>
+                <option value="balanced">Balanced</option>
+                <option value="lively">Lively</option>
+              </select>
+            </label>
+          </section>
+
+          <section class="osx-theme-group">
+            <h3>Look</h3>
+            <label class="osx-theme-row osx-theme-row--select">
+              <span class="osx-theme-text"><b>Background</b><small>A still gradient or a living sea.</small></span>
+              <select class="osx-select" data-water-setting="background" aria-label="Background">
+                <option value="still" selected>Still gradient</option>
+                <option value="sea">Sea and waves</option>
+              </select>
+            </label>
+            <label class="osx-theme-row osx-theme-row--select">
+              <span class="osx-theme-text"><b>Water tone</b><small>Choose the palette of the sea.</small></span>
+              <select class="osx-select" data-water-setting="tone" aria-label="Water tone">
+                <option value="lagoon">Lagoon</option>
+                <option value="ocean" selected>Ocean</option>
+                <option value="deep">Deep</option>
+              </select>
+            </label>
+            <label class="osx-theme-row">
+              <span class="osx-theme-text"><b>Glass surfaces</b><small>Frosted panes over the moving water.</small></span>
+              <span class="ds-switch"><input type="checkbox" data-water-setting="glass" checked><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+            </label>
+          </section>
+
+          </div>
+          <footer class="osx-theme-foot">
+            <button class="osx-btn osx-btn--ghost" type="button" data-cmd="reset-water-settings">Reset water settings</button>
+            <p>Saved on this device · Water is available from the theme menu.</p>
+          </footer>
+        </div>
+      </section>
+
+      <!-- ------------------------------------------------------------- terminal -->
+      <section class="os-window os-window--terminal" id="win-terminal" data-window="terminal" data-title="Terminal" role="dialog" aria-label="Terminal" tabindex="-1" hidden>
+        <header class="os-titlebar" data-drag-handle>
+          <div class="os-lights">
+            <button class="os-light os-light--close" type="button" data-window-action="close" aria-label="Close Terminal" title="Close"></button>
+            <button class="os-light os-light--min" type="button" data-window-action="minimize" aria-label="Minimise Terminal" title="Minimise"></button>
+            <button class="os-light os-light--max" type="button" data-window-action="maximize" aria-label="Maximise Terminal" title="Maximise"></button>
+          </div>
+          <div class="os-titlebar__title">
+            <span class="os-app-mark os-app-mark--terminal"><svg class="icon"><use href="#i-terminal"/></svg></span>
+            <b>Terminal</b><span class="os-titlebar__sub">tide@water — zsh</span>
+          </div>
+          <div class="os-titlebar__actions"><span class="ds-badge ds-badge--muted"><span class="ds-dot" style="color:var(--ds-green)"></span>Local</span></div>
+        </header>
+        <div class="os-terminal" data-terminal>
+          <div class="os-term-line"><span class="os-term-prompt">tide@water</span><span class="os-term-path">~/tank</span><span class="os-term-cmd">tank compare --provider jottacloud --root Archive</span></div>
+          <div class="os-term-line os-term-muted">Reading local index · 2,431,882 entries</div>
+          <div class="os-term-line os-term-muted">Reading Archive snapshot · 1,434,971 entries</div>
+          <div class="os-term-line os-term-ok">✓ Comparison complete in 42.8s</div>
+          <div class="os-term-line"><span class="os-term-key">same</span> 1,256,127 <span class="os-term-key">moved</span> 3,204 <span class="os-term-key">maybe</span> 1,873</div>
+          <div class="os-term-line"><span class="os-term-key">partial</span> 8,412 <span class="os-term-key">missing</span> 176,971 <span class="os-term-key">local</span> 18,204</div>
+          <div class="os-term-line os-term-muted">Report written to ~/tank/Reports/aurora-2026-11-17.json</div>
+          <div class="os-term-line"><span class="os-term-prompt">tide@water</span><span class="os-term-path">~/tank</span><span class="os-term-cursor" aria-hidden="true"></span></div>
+        </div>
+        <div class="os-terminal__foot">
+          <span>Read-only · no uploads</span>
+          <button class="ds-btn ds-btn--small ds-btn--quiet" type="button" data-cmd="run-terminal"><svg class="icon"><use href="#i-play"/></svg>Run again</button>
+        </div>
+      </section>
+
+      <!-- ------------------------------------------------------------- music -->
+      <section class="os-window os-window--music" id="win-music" data-window="music" data-title="Tide Radio" role="dialog" aria-label="Tide Radio" tabindex="-1" hidden>
+        <header class="os-titlebar" data-drag-handle>
+          <div class="os-lights">
+            <button class="os-light os-light--close" type="button" data-window-action="close" aria-label="Close Tide Radio" title="Close"></button>
+            <button class="os-light os-light--min" type="button" data-window-action="minimize" aria-label="Minimise Tide Radio" title="Minimise"></button>
+            <button class="os-light os-light--max" type="button" data-window-action="maximize" aria-label="Maximise Tide Radio" title="Maximise"></button>
+          </div>
+          <div class="os-titlebar__title">
+            <span class="os-app-mark os-app-mark--music"><svg class="icon"><use href="#i-volume"/></svg></span>
+            <b>Tide Radio</b>
+          </div>
+          <div class="os-titlebar__actions"><span class="os-eq" data-eq aria-hidden="true"><i></i><i></i><i></i></span></div>
+        </header>
+        <div class="os-player is-playing" data-player>
+          <div class="os-player__art" aria-hidden="true">
+            <span class="os-player__orb"></span>
+            <span class="os-player__ring"></span>
+            <span class="os-player__ring os-player__ring--2"></span>
+          </div>
+          <div class="os-player__body">
+            <span class="os-player__eyebrow">Water OS Sessions</span>
+            <h3 data-track-title>Deep Current</h3>
+            <p data-track-artist>Tide Ensemble · 04:32</p>
+            <div class="os-player__progress"><i data-track-fill style="width:38%"></i></div>
+            <div class="os-player__controls">
+              <button class="os-icon-button" type="button" data-cmd="previous-track" aria-label="Previous track"><svg class="icon" style="transform:rotate(180deg)"><use href="#i-skip"/></svg></button>
+              <button class="os-player__play" type="button" data-cmd="toggle-play" aria-label="Pause" aria-pressed="true"><svg class="icon"><use href="#i-pause"/></svg></button>
+              <button class="os-icon-button" type="button" data-cmd="next-track" aria-label="Next track"><svg class="icon"><use href="#i-skip"/></svg></button>
+              <span class="os-player__time" data-track-time>1:43 / 4:32</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------------------------------------------------------- shortcuts -->
+      <section class="os-window os-window--shortcuts" id="win-shortcuts" data-window="shortcuts" data-title="Keyboard shortcuts" role="dialog" aria-label="Keyboard shortcuts" tabindex="-1" hidden>
+        <header class="os-titlebar" data-drag-handle>
+          <div class="os-lights">
+            <button class="os-light os-light--close" type="button" data-window-action="close" aria-label="Close keyboard shortcuts" title="Close"></button>
+            <button class="os-light os-light--min" type="button" data-window-action="minimize" aria-label="Minimise keyboard shortcuts" title="Minimise"></button>
+            <button class="os-light os-light--max" type="button" data-window-action="maximize" aria-label="Maximise keyboard shortcuts" title="Maximise"></button>
+          </div>
+          <div class="os-titlebar__title">
+            <span class="os-app-mark os-app-mark--settings"><svg class="icon"><use href="#i-keyboard"/></svg></span>
+            <b>Keyboard shortcuts</b>
+            <span class="os-titlebar__sub">Explorer key map</span>
+          </div>
+          <div class="os-titlebar__actions"><span class="ds-chip">Simple (default)</span></div>
+        </header>
+        <div class="osx-shortcuts">
+          <section>
+            <h3>Explorer</h3>
+            <div class="osx-shortcut-row"><span>Focus local pane</span><span class="osx-keys"><kbd>⌘</kbd><kbd>1</kbd></span></div>
+            <div class="osx-shortcut-row"><span>Focus remote pane</span><span class="osx-keys"><kbd>⌘</kbd><kbd>2</kbd></span></div>
+            <div class="osx-shortcut-row"><span>Search the active pane</span><span class="osx-keys"><kbd>⌘</kbd><kbd>F</kbd></span></div>
+            <div class="osx-shortcut-row"><span>Open the command bar</span><span class="osx-keys"><kbd>⌘</kbd><kbd>K</kbd></span></div>
+            <div class="osx-shortcut-row"><span>Move selection</span><span class="osx-keys"><kbd>↑</kbd><kbd>↓</kbd></span></div>
+            <div class="osx-shortcut-row"><span>Activate selected item</span><span class="osx-keys"><kbd>↵</kbd></span></div>
+            <div class="osx-shortcut-row"><span>Up one folder</span><span class="osx-keys"><kbd>⌫</kbd></span></div>
+          </section>
+          <section>
+            <h3>Views</h3>
+            <div class="osx-shortcut-row"><span>Show or hide dotfiles</span><span class="osx-keys"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>.</kbd></span></div>
+            <div class="osx-shortcut-row"><span>Toggle the legend</span><span class="osx-keys"><kbd>⌘</kbd><kbd>/</kbd></span></div>
+            <div class="osx-shortcut-row"><span>Columns settings</span><span class="osx-keys"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>C</kbd></span></div>
+            <div class="osx-shortcut-row"><span>Analytics</span><span class="osx-keys"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>A</kbd></span></div>
+            <div class="osx-shortcut-row"><span>Water settings</span><span class="osx-keys"><kbd>⌘</kbd><kbd>,</kbd></span></div>
+            <div class="osx-shortcut-row"><span>Close overlay</span><span class="osx-keys"><kbd>esc</kbd></span></div>
+          </section>
+          <p class="osx-shortcuts-note">Ctrl works in place of ⌘ on other keyboards. The shortcut sheet is a read-only concept in this demo.</p>
+        </div>
+      </section>
+
+      <!-- -------------------------------------------------------------- about -->
+<!-- ------------------------------------------------------------- about -->
+      <section class="os-window os-window--about" id="win-about" data-window="about" data-title="About Water OS" role="dialog" aria-label="About Water OS" tabindex="-1" hidden>
+        <header class="os-titlebar" data-drag-handle>
+          <div class="os-lights">
+            <button class="os-light os-light--close" type="button" data-window-action="close" aria-label="Close About" title="Close"></button>
+            <button class="os-light os-light--min" type="button" data-window-action="minimize" aria-label="Minimise About" title="Minimise"></button>
+            <button class="os-light os-light--max" type="button" data-window-action="maximize" aria-label="Maximise About" title="Maximise"></button>
+          </div>
+          <div class="os-titlebar__title"><b>About Water OS</b></div>
+        </header>
+        <div class="os-about">
+          <span class="os-about__mark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none">
+              <rect x="5" y="13" width="36" height="26" rx="8" class="logo-back"/>
+              <rect x="23" y="25" width="36" height="26" rx="8" class="logo-front"/>
+              <path d="m31 38 4.4 4.4 8.8-9.6" class="logo-check"/>
+            </svg>
+          </span>
+          <h2>Water OS <span>1.0</span></h2>
+          <p>A desktop concept drawn from the Data Cloud Compare design system. Every surface, badge, and control here is a token or component from the gallery.</p>
+          <div class="os-about__meta">
+            <span class="ds-chip"><span class="ds-dot"></span>Ocean current</span>
+            <span class="ds-chip">Glass windows</span>
+            <span class="ds-chip">Local-first</span>
+          </div>
+          <div class="os-about__actions">
+            <a class="ds-btn ds-btn--primary ds-btn--small" href="../">Open the design system <svg class="icon"><use href="#i-arrow-right"/></svg></a>
+            <a class="ds-btn ds-btn--small ds-btn--ghost" href="../../demo/">Try the real explorer</a>
+          </div>
+          <span class="os-about__fine">Built with plain CSS and JavaScript. No images, no frameworks.</span>
+        </div>
+      </section>
+    </main>
+
+    <div class="os-dock-wrap" aria-label="Dock">
+      <div class="os-dock" role="toolbar" aria-label="Applications">
+        <button class="os-dock__item is-open is-running" type="button" data-cmd="open-explorer" data-label="Explorer" aria-label="Explorer">
+          <span class="os-dock__tile" style="--tile:#38d6ff"><svg class="icon"><use href="#i-folder-open"/></svg></span>
+        </button>
+        <button class="os-dock__item" type="button" data-cmd="open-command" data-label="Search" aria-label="Search">
+          <span class="os-dock__tile" style="--tile:#9ec5ce"><svg class="icon"><use href="#i-search"/></svg></span>
+        </button>
+        <button class="os-dock__item" type="button" data-cmd="open-settings" data-label="Settings" aria-label="System settings">
+          <span class="os-dock__tile" style="--tile:#5ef2b0"><svg class="icon"><use href="#i-gear"/></svg></span>
+        </button>
+        <button class="os-dock__item" type="button" data-cmd="open-terminal" data-label="Terminal" aria-label="Terminal">
+          <span class="os-dock__tile" style="--tile:#6fd5ff"><svg class="icon"><use href="#i-terminal"/></svg></span>
+        </button>
+        <button class="os-dock__item" type="button" data-cmd="open-music" data-label="Tide Radio" aria-label="Tide Radio">
+          <span class="os-dock__tile" style="--tile:#ff9ad5"><svg class="icon"><use href="#i-volume"/></svg></span>
+        </button>
+        <button class="os-dock__item" type="button" data-cmd="open-about" data-label="About" aria-label="About Water OS">
+          <span class="os-dock__tile" style="--tile:#ffd27a"><svg class="icon"><use href="#i-drop"/></svg></span>
+        </button>
+        <span class="os-dock__sep" aria-hidden="true"></span>
+        <button class="os-dock__item" type="button" data-cmd="trash" data-label="Trash" aria-label="Trash">
+          <span class="os-dock__tile os-dock__tile--trash" style="--tile:#9ec5ce"><svg class="icon"><use href="#i-trash"/></svg></span>
+        </button>
+        <a class="os-dock__item" href="../" data-label="Design system" aria-label="Design system gallery">
+          <span class="os-dock__tile" style="--tile:#c3a8ff"><svg class="icon"><use href="#i-layers"/></svg></span>
+        </a>
+      </div>
+      <p class="os-dock__hint">Click desktop icons · <span class="ds-kbd">⌘K</span> for commands</p>
+    </div>
+  </div>
+
+  <div class="os-overlay os-command-overlay" data-command-overlay hidden>
+    <div class="osx-command" role="dialog" aria-modal="true" aria-labelledby="osx-command-title">
+      <h2 class="sr-text" id="osx-command-title">Command bar</h2>
+      <div class="osx-command-input-row">
+        <svg class="icon osx-command-input-icon"><use href="#i-search"/></svg>
+        <input id="osx-command-input" data-command-input type="text" role="combobox" aria-autocomplete="list" aria-expanded="true" aria-controls="osx-command-results" placeholder="Search files and folders, or run a command…" autocomplete="off" spellcheck="false" aria-label="Search files and folders or run a command">
+        <span class="osx-spinner" data-command-spinner hidden aria-hidden="true"></span>
+        <button type="button" class="osx-command-esc" data-command-close title="Close command bar" aria-label="Close command bar">Esc</button>
+      </div>
+      <div class="osx-command-results" id="osx-command-results" data-command-results role="listbox" aria-label="Commands and files"></div>
+      <div class="osx-command-empty" data-command-empty hidden>
+        <p data-command-empty-title>No matches</p>
+        <span data-command-empty-hint>Try a different word or command.</span>
+      </div>
+      <footer class="osx-command-foot">
+        <span><kbd>↑</kbd><kbd>↓</kbd> to move · <kbd>↵</kbd> to open</span>
+        <span><kbd>esc</kbd> to close · <kbd>⌘K</kbd> to toggle</span>
+      </footer>
+    </div>
+  </div>
+
+
+  <div class="os-toast-host" data-toast-host aria-live="polite" aria-atomic="false"></div>
+</body>
+</html>

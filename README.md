@@ -10,10 +10,12 @@ The repository also contains the product's public sites:
 - **Documentation:** [`docs/`](docs/) — Docusaurus, deployed under `/docs/`.
 - **Design system:** [`design-system/`](design-system/) — the water theme's tokens,
   components, effects, and an interactive component gallery at `/design-system/`.
+- **OS concept:** [`design-system/os/`](design-system/os/) — a desktop environment
+  built from those tokens and components, including a two-pane file explorer.
 - **Live demo:** [`app/`](app/) — the explorer UI running on a generated synthetic dataset,
   assembled into `/demo/` with no server or SQLite.
 
-All four are assembled into one GitHub Pages artifact by
+All of these are assembled into one GitHub Pages artifact by
 [`.github/workflows/pages.yml`](.github/workflows/pages.yml).
 
 ## What it does
@@ -99,7 +101,7 @@ tools/screenshots/               reference screenshots + comparison harness
 report/                          generated comparison outputs (git-ignored by default)
 marketing/                       static marketing site (water theme)
 docs/                            Docusaurus documentation site
-design-system/                   shared water tokens, components, and gallery
+design-system/                   shared water tokens, components, gallery, and OS concept
 ```
 
 ## Notes

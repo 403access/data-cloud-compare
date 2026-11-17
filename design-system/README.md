@@ -5,6 +5,8 @@ theme. It is plain CSS custom properties plus one dependency-free ES module — 
 framework, no build step, no image assets.
 
 - **Live showcase:** `/design-system/` in the assembled site.
+- **OS concept:** `/design-system/os/` — a desktop environment composed from the
+  same tokens and components.
 - **Tokens:** [`tokens.css`](tokens.css)
 - **Components:** [`components.css`](components.css)
 - **Water effects:** [`water.js`](water.js)
@@ -140,6 +142,31 @@ when the tab is hidden.
 - The water controls in the showcase expose `aria-pressed`.
 - Interactive text meets contrast on `--ds-surface` in both themes.
 
+## Water OS concept
+
+[`os/`](os/index.html) is a desktop-environment concept: a glass menu bar, a
+dock, draggable windows, and a command bar built around a faithful reproduction
+of the real explorer application.
+
+- The Explorer window follows `app/src/web`: app bar, two five-column panes,
+  toolbar and breadcrumbs, search with scope and status filters, sortable
+  columns, pane footers, selection status bar, and the columns, details, source,
+  and analytics side panels.
+- The Water settings window mirrors the app's theme sidebar: effects, drips,
+  click ripples, caustics, row motion, flow speed, drip energy, background,
+  tone, glass surfaces, reset, and the paused/active status callout.
+- The command bar mirrors the app's command catalog and file search: Navigation,
+  Search, View, Columns, Sort, Filters, Appearance, and Provider groups, `>`
+  commands-only mode, fuzzy matching, and local/remote file results.
+- Appearance preferences use the same storage keys as the app
+  (`explorer-theme`, `explorer-water-settings`, `explorer-provider`) and also
+  write `dcc-design-prefs` so the gallery follows the same tone and theme.
+- Window chrome, the dock, and desktop widgets are local layout plus `--ds-*`
+  tokens.
+- Keyboard: `⌘K` / `Ctrl K` opens the command bar, `⌘F` focuses the explorer
+  search, `⌘1` / `⌘2` focus a pane, `⌘,` opens water settings, and `Esc`
+  closes menus and overlays.
+
 ## Files
 
 ```text
@@ -150,4 +177,8 @@ design-system/
   index.html       component showcase
   showcase.css     showcase-only layout
   showcase.js      showcase controls
+  os/              Water OS desktop concept
+    index.html     desktop shell, windows, dock, command bar
+    os.css         window chrome and desktop layout
+    os.js          window manager and explorer interactions
 ```
