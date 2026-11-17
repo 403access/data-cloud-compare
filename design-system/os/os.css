@@ -4165,6 +4165,114 @@ body.os code { font-family: var(--ds-font-mono); }
 
 .os-app-hero__mark--battery { --app: var(--ds-green); }
 
+/* ---------------------------------------------------------------- sound */
+
+.os-tray--sound { width: 292px; padding: 9px; }
+
+.os-sound-volume {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 6px;
+  border-bottom: 1px solid var(--ds-line);
+}
+
+.os-sound-mute {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  flex: none;
+  border-radius: var(--ds-radius-xs);
+  color: var(--ds-text-2);
+}
+
+.os-sound-mute:hover { background: var(--ds-hover); color: var(--ds-text); }
+.os-sound-mute .icon { width: 14px; height: 14px; }
+
+.os-sound-volume input[type="range"] {
+  flex: 1;
+  min-width: 0;
+  height: 3px;
+  accent-color: var(--ds-accent);
+  cursor: pointer;
+}
+
+.os-sound-value {
+  width: 34px;
+  flex: none;
+  color: var(--ds-text-2);
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.os-sound-now {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 3px 6px 4px;
+}
+
+.os-sound-now__art {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border: 1px solid color-mix(in srgb, var(--ds-pink) 32%, var(--ds-line));
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--ds-pink) 48%, transparent), transparent 48%),
+    linear-gradient(150deg, var(--ds-bg-elevated), var(--ds-bg));
+  overflow: hidden;
+}
+
+.os-sound-now__art i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff, var(--ds-pink) 60%, #d35aa6);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--ds-pink) 55%, transparent);
+  transform: translate(-50%, -50%);
+}
+
+.os-sound-now__text { display: grid; gap: 1px; flex: 1; min-width: 0; }
+.os-sound-now__text b {
+  overflow: hidden;
+  color: var(--ds-text);
+  font-size: 9.5px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.os-sound-now__text small {
+  overflow: hidden;
+  color: var(--ds-text-3);
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.os-sound-now .os-icon-button { width: 26px; height: 26px; flex: none; color: var(--ds-text-2); }
+
+.os-output-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 6px;
+  color: var(--ds-text-2);
+}
+
+.os-output-row .icon { width: 14px; height: 14px; color: var(--ds-text-3); }
+.os-output-row__text { display: grid; gap: 1px; flex: 1; min-width: 0; }
+.os-output-row__text b { color: var(--ds-text); font-size: 9px; font-weight: 600; }
+.os-output-row__text small { color: var(--ds-text-3); font-size: 8px; }
+.os-output-row .os-output-row__check { color: var(--ds-accent); }
+
 /* ----------------------------------------------------------- calendar app */
 
 .os-calendar-app {
