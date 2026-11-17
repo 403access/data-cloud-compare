@@ -176,6 +176,9 @@ of the real explorer application.
 - **Task Manager** shows CPU, memory, and storage cards above a process table.
   It samples every six seconds (or on demand), updates rows in place, and lets
   you select and end a process, which recalculates the totals and meters.
+- One viewport-wide water canvas sits above the windows, menu bar, and dock
+  (below the command bar and toasts) and listens on `window`, so caustics, cursor
+  drips, and click ripples play across every surface, not just the desktop.
 - Appearance preferences use the same storage keys as the app
   (`explorer-theme`, `explorer-water-settings`, `explorer-provider`) and also
   write `dcc-design-prefs` so the gallery follows the same tone and theme.

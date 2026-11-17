@@ -250,7 +250,9 @@ const activeWater = () => state.water.effects && state.themeMode === "water";
 
 const surface = canvas
   ? new WaterSurface(canvas, {
-      scope: desktop,
+      // Listen on the window, not just the desktop, so drips and ripples also
+      // follow the cursor across windows, the menu bar, and the dock.
+      scope: window,
       tone: state.water.tone,
       speed: state.water.speed,
       intensity: state.water.intensity,
