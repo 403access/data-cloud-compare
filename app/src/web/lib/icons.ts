@@ -195,6 +195,10 @@ export const COMMAND_ICONS: Record<string, string> = {
     `<path d="M2.8 13.4V8.2M6.4 13.4V4.1M10 13.4v-3.6M13.6 13.4V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>` +
       `<path d="M2 13.9h12.2" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>`,
   ),
+  keyboard: svg(
+    `<rect x="1.9" y="4" width="12.2" height="8" rx="1.6" stroke="currentColor" stroke-width="1.2"/>` +
+      `<path d="M4 6.4h.01M6.2 6.4h.01M8.4 6.4h.01M10.6 6.4h.01M4 8.4h.01M6.2 8.4h.01M8.4 8.4h.01M10.6 8.4h.01M5.2 10.4h5.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>`,
+  ),
   reset: svg(
     `<path d="M13.2 8a5.2 5.2 0 1 1-1.5-3.7M13.1 2.6v3.1H10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>`,
   ),

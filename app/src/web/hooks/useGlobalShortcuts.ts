@@ -1,12 +1,16 @@
 /** Document-level keyboard shortcuts for panes, sidebars and the command bar. */
 
 import { useEffect, type Dispatch, type SetStateAction } from "react";
+import { shortcutMatches, type ShortcutBindings } from "../lib/shortcuts";
 import type { Side, SidebarMode } from "../lib/types";
 
 interface Options {
   active: Side;
   commandOpen: boolean;
   setCommandOpen: Dispatch<SetStateAction<boolean>>;
+  shortcutsOpen: boolean;
+  setShortcutsOpen: Dispatch<SetStateAction<boolean>>;
+  shortcuts: ShortcutBindings;
   themePanelOpen: boolean;
   setThemePanelOpen: Dispatch<SetStateAction<boolean>>;
   sidebarMode: SidebarMode;
@@ -21,6 +25,9 @@ export function useGlobalShortcuts({
   active,
   commandOpen,
   setCommandOpen,
+  shortcutsOpen,
+  setShortcutsOpen,
+  shortcuts,
   themePanelOpen,
   setThemePanelOpen,
   sidebarMode,
@@ -33,39 +40,95 @@ export function useGlobalShortcuts({
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
       const mod = event.metaKey || event.ctrlKey;
-      if (mod && !event.altKey && event.key.toLowerCase() === "k") {
+      const isEscape = event.key === "Escape";
+      const target = event.target;
+      const typing =
+        target instanceof HTMLElement &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.tagName === "SELECT" ||
+          target.isContentEditable);
+      const chordAllowed = !typing || event.ctrlKey || event.altKey || event.metaKey;
+      const closeOverlay =
+        chordAllowed && shortcutMatches(event, shortcuts["close-overlay"]);
+      const closeWindow =
+        chordAllowed && shortcutMatches(event, shortcuts["close-window"]);
+
+      if (shortcutsOpen) {
+        if (isEscape || closeOverlay || closeWindow) {
+          event.preventDefault();
+          setShortcutsOpen(false);
+        }
+        return;
+      }
+
+      if (
+        chordAllowed &&
+        shortcutMatches(event, shortcuts["shortcuts-cheatsheet"])
+      ) {
+        event.preventDefault();
+        setCommandOpen(false);
+        setShortcutsOpen(true);
+        return;
+      }
+
+      if (chordAllowed && shortcutMatches(event, shortcuts["command-palette"])) {
         event.preventDefault();
         setCommandOpen((open) => !open);
         return;
       }
+
+      const closeTopmost = (): boolean => {
+        if (commandOpen) {
+          setCommandOpen(false);
+          return true;
+        }
+        if (themePanelOpen) {
+          setThemePanelOpen(false);
+          return true;
+        }
+        if (sidebarMode) {
+          setSidebarMode(null);
+          return true;
+        }
+        if (legendOpen) {
+          setLegendOpen(false);
+          return true;
+        }
+        if (filterMenu) {
+          setFilterMenu(null);
+          return true;
+        }
+        return false;
+      };
+
+      if (closeWindow) {
+        event.preventDefault();
+        closeTopmost();
+        return;
+      }
+
       if (commandOpen) {
-        if (event.key === "Escape") {
+        if (isEscape || closeOverlay) {
           event.preventDefault();
           setCommandOpen(false);
         }
         return;
       }
-      if (event.key === "Escape") {
-        if (themePanelOpen) {
+
+      if (isEscape || closeOverlay) {
+        if (closeTopmost()) {
           event.preventDefault();
-          setThemePanelOpen(false);
           return;
         }
-        if (sidebarMode) {
-          event.preventDefault();
-          setSidebarMode(null);
-          return;
-        }
-        if (legendOpen) {
-          event.preventDefault();
-          setLegendOpen(false);
-          return;
-        }
-        if (filterMenu) {
-          event.preventDefault();
-          setFilterMenu(null);
-          return;
-        }
+      }
+
+      // Keep the app's established command palette alias working alongside the
+      // configurable Simple key map.
+      if (mod && !event.altKey && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setCommandOpen((open) => !open);
+        return;
       }
       if (mod && event.key.toLowerCase() === "f") {
         event.preventDefault();
@@ -82,6 +145,9 @@ export function useGlobalShortcuts({
     active,
     commandOpen,
     setCommandOpen,
+    shortcutsOpen,
+    setShortcutsOpen,
+    shortcuts,
     themePanelOpen,
     setThemePanelOpen,
     sidebarMode,

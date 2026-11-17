@@ -64,6 +64,20 @@ function GearIcon() {
   );
 }
 
+export function KeyboardIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <rect x="2.2" y="5" width="15.6" height="10" rx="2" stroke="currentColor" strokeWidth="1.4" />
+      <path
+        d="M4.8 8h.01M7.4 8h.01M10 8h.01M12.6 8h.01M15.2 8h.01M4.8 10.4h.01M7.4 10.4h.01M10 10.4h.01M12.6 10.4h.01M15.2 10.4h.01M6.4 12.6h7.2"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 interface Props {
   provider: ProviderInfo;
   providers: ProviderInfo[];
@@ -72,6 +86,7 @@ interface Props {
   legendOpen: boolean;
   hidden: boolean;
   themePanelOpen: boolean;
+  shortcutsOpen: boolean;
   commandOpen: boolean;
   shortcut: string;
   onProviderSwitch: (key: string) => void;
@@ -81,6 +96,7 @@ interface Props {
   onLegendToggle: () => void;
   onHiddenChange: (value: boolean) => void;
   onThemePanelToggle: () => void;
+  onShortcutsToggle: () => void;
 }
 
 function Legend({ provider }: { provider: ProviderInfo }) {
@@ -125,6 +141,7 @@ export function AppBar({
   legendOpen,
   hidden,
   themePanelOpen,
+  shortcutsOpen,
   commandOpen,
   shortcut,
   onProviderSwitch,
@@ -134,6 +151,7 @@ export function AppBar({
   onLegendToggle,
   onHiddenChange,
   onThemePanelToggle,
+  onShortcutsToggle,
 }: Props) {
   return (
     <header className="appbar">
@@ -258,6 +276,20 @@ export function AppBar({
           </select>
           <ChevronIcon />
         </div>
+
+        <button
+          id="shortcuts-toggle"
+          className={`btn icon-btn${shortcutsOpen ? " active" : ""}`}
+          type="button"
+          title="Keyboard shortcuts"
+          aria-label="Keyboard shortcuts"
+          aria-haspopup="dialog"
+          aria-controls="shortcuts-overlay"
+          aria-expanded={shortcutsOpen}
+          onClick={onShortcutsToggle}
+        >
+          <KeyboardIcon />
+        </button>
 
         <button
           id="theme-settings-toggle"

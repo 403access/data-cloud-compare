@@ -8,6 +8,7 @@ import { useExplorerUi } from "./hooks/useExplorerUi";
 import { usePaneWorkspace } from "./hooks/usePaneWorkspace";
 import { useProviderCatalog } from "./hooks/useProviderCatalog";
 import { useProviderSwitch } from "./hooks/useProviderSwitch";
+import { useShortcutSettings } from "./hooks/useShortcutSettings";
 import { useThemeMode } from "./hooks/useThemeMode";
 import { useToast } from "./hooks/useToast";
 import { useWaterSettings } from "./hooks/useWaterSettings";
@@ -16,6 +17,7 @@ import { AppBar } from "./components/AppBar";
 import { CommandBar } from "./components/CommandBar";
 import { PanePair } from "./components/PanePair";
 import { ShellPanels } from "./components/ShellPanels";
+import { ShortcutsWindow } from "./components/ShortcutsWindow";
 import { StatusBar } from "./components/StatusBar";
 import { Toast } from "./components/Toast";
 import { WaterBackdrop } from "./components/WaterBackdrop";
@@ -32,7 +34,8 @@ export function App() {
     getProvider,
     getProviderKey,
   } = useProviderCatalog(toast);
-  const ui = useExplorerUi();
+  const { shortcuts, setShortcut, resetShortcuts } = useShortcutSettings(toast);
+  const ui = useExplorerUi(shortcuts);
 
   const { themeMode, applyThemeMode } = useThemeMode({
     onWaterPanel: () => ui.setThemePanelOpen(true),
@@ -118,6 +121,7 @@ export function App() {
         legendOpen={ui.legendOpen}
         hidden={ui.hidden}
         themePanelOpen={ui.themePanelOpen}
+        shortcutsOpen={ui.shortcutsOpen}
         commandOpen={ui.commandOpen}
         shortcut={ui.shortcut}
         onProviderSwitch={(key) => void switchProvider(key)}
@@ -127,6 +131,7 @@ export function App() {
         onLegendToggle={ui.toggleLegend}
         onHiddenChange={setHidden}
         onThemePanelToggle={ui.toggleThemePanel}
+        onShortcutsToggle={ui.toggleShortcuts}
       />
 
       <main className={ui.panesClass} id="panes">
@@ -196,6 +201,7 @@ export function App() {
         sidebarMode={ui.sidebarMode}
         themeMode={themeMode}
         themePanelOpen={ui.themePanelOpen}
+        shortcutsOpen={ui.shortcutsOpen}
         waterEffects={waterSettings.effects}
         columns={columns}
         shortcut={ui.shortcut}
@@ -213,11 +219,20 @@ export function App() {
         onResetColumns={resetColumns}
         onThemeMode={(mode) => applyThemeMode(mode)}
         onThemePanel={ui.setThemePanelOpen}
+        onShortcutsPanel={(open) => (open ? ui.openShortcuts() : ui.closeShortcuts())}
         onToggleWaterEffects={() =>
           updateWaterSettings({ effects: !waterRef.current.effects })
         }
         onProviderSwitch={(key) => void switchProvider(key)}
         onToast={toast}
+      />
+
+      <ShortcutsWindow
+        open={ui.shortcutsOpen}
+        shortcuts={shortcuts}
+        onChange={setShortcut}
+        onReset={resetShortcuts}
+        onClose={ui.closeShortcuts}
       />
 
       <Toast message={toastState.message} show={toastState.show} />

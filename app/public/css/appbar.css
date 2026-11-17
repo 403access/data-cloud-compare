@@ -228,6 +228,11 @@
   border-color: color-mix(in srgb, var(--accent) 42%, var(--line));
   background: var(--accent-soft);
 }
+#shortcuts-toggle.active {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--line));
+  background: var(--accent-soft);
+}
 
 .toggle {
   display: inline-flex;

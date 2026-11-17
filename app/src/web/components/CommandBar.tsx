@@ -45,6 +45,7 @@ interface Props {
   sidebarMode: string | null;
   themeMode: ThemeMode;
   themePanelOpen: boolean;
+  shortcutsOpen: boolean;
   waterEffects: boolean;
   columns: Set<string>;
   shortcut: string;
@@ -62,6 +63,7 @@ interface Props {
   onResetColumns: () => void;
   onThemeMode: (mode: ThemeMode) => void;
   onThemePanel: (open: boolean) => void;
+  onShortcutsPanel: (open: boolean) => void;
   onToggleWaterEffects: () => void;
   onProviderSwitch: (key: string) => void;
   onToast: (message: string) => void;
@@ -397,6 +399,13 @@ export function CommandBar(props: Props) {
       keywords: "help key colours colors",
       check: legendOpen,
       run: () => props.onSetLegend(!legendOpen),
+    });
+    add("View", props.shortcutsOpen ? "Close keyboard shortcuts" : "Open keyboard shortcuts", {
+      key: "toggle-shortcuts-window",
+      icon: "keyboard",
+      subtitle: "Review the current key map and rebind keys",
+      keywords: "shortcut cheat sheet keys bindings keyboard",
+      run: () => props.onShortcutsPanel(!props.shortcutsOpen),
     });
     add("View", sidebarMode === "columns" ? "Close the columns sidebar" : "Open the columns sidebar", {
       key: "toggle-columns-panel",

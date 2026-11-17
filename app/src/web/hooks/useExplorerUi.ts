@@ -2,14 +2,16 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useGlobalShortcuts } from "./useGlobalShortcuts";
+import type { ShortcutBindings } from "../lib/shortcuts";
 import type { Side, SidebarMode } from "../lib/types";
 
-export function useExplorerUi() {
+export function useExplorerUi(shortcuts: ShortcutBindings) {
   const [active, setActive] = useState<Side>("local");
   const [hidden, setHiddenState] = useState(false);
   const [sidebarMode, setSidebarMode] = useState<SidebarMode>(null);
   const [sourcePanelSide, setSourcePanelSide] = useState<Side>("local");
   const [themePanelOpen, setThemePanelOpen] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [legendOpen, setLegendOpen] = useState(false);
   const [filterMenu, setFilterMenu] = useState<Side | null>(null);
   const [commandOpen, setCommandOpen] = useState(false);
@@ -41,6 +43,9 @@ export function useExplorerUi() {
     [],
   );
   const toggleThemePanel = useCallback(() => setThemePanelOpen((open) => !open), []);
+  const toggleShortcuts = useCallback(() => setShortcutsOpen((open) => !open), []);
+  const openShortcuts = useCallback(() => setShortcutsOpen(true), []);
+  const closeShortcuts = useCallback(() => setShortcutsOpen(false), []);
   const toggleLegend = useCallback(() => setLegendOpen((open) => !open), []);
   const toggleFilter = useCallback(
     (side: Side) => setFilterMenu((prev) => (prev === side ? null : side)),
@@ -73,6 +78,9 @@ export function useExplorerUi() {
     active,
     commandOpen,
     setCommandOpen,
+    shortcutsOpen,
+    setShortcutsOpen,
+    shortcuts,
     themePanelOpen,
     setThemePanelOpen,
     sidebarMode,
@@ -99,6 +107,11 @@ export function useExplorerUi() {
     themePanelOpen,
     setThemePanelOpen,
     toggleThemePanel,
+    shortcutsOpen,
+    setShortcutsOpen,
+    toggleShortcuts,
+    openShortcuts,
+    closeShortcuts,
     legendOpen,
     setLegendOpen,
     toggleLegend,

@@ -122,6 +122,11 @@ and `screenshots/report.md`. Scenario names follow the UI state
 
 - The water palette and interactions are distilled into the shared
   [`../design-system/`](../design-system/) package, with a live component gallery.
+- The keyboard button in the header opens the **Keyboard shortcuts** window.
+  Its key map lives in `src/web/lib/shortcuts.ts`; rebinding is stored in
+  `localStorage` under `explorer-shortcuts`. The command palette, cheat-sheet,
+  close-window, and close-overlay bindings drive the real shell shortcuts, while
+  the remaining entries document the wider window-manager map.
 - Caches live under `app/.cache/` and stay compatible with the original schema
   and signatures.
 - The UI intentionally uses the original stylesheet unchanged so every visual
