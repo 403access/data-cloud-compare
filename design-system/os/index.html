@@ -213,7 +213,7 @@
           <button class="os-status os-status--icon" type="button" data-tray-toggle="network" aria-haspopup="dialog" aria-expanded="false" title="Wi-Fi: Harbour 5G" aria-label="Wi-Fi">
             <svg class="icon"><use href="#i-wifi"/></svg>
           </button>
-          <div class="os-tray os-tray--network" data-tray="network" hidden role="dialog" aria-label="Wi-Fi" tabindex="-1">
+          <div class="os-tray os-tray--network ds-scroll" data-tray="network" hidden role="dialog" aria-label="Wi-Fi" tabindex="-1">
             <header class="os-tray__head">
               <span class="os-tray__title"><svg class="icon"><use href="#i-wifi"/></svg><b>Wi-Fi</b></span>
               <span class="os-tray__state" data-network-state>Connected</span>
@@ -247,7 +247,7 @@
           <button class="os-status os-status--icon" type="button" data-tray-toggle="battery" aria-haspopup="dialog" aria-expanded="false" title="Battery 78%" aria-label="Battery">
             <svg class="icon"><use href="#i-battery"/></svg><span class="os-status__value" data-battery-tray-value>78%</span>
           </button>
-          <div class="os-tray os-tray--battery" data-tray="battery" hidden role="dialog" aria-label="Battery" tabindex="-1">
+          <div class="os-tray os-tray--battery ds-scroll" data-tray="battery" hidden role="dialog" aria-label="Battery" tabindex="-1">
             <header class="os-tray__head">
               <span class="os-tray__title"><svg class="icon"><use href="#i-battery"/></svg><b>Battery</b></span>
               <span class="os-tray__state" data-battery-state>On battery</span>
@@ -284,7 +284,7 @@
           <button class="os-status os-status--icon" type="button" data-tray-toggle="sound" aria-haspopup="dialog" aria-expanded="false" title="Sound" aria-label="Sound">
             <svg class="icon"><use href="#i-volume"/></svg>
           </button>
-          <div class="os-tray os-tray--sound" data-tray="sound" hidden role="dialog" aria-label="Sound" tabindex="-1">
+          <div class="os-tray os-tray--sound ds-scroll" data-tray="sound" hidden role="dialog" aria-label="Sound" tabindex="-1">
             <header class="os-tray__head">
               <span class="os-tray__title"><svg class="icon"><use href="#i-volume"/></svg><b>Sound</b></span>
               <span class="os-tray__state" data-sound-state>Harbour speakers</span>
@@ -322,7 +322,7 @@
             <span data-clock-date>Tue 17 Nov</span>
             <b data-clock-time>09:41</b>
           </button>
-          <div class="os-tray os-calendar" data-tray="calendar" data-calendar hidden role="dialog" aria-label="Calendar" tabindex="-1">
+          <div class="os-tray os-calendar ds-scroll" data-tray="calendar" data-calendar hidden role="dialog" aria-label="Calendar" tabindex="-1">
             <header class="os-calendar__head">
               <span class="os-calendar__date" data-calendar-today-label>Tuesday, 17 November</span>
               <b class="os-calendar__time" data-calendar-time>09:41</b>
@@ -555,7 +555,7 @@
                   <button type="button" data-sort="size">Size</button>
                   <button type="button" data-sort="modified">Modified</button>
                 </div>
-                <div class="osx-rows" data-rows="local" tabindex="0" role="listbox" aria-label="Local index files"></div>
+                <div class="osx-rows ds-scroll" data-rows="local" tabindex="0" role="listbox" aria-label="Local index files"></div>
                 <footer class="osx-pane-foot">
                   <span data-pane-summary="local">16 items · 12 folders · 4 files · 6.41 TB</span>
                   <span class="osx-mini-chips" data-pane-chips="local"></span>
@@ -617,7 +617,7 @@
                   <button type="button" data-sort="size">Size</button>
                   <button type="button" data-sort="modified">Modified</button>
                 </div>
-                <div class="osx-rows" data-rows="remote" tabindex="0" role="listbox" aria-label="Jottacloud files"></div>
+                <div class="osx-rows ds-scroll" data-rows="remote" tabindex="0" role="listbox" aria-label="Jottacloud files"></div>
                 <footer class="osx-pane-foot">
                   <span data-pane-summary="remote">16 items · 13 folders · 3 files · 6.50 TB</span>
                   <span class="osx-mini-chips" data-pane-chips="remote"></span>
@@ -635,7 +635,7 @@
                   <svg class="icon"><use href="#i-x"/></svg>
                 </button>
               </header>
-              <div class="osx-side-body" data-side-body></div>
+              <div class="osx-side-body ds-scroll" data-side-body></div>
             </aside>
           </div>
 
@@ -663,7 +663,7 @@
         </header>
 
         <div class="osx-theme-panel">
-          <div class="osx-theme-body">
+          <div class="osx-theme-body ds-scroll">
           <div class="osx-theme-status" data-theme-status>
             <span class="osx-theme-status-dot" aria-hidden="true"></span>
             <p data-theme-status-text>Water effects are active. Drips follow your cursor.</p>
@@ -762,7 +762,7 @@
             <span class="ds-badge ds-badge--same" data-network-app-badge><span class="ds-dot"></span><span data-network-app-badge-text>Connected</span></span>
           </div>
         </header>
-        <div class="os-app-body">
+        <div class="os-app-body ds-scroll">
           <header class="os-app-hero">
             <span class="os-app-hero__mark os-app-hero__mark--network"><svg class="icon"><use href="#i-wifi"/></svg></span>
             <div class="os-app-hero__text">
@@ -822,7 +822,7 @@
             <span class="ds-badge ds-badge--muted" data-battery-app-badge><span class="ds-dot"></span><span data-battery-app-badge-text>On battery</span></span>
           </div>
         </header>
-        <div class="os-app-body">
+        <div class="os-app-body ds-scroll">
           <header class="os-app-hero">
             <span class="os-app-hero__mark os-app-hero__mark--battery"><svg class="icon"><use href="#i-bolt"/></svg></span>
             <div class="os-app-hero__text">
@@ -905,7 +905,7 @@
             <span class="ds-badge ds-badge--muted" data-calendar-app-badge><span class="ds-dot"></span><span data-calendar-app-badge-text>Today</span></span>
           </div>
         </header>
-        <div class="os-calendar-app">
+        <div class="os-calendar-app ds-scroll">
           <section class="os-calendar-app__month" aria-label="Month">
             <header class="os-calendar-app__toolbar">
               <button class="os-calendar-app__nav" type="button" data-calendar-app-prev aria-label="Previous month"><svg class="icon"><use href="#i-chevron-left"/></svg></button>
@@ -921,7 +921,7 @@
               <span class="os-agenda__date" data-calendar-app-selected>Tuesday, 17 November</span>
               <b class="os-agenda__clock" data-calendar-app-time>09:41</b>
             </header>
-            <div class="os-agenda__events" data-calendar-app-events></div>
+            <div class="os-agenda__events ds-scroll" data-calendar-app-events></div>
           </aside>
         </div>
       </section>
@@ -972,7 +972,7 @@
             <div class="os-tm-head" aria-hidden="true">
               <span>Process</span><span>CPU</span><span>Memory</span><span>Status</span>
             </div>
-            <div class="os-tm-rows" data-task-rows role="listbox" aria-label="Processes"></div>
+            <div class="os-tm-rows ds-scroll" data-task-rows role="listbox" aria-label="Processes"></div>
           </div>
 
           <footer class="os-tm-foot">
@@ -996,7 +996,7 @@
           </div>
           <div class="os-titlebar__actions"><span class="ds-badge ds-badge--muted"><span class="ds-dot" style="color:var(--ds-green)"></span>Local</span></div>
         </header>
-        <div class="os-terminal" data-terminal>
+        <div class="os-terminal ds-scroll" data-terminal>
           <div class="os-term-line"><span class="os-term-prompt">tide@water</span><span class="os-term-path">~/tank</span><span class="os-term-cmd">tank compare --provider jottacloud --root Archive</span></div>
           <div class="os-term-line os-term-muted">Reading local index · 2,431,882 entries</div>
           <div class="os-term-line os-term-muted">Reading Archive snapshot · 1,434,971 entries</div>
@@ -1062,7 +1062,7 @@
           </div>
           <div class="os-titlebar__actions"><span class="ds-chip">Simple (default)</span></div>
         </header>
-        <div class="osx-shortcuts">
+        <div class="osx-shortcuts ds-scroll">
           <section>
             <h3>Explorer</h3>
             <div class="osx-shortcut-row"><span>Focus local pane</span><span class="osx-keys"><kbd>⌘</kbd><kbd>1</kbd></span></div>
@@ -1097,7 +1097,7 @@
           </div>
           <div class="os-titlebar__title"><b>About Water OS</b></div>
         </header>
-        <div class="os-about">
+        <div class="os-about ds-scroll">
           <span class="os-about__mark" aria-hidden="true">
             <svg viewBox="0 0 64 64" fill="none">
               <rect x="5" y="13" width="36" height="26" rx="8" class="logo-back"/>
@@ -1161,7 +1161,7 @@
         <span class="osx-spinner" data-command-spinner hidden aria-hidden="true"></span>
         <button type="button" class="osx-command-esc" data-command-close title="Close command bar" aria-label="Close command bar">Esc</button>
       </div>
-      <div class="osx-command-results" id="osx-command-results" data-command-results role="listbox" aria-label="Commands and files"></div>
+      <div class="osx-command-results ds-scroll" id="osx-command-results" data-command-results role="listbox" aria-label="Commands and files"></div>
       <div class="osx-command-empty" data-command-empty hidden>
         <p data-command-empty-title>No matches</p>
         <span data-command-empty-hint>Try a different word or command.</span>

@@ -872,7 +872,7 @@ body.os code { font-family: var(--ds-font-mono); }
   border-right: 1px solid var(--ds-line);
   background: color-mix(in srgb, var(--ds-sidebar) 82%, transparent);
   overflow-y: auto;
-  scrollbar-width: thin;
+  
 }
 
 .os-sidebar__group { display: grid; gap: 2px; }
@@ -1141,7 +1141,7 @@ body.os code { font-family: var(--ds-font-mono); }
   min-height: 0;
   padding: 3px 0;
   overflow-y: auto;
-  scrollbar-width: thin;
+  
 }
 
 .os-pane .ds-pane__row {
@@ -1274,7 +1274,7 @@ body.os code { font-family: var(--ds-font-mono); }
   border-left: 1px solid var(--ds-line);
   background: color-mix(in srgb, var(--ds-sidebar) 58%, transparent);
   overflow-y: auto;
-  scrollbar-width: thin;
+  
 }
 
 .os-explorer.has-inspector .os-inspector { display: flex; flex-direction: column; }
@@ -1439,7 +1439,7 @@ body.os code { font-family: var(--ds-font-mono); }
   min-height: 0;
   padding: 18px;
   overflow-y: auto;
-  scrollbar-width: thin;
+  
 }
 
 .os-settings__hero {
@@ -2039,7 +2039,7 @@ body.os code { font-family: var(--ds-font-mono); }
 .os-command .ds-command__list {
   max-height: min(56vh, 470px);
   overflow-y: auto;
-  scrollbar-width: thin;
+  
 }
 
 .os-command .ds-command__item {
@@ -2782,14 +2782,6 @@ body.os code { font-family: var(--ds-font-mono); }
   overflow-x: hidden;
   outline: none;
   overscroll-behavior: contain;
-  scrollbar-width: thin;
-}
-.osx-rows::-webkit-scrollbar { width: 10px; }
-.osx-rows::-webkit-scrollbar-thumb {
-  border: 3px solid transparent;
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--ds-text-3) 42%, transparent);
-  background-clip: content-box;
 }
 .osx-row {
   display: grid;
@@ -2996,7 +2988,7 @@ body.os code { font-family: var(--ds-font-mono); }
 .osx-side-head h2 { margin: 0; font-size: 13px; font-weight: 650; letter-spacing: -0.01em; }
 .osx-side-head p { margin: 3px 0 0; color: var(--ds-text-3); font-size: 9.5px; line-height: 1.4; }
 .osx-side-head .osx-btn { margin-left: auto; margin-top: -4px; flex: none; }
-.osx-side-body { flex: 1; min-height: 0; padding: 12px 16px 16px; overflow-y: auto; scrollbar-width: thin; }
+.osx-side-body { flex: 1; min-height: 0; padding: 12px 16px 16px; overflow-y: auto; }
 
 .osx-columns-options { display: flex; flex-direction: column; gap: 1px; }
 .osx-columns-option {
@@ -3185,7 +3177,7 @@ body.os code { font-family: var(--ds-font-mono); }
   min-height: 0;
   padding: 10px 12px 12px;
   overflow-y: auto;
-  scrollbar-width: thin;
+  
 }
 .osx-theme-status {
   display: flex;
@@ -3282,7 +3274,7 @@ body.os code { font-family: var(--ds-font-mono); }
   min-height: 0;
   padding: 16px;
   overflow-y: auto;
-  scrollbar-width: thin;
+  
   background: color-mix(in srgb, var(--ds-surface-solid) 74%, transparent);
 }
 .osx-shortcuts section { margin-bottom: 16px; }
@@ -3404,7 +3396,7 @@ body.os code { font-family: var(--ds-font-mono); }
   min-height: 0;
   padding: 6px 6px 8px;
   overflow-y: auto;
-  scrollbar-width: thin;
+  
 }
 .osx-command-group {
   padding: 8px 10px 4px;
