@@ -47,7 +47,8 @@
         root.dataset.resourceCaptions = resourceDisplay.captions === false ? "off" : "on";
         root.dataset.resourceBars = resourceDisplay.bars === false ? "off" : "on";
         root.dataset.resourceValues = resourceDisplay.values === false ? "off" : "on";
-        root.dataset.resourceDividers = resourceDisplay.dividers === false ? "off" : "on";
+        root.dataset.resourceDividers =
+          resourceDisplay.version === 2 && resourceDisplay.dividers === true ? "on" : "off";
       } catch (e) {}
     })();
   </script>
@@ -1120,7 +1121,7 @@
               </label>
               <label class="os-tm-display-row" title="Show separators between the three meters">
                 <span>Dividers</span>
-                <span class="ds-switch"><input type="checkbox" data-resource-display-setting="dividers" checked aria-label="Show usage dividers"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                <span class="ds-switch"><input type="checkbox" data-resource-display-setting="dividers" aria-label="Show usage dividers"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
               </label>
             </div>
           </div>

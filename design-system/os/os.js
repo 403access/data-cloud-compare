@@ -3222,13 +3222,14 @@ document.querySelector("[data-task-sample]")?.addEventListener("click", () => {
 /* ------------------------------------------------ menu bar usage display */
 
 const RESOURCE_DISPLAY_KEY = "explorer-os-resource-display";
+const RESOURCE_DISPLAY_VERSION = 2;
 const RESOURCE_DISPLAY_DEFAULTS = {
   visible: true,
   border: false,
   captions: true,
   bars: true,
   values: true,
-  dividers: true,
+  dividers: false,
 };
 const RESOURCE_DISPLAY_LABELS = {
   visible: "Menu bar visibility",
@@ -3242,13 +3243,15 @@ const RESOURCE_DISPLAY_LABELS = {
 function readResourceDisplay() {
   const saved = readJSON(RESOURCE_DISPLAY_KEY);
   if (!saved || typeof saved !== "object") return { ...RESOURCE_DISPLAY_DEFAULTS };
+  const current = saved.version === RESOURCE_DISPLAY_VERSION;
   return {
     visible: saved.visible !== false,
     border: saved.border === true,
     captions: saved.captions !== false,
     bars: saved.bars !== false,
     values: saved.values !== false,
-    dividers: saved.dividers !== false,
+    // Older saves wrote the old default (on) even when nobody chose it.
+    dividers: current ? saved.dividers === true : false,
   };
 }
 
@@ -3267,7 +3270,10 @@ function applyResourceDisplay() {
 }
 
 function saveResourceDisplay() {
-  writeJSON(RESOURCE_DISPLAY_KEY, resourceDisplay);
+  writeJSON(RESOURCE_DISPLAY_KEY, {
+    ...resourceDisplay,
+    version: RESOURCE_DISPLAY_VERSION,
+  });
 }
 
 function setResourceDisplay(key, value) {
