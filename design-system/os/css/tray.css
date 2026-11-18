@@ -288,6 +288,13 @@
 
 .os-tray__hint b { color: var(--ds-text-2); font-weight: 600; }
 
+.os-tray__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+}
+
 .os-tray__link {
   color: var(--ds-accent);
   font-size: calc(9px * var(--os-font-scale, 1));

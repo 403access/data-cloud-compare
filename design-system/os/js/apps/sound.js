@@ -14,7 +14,7 @@ setTrackChangeHandler(syncSoundUi);
 export const soundState = {
   volume: 42,
   muted: false,
-  output: "Harbour speakers",
+  output: "Harbour Speakers",
 };
 
 const soundSliders = document.querySelectorAll("[data-sound-slider]");
@@ -65,8 +65,13 @@ export function toggleMute() {
 }
 
 export function setSoundOutput(output) {
-  soundState.output = output || soundState.output;
+  const next = output || soundState.output;
+  const changed = next !== soundState.output;
+  soundState.output = next;
   syncSoundUi();
+  if (changed) {
+    document.dispatchEvent(new CustomEvent("sound-output-change", { detail: soundState.output }));
+  }
 }
 
 soundSliders.forEach((slider) => {

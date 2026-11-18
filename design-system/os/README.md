@@ -48,6 +48,7 @@ os/
     devices.css          Devices app
     battery.css          Battery app
     sound.css            Sound tray
+    audio.css            Audio app
     task-manager.css     Task Manager
     calendar-app.css     Calendar app
     menu-meters.css      menu bar resource meters
@@ -88,6 +89,7 @@ os/
       battery.js         charge and energy mode
       music.js           Tide Radio playback
       sound.js           volume, mute, now playing
+      audio.js           output and input devices, presets, level meter
       settings.js        Settings tabs, search, saved preferences, panes
       terminal.js        simulated shell
       task-processes.js  process catalog fixtures
@@ -122,9 +124,9 @@ Battery, Notifications, Privacy & Security, and Storage.
   shortcut grid and widget stack independently, and applies the dock's
   visibility, size, magnification, and edge position. The dock is hidden by
   default and can be enabled from this pane.
-- Network, Bluetooth, Sound, and Battery reuse the live state owned by their
-  feature modules. Changes made in Settings are reflected in the tray, the
-  standalone apps, and the command bar.
+- Network, Bluetooth, Sound, Battery, and Audio reuse the live state owned by
+  their feature modules. Changes made in Settings are reflected in the tray,
+  the standalone apps, and the command bar.
 - The remaining controls persist in `explorer-os-settings-v1`; the selected tab
   persists in `explorer-os-settings-tab`.
 - `⌘,`, the dock, desktop, and menu bar items open Settings. Tray shortcuts jump
@@ -135,7 +137,7 @@ Battery, Notifications, Privacy & Security, and Storage.
 
 `App Studio` is the desktop's GUI builder. It opens with one editable project
 for every application on the system — Explorer, Data Cloud Compare, Settings,
-Network, Devices, Battery, Calendar, Task Manager, Terminal, Tide Radio,
+Network, Devices, Battery, Audio, Calendar, Task Manager, Terminal, Tide Radio,
 Keyboard shortcuts, and About — and deliberately has no project for itself.
 Projects store percentage-based component boxes on a 16:10 artboard, so the
 same project renders at any window size.
@@ -152,9 +154,10 @@ same project renders at any window size.
   follows live values from the rest of the desktop. Clicking a variable with
   nothing selected copies a `{{variable.id}}` template.
 - `builder-variables.js` covers system identity, viewport and appearance,
-  design tokens, resources, battery, network, devices, clock and calendar,
-  the comparison model, Tide Radio and sound, the terminal, and the studio
-  itself. Values refresh once per second while the builder is open.
+  design tokens, resources, battery, network, devices, audio devices and
+  presets, clock and calendar, the comparison model, Tide Radio and sound, the
+  terminal, and the studio itself. Values refresh once per second while the
+  builder is open.
 - Projects are saved as `explorer-os-builder-v1` in `localStorage`; the footer
   resets them to the shipped system set.
 

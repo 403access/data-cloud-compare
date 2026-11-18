@@ -96,9 +96,14 @@
   display: flex;
   align-items: center;
   gap: 9px;
+  width: 100%;
   padding: 5px 6px;
+  border-radius: var(--ds-radius-xs);
   color: var(--ds-text-2);
+  text-align: left;
 }
+
+.os-output-row:hover { background: var(--ds-hover); }
 
 .os-output-row .icon { width: 14px; height: 14px; color: var(--ds-text-3); }
 .os-output-row__text { display: grid; gap: 1px; flex: 1; min-width: 0; }

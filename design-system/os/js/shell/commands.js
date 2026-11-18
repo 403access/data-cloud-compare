@@ -13,6 +13,7 @@ import { verifySnapshot } from "../compare/verify.js";
 import {
   resetWaterSettings, setThemeMode, setWaterSetting,
 } from "../features/appearance.js";
+import { openAudio } from "../apps/audio.js";
 import { openCalendarApp } from "../apps/calendar.js";
 import { openDevices } from "../apps/devices.js";
 import { openBuilder } from "../apps/gui-builder.js";
@@ -67,6 +68,9 @@ export function runCommand(command) {
       break;
     case "open-battery":
       openWindow("battery");
+      break;
+    case "open-audio":
+      openAudio();
       break;
     case "open-calendar":
       openCalendarApp();

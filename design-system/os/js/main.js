@@ -20,6 +20,7 @@ import "./apps/network.js";
 import "./apps/devices.js";
 import "./apps/battery.js";
 import "./apps/sound.js";
+import "./apps/audio.js";
 import "./apps/settings.js";
 import "./apps/terminal.js";
 import "./apps/explorer.js";

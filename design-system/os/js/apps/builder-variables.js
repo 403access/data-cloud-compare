@@ -10,6 +10,9 @@ import {
 } from "../core/state.js";
 import { batteryState, batteryTime } from "./battery.js";
 import {
+  audioState, currentAudioInput, currentAudioOutput, currentAudioPreset,
+} from "./audio.js";
+import {
   calendarAppSelected, calendarDayFormat, calendarEventsFor,
 } from "./calendar.js";
 import { NETWORKS, NETWORK_DETAILS, networkState } from "./network.js";
@@ -308,6 +311,14 @@ export function systemVariables(studio = null) {
   media("sound.volume", "Volume", "number", soundState.volume, { unit: "%" });
   media("sound.muted", "Muted", "boolean", soundState.muted);
   media("sound.output", "Output device", "string", soundState.output);
+
+  /* -------------------------------------------------------------- audio */
+  const audio = group("Audio");
+  audio("audio.output", "Default output", "string", currentAudioOutput().name);
+  audio("audio.input", "Default input", "string", currentAudioInput().name);
+  audio("audio.preset", "Preset", "string", currentAudioPreset().label);
+  audio("audio.frames", "Buffer frames", "number", currentAudioPreset().frames);
+  audio("audio.locked", "Microphone locked", "boolean", audioState.locked);
 
   /* ----------------------------------------------------------- terminal */
   const terminal = group("Terminal");

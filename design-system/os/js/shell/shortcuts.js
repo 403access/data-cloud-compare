@@ -68,6 +68,12 @@ document.addEventListener("keydown", (event) => {
     return;
   }
 
+  if (modifier && event.shiftKey && event.key.toLowerCase() === "s") {
+    event.preventDefault();
+    runCommand("open-audio");
+    return;
+  }
+
   if (modifier && event.shiftKey && event.key === ".") {
     event.preventDefault();
     runCommand("toggle-hidden");

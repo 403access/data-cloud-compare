@@ -66,6 +66,7 @@
     <symbol id="i-battery" viewBox="0 0 24 24"><rect x="2.5" y="8" width="16.5" height="8" rx="2"/><path d="M21.5 10.5v3"/><rect x="4.5" y="10" width="11.5" height="4" rx="1" fill="currentColor" stroke="none"/></symbol>
     <symbol id="i-volume" viewBox="0 0 24 24"><path d="M4 9.5h3l4-3.5v12l-4-3.5H4z"/><path d="M14.5 9a4.2 4.2 0 0 1 0 6M17 6.5a7.8 7.8 0 0 1 0 11"/></symbol>
     <symbol id="i-volume-off" viewBox="0 0 24 24"><path d="M4 9.5h3l4-3.5v12l-4-3.5H4z"/><path d="m14.5 9.5 5 5M19.5 9.5l-5 5"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/></symbol>
     <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.2 19 12 8 18.8z" fill="currentColor" stroke="none"/></symbol>
     <symbol id="i-pause" viewBox="0 0 24 24"><rect x="7" y="5" width="3.5" height="14" rx="1" fill="currentColor" stroke="none"/><rect x="13.5" y="5" width="3.5" height="14" rx="1" fill="currentColor" stroke="none"/></symbol>
     <symbol id="i-skip" viewBox="0 0 24 24"><path d="M6 5.5 15 12l-9 6.5z" fill="currentColor" stroke="none"/><path d="M17.5 5.5v13"/></symbol>
@@ -176,6 +177,7 @@
               <button type="button" role="menuitem" data-cmd="open-network"><svg class="icon"><use href="#i-globe"/></svg>Network</button>
               <button type="button" role="menuitem" data-cmd="open-devices"><svg class="icon"><use href="#i-bluetooth"/></svg>Devices</button>
               <button type="button" role="menuitem" data-cmd="open-battery"><svg class="icon"><use href="#i-battery"/></svg>Battery</button>
+              <button type="button" role="menuitem" data-cmd="open-audio"><svg class="icon"><use href="#i-headphones"/></svg>Audio</button>
               <button type="button" role="menuitem" data-cmd="open-calendar"><svg class="icon"><use href="#i-calendar"/></svg>Calendar</button>
               <button type="button" role="menuitem" data-cmd="open-taskmanager"><svg class="icon"><use href="#i-activity"/></svg>Task Manager</button>
               <button type="button" role="menuitem" data-cmd="open-builder"><svg class="icon"><use href="#i-studio"/></svg>App Studio</button>
@@ -324,7 +326,7 @@
           <div class="os-tray os-tray--sound ds-scroll" data-tray="sound" hidden role="dialog" aria-label="Sound" tabindex="-1">
             <header class="os-tray__head">
               <span class="os-tray__title"><svg class="icon"><use href="#i-volume"/></svg><b>Sound</b></span>
-              <span class="os-tray__state" data-sound-state>Harbour speakers</span>
+              <span class="os-tray__state" data-sound-state>Harbour Speakers</span>
             </header>
             <div class="os-sound-volume">
               <button class="os-sound-mute" type="button" data-sound-mute aria-label="Mute" aria-pressed="false">
@@ -342,15 +344,18 @@
               </div>
             </div>
             <div class="os-tray__section">
-              <div class="os-output-row">
+              <button class="os-output-row" type="button" data-cmd="open-audio" aria-label="Open Audio settings">
                 <svg class="icon"><use href="#i-volume"/></svg>
-                <span class="os-output-row__text"><b>Harbour speakers</b><small>Built-in · Stereo</small></span>
+                <span class="os-output-row__text"><b data-audio-tray-name>Harbour Speakers</b><small data-audio-tray-detail>Analog · analog-stereo</small></span>
                 <svg class="icon os-output-row__check"><use href="#i-check"/></svg>
-              </div>
+              </button>
             </div>
             <footer class="os-tray__foot">
               <span class="os-tray__hint">Output <b>Internal</b></span>
-              <button class="os-tray__link" type="button" data-cmd="open-music">Tide Radio…</button>
+              <span class="os-tray__actions">
+                <button class="os-tray__link" type="button" data-cmd="open-music">Tide Radio…</button>
+                <button class="os-tray__link" type="button" data-cmd="open-audio">Audio…</button>
+              </span>
             </footer>
           </div>
         </div>
@@ -1377,13 +1382,13 @@
                 <label class="os-settings-row">
                   <span class="os-settings-row__text"><b>Output device</b><small>Where sound should play.</small></span>
                   <select class="osx-select" data-settings-output aria-label="Output device">
-                    <option value="Harbour speakers" selected>Harbour speakers</option>
-                    <option value="Studio monitors">Studio monitors</option>
-                    <option value="Drift Earbuds">Drift Earbuds</option>
+                    <option value="Harbour Speakers" selected>Harbour Speakers</option>
+                    <option value="USB Headset">USB Headset</option>
+                    <option value="AirPods Pro">AirPods Pro</option>
                   </select>
                 </label>
                 <div class="os-settings-row os-settings-row--stack">
-                  <span class="os-settings-row__text"><b>Volume</b><small>Currently using <span data-sound-output-label>Harbour speakers</span>.</small></span>
+                  <span class="os-settings-row__text"><b>Volume</b><small>Currently using <span data-sound-output-label>Harbour Speakers</span>.</small></span>
                   <span class="os-settings-slider">
                     <button class="os-settings-mute" type="button" data-sound-mute aria-label="Mute" aria-pressed="false"><svg class="icon"><use href="#i-volume"/></svg></button>
                     <input type="range" min="0" max="100" step="1" value="42" data-sound-slider aria-label="Volume">
@@ -1821,6 +1826,69 @@
             </div>
           </section>
         </div>
+      </section>
+
+      <!-- ---------------------------------------------------------------- audio -->
+      <section class="os-window os-window--audio" id="win-audio" data-window="audio" data-title="Audio" role="dialog" aria-label="Audio" tabindex="-1" hidden>
+        <header class="os-titlebar" data-drag-handle>
+          <div class="os-lights">
+            <button class="os-light os-light--close" type="button" data-window-action="close" aria-label="Close Audio" title="Close"></button>
+            <button class="os-light os-light--min" type="button" data-window-action="minimize" aria-label="Minimise Audio" title="Minimise"></button>
+            <button class="os-light os-light--max" type="button" data-window-action="maximize" aria-label="Maximise Audio" title="Maximise"></button>
+          </div>
+          <div class="os-titlebar__title">
+            <span class="os-app-mark os-app-mark--audio"><svg class="icon"><use href="#i-volume"/></svg></span>
+            <b>Audio</b>
+            <span class="os-titlebar__sub">Output, input, and PipeWire presets</span>
+          </div>
+          <div class="os-titlebar__actions">
+            <span class="ds-kbd" title="Open Audio anywhere with ⌘⇧S">⌘⇧S</span>
+          </div>
+        </header>
+        <div class="os-app-body ds-scroll">
+          <header class="os-app-hero">
+            <span class="os-app-hero__mark os-app-hero__mark--audio"><svg class="icon"><use href="#i-volume"/></svg></span>
+            <div class="os-app-hero__text">
+              <h2>Audio</h2>
+              <p>PipeWire 1.2 · 48 kHz · no xruns</p>
+            </div>
+            <span class="ds-chip os-audio-hero__chip"><svg class="icon"><use href="#i-headphones"/></svg><span data-audio-hero-output>Harbour Speakers</span></span>
+          </header>
+
+          <section class="os-app-section">
+            <h3>Output</h3>
+            <div class="os-audio-list" data-audio-output role="group" aria-label="Output devices"></div>
+          </section>
+
+          <section class="os-app-section">
+            <h3>Input</h3>
+            <div class="os-audio-list" data-audio-input role="group" aria-label="Input devices"></div>
+          </section>
+
+          <section class="os-app-section os-audio-level">
+            <div class="os-audio-level__head">
+              <h3>Input level</h3>
+              <span class="os-audio-level__state is-locked" data-audio-mic-state><svg class="icon"><use href="#i-lock"/></svg>mic locked</span>
+            </div>
+            <div class="os-audio-meter" data-audio-meter aria-hidden="true"></div>
+          </section>
+
+          <section class="os-app-section os-audio-presets">
+            <div class="os-audio-presets__head">
+              <h3>Presets</h3>
+              <span class="os-audio-presets__hint"><svg class="icon"><use href="#i-activity"/></svg>PipeWire buffer</span>
+            </div>
+            <div class="os-audio-preset-grid" role="group" aria-label="Audio presets">
+              <button class="os-audio-preset is-active" type="button" data-audio-preset="media" aria-pressed="true"><b>Media</b><small>1024 frames</small></button>
+              <button class="os-audio-preset" type="button" data-audio-preset="voice" aria-pressed="false"><b>Voice</b><small>256 frames</small></button>
+              <button class="os-audio-preset" type="button" data-audio-preset="monitor" aria-pressed="false"><b>Monitor</b><small>128 frames</small></button>
+            </div>
+          </section>
+        </div>
+        <footer class="os-audio-foot">
+          <span class="os-audio-keys"><kbd>↑</kbd><kbd>↓</kbd> Select <kbd>↵</kbd> Switch <kbd>P</kbd> Preset <kbd>esc</kbd> Close</span>
+          <span class="os-audio-foot__note">PipeWire 1.2</span>
+        </footer>
       </section>
 
       <!-- -------------------------------------------------------------- devices -->
@@ -2330,6 +2398,7 @@
             <div class="osx-shortcut-row"><span>Toggle the legend</span><span class="osx-keys"><kbd>⌘</kbd><kbd>/</kbd></span></div>
             <div class="osx-shortcut-row"><span>Columns settings</span><span class="osx-keys"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>C</kbd></span></div>
             <div class="osx-shortcut-row"><span>Analytics</span><span class="osx-keys"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>A</kbd></span></div>
+            <div class="osx-shortcut-row"><span>Audio</span><span class="osx-keys"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>S</kbd></span></div>
             <div class="osx-shortcut-row"><span>Settings</span><span class="osx-keys"><kbd>⌘</kbd><kbd>,</kbd></span></div>
             <div class="osx-shortcut-row"><span>Close overlay</span><span class="osx-keys"><kbd>esc</kbd></span></div>
           </section>

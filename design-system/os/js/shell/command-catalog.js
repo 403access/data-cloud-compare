@@ -19,6 +19,7 @@ import {
 } from "./windows.js";
 import { setThemeMode, setWaterSetting } from "../features/appearance.js";
 import { openCommandSettings } from "./command-settings.js";
+import { audioSummary, openAudio } from "../apps/audio.js";
 import { batteryState, batteryTime } from "../apps/battery.js";
 import {
   calendarAppSelected, calendarDayFormat, openCalendarApp,
@@ -89,6 +90,7 @@ export function commandIcon(name) {
     network: "i-globe",
     devices: "i-bluetooth",
     battery: "i-battery",
+    audio: "i-headphones",
     calendar: "i-calendar",
     taskmanager: "i-activity",
     builder: "i-studio",
@@ -456,6 +458,13 @@ function commandCatalog() {
     subtitle: `${batteryState.level}% · ${batteryTime()}`,
     keywords: "power energy charge battery",
     run: () => openWindow("battery"),
+  });
+  addCommand(items, groups, "System", "Open Audio", {
+    key: "open-audio",
+    icon: "audio",
+    subtitle: audioSummary(),
+    keywords: "audio sound output input microphone speakers headphones presets pipewire buffer",
+    run: () => openAudio(),
   });
   addCommand(items, groups, "System", "Open Calendar", {
     key: "open-calendar",

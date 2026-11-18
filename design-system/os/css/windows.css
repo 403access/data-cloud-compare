@@ -317,6 +317,13 @@ body.is-resizing-window * {
   height: min(650px, calc(100dvh - 150px));
 }
 
+.os-window--audio {
+  top: 52px;
+  left: calc(50% - 270px);
+  width: min(540px, calc(100vw - 32px));
+  height: min(690px, calc(100dvh - 140px));
+}
+
 .os-window--calendar {
   top: 50px;
   left: calc(50% - 350px);
@@ -463,6 +470,7 @@ body.is-resizing-window * {
 .os-app-mark--network { --app: var(--ds-accent); }
 .os-app-mark--devices { --app: var(--ds-blue); }
 .os-app-mark--battery { --app: var(--ds-green); }
+.os-app-mark--audio { --app: var(--ds-blue); }
 .os-app-mark--calendar { --app: var(--ds-violet); }
 .os-app-mark--taskmanager { --app: var(--ds-amber); }
 
