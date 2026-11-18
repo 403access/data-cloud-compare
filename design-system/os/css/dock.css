@@ -40,6 +40,9 @@
   place-items: center;
   width: var(--os-dock-size, 48px);
   height: var(--os-dock-size, 48px);
+  /* Reset the UA button padding so the tile centres inside the item in the
+     edge (vertical) dock layout instead of overflowing to the right. */
+  padding: 0;
   border-radius: 12px;
   transition: transform var(--ds-motion-base) var(--ds-ease-out), background var(--ds-motion-fast) ease;
 }
