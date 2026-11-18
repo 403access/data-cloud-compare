@@ -160,23 +160,31 @@ of the real explorer application.
   Search, View, Columns, Sort, Filters, Appearance, and Provider groups, `>`
   commands-only mode, fuzzy matching, and local/remote file results.
 - Menu bar tray items open their own popovers: Wi-Fi (current network, known
-  networks, signal strength, VPN), Battery (level, time, energy mode, low-power
-  mode), Sound (volume, mute, output, now playing), and Calendar (month grid,
-  event dots, day selection). One shared controller keeps a single panel open
-  and closes it on outside click, `Esc`, a menu, or the command bar.
+  networks, signal strength, VPN), Bluetooth (connected mouse and keyboard,
+  battery meters, Bluetooth switch), Battery (level, time, energy mode,
+  low-power mode), Sound (volume, mute, output, now playing), and Calendar
+  (month grid, event dots, day selection). One shared controller keeps a single
+  panel open and closes it on outside click, `Esc`, a menu, or the command bar.
 - Each popover opens a dedicated system app: **Network** (Wi-Fi/VPN switches,
-  networks, connection details), **Battery** (charge gauge, energy and charging
-  controls, health, consumers), and **Calendar** (month navigation and a day
-  agenda). All three are also in the Window menu and command bar. Tray and app
-  share in-session state, so joining a network or changing an energy mode is
-  reflected in both.
+  networks, connection details), **Devices** (Bluetooth and discoverable
+  switches, paired accessories, battery levels, connect/disconnect),
+  **Battery** (charge gauge, energy and charging controls, health, consumers),
+  and **Calendar** (month navigation and a day agenda). All are also in the
+  Window menu and command bar. Tray and app share in-session state, so joining
+  a network, connecting an accessory, or changing an energy mode is reflected
+  in both.
 - The menu bar also carries three resource meters: CPU usage, RAM usage, and
   free storage in GB. They are computed from the Task Manager's process table,
   update with each sample, and open the Task Manager when clicked. The group
-  hides below 1100px so the remaining tray items keep their space.
+  hides below 1260px so the remaining tray items, including Bluetooth, keep
+  their space.
 - **Task Manager** shows CPU, memory, and storage cards above a process table.
   It samples every six seconds (or on demand), updates rows in place, and lets
   you select and end a process, which recalculates the totals and meters.
+- **Devices** shows the paired Tide Mouse, Harbour Keyboard, and Drift Earbuds
+  with colour-coded battery meters. Disconnecting an accessory removes it from
+  the tray menu, and turning Bluetooth off disables the accessory controls
+  while preserving the paired state for the next time it is enabled.
 - Every scrollable window surface uses `.ds-scroll`: a 10px transparent track,
   a rounded `--ds-text-3` thumb, and an accent-tinted hover. Firefox gets the
   native thin scrollbar via an `@supports` fallback so it does not lose the
