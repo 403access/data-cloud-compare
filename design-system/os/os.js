@@ -3092,6 +3092,21 @@ const PROCESS_SEED = [
 let taskProcesses = PROCESS_SEED.map((task) => ({ ...task }));
 let selectedTask = null;
 
+const TASK_SAMPLE_MS = 6000;
+const TASK_HISTORY_LIMIT = 601;
+const TASK_RANGES = {
+  60: "1 minute",
+  300: "5 minutes",
+  900: "15 minutes",
+  3600: "1 hour",
+};
+let taskRange = 300;
+let resourceHistory = [];
+
+const TASK_CHART_WIDTH = 120;
+const TASK_CHART_TOP = 2;
+const TASK_CHART_BOTTOM = 38;
+
 function taskTotals() {
   const cpu = taskProcesses.reduce((sum, task) => sum + task.cpu, 0);
   const memory = taskProcesses.reduce((sum, task) => sum + task.memory, 0);
@@ -3105,6 +3120,93 @@ function taskTotals() {
 }
 
 const taskMemoryLabel = (gb) => (gb >= 1 ? `${gb.toFixed(1)} GB` : `${Math.round(gb * 1024)} MB`);
+
+function seedResourceHistory() {
+  const totals = taskTotals();
+  const now = Date.now();
+  let cpu = totals.cpu;
+  let memory = totals.memory;
+  resourceHistory = new Array(TASK_HISTORY_LIMIT);
+  for (let i = TASK_HISTORY_LIMIT - 1; i >= 0; i -= 1) {
+    resourceHistory[i] = { t: now - i * TASK_SAMPLE_MS, cpu, memory };
+    cpu = Math.max(6, Math.min(64, cpu + (Math.random() - 0.5) * 2.8));
+    memory = Math.max(32, Math.min(82, memory + (Math.random() - 0.5) * 1.4));
+  }
+}
+
+function recordResourceHistory() {
+  const totals = taskTotals();
+  const now = Date.now();
+  const last = resourceHistory[resourceHistory.length - 1];
+  if (last && now - last.t < TASK_SAMPLE_MS / 2) {
+    last.cpu = totals.cpu;
+    last.memory = totals.memory;
+    return;
+  }
+  resourceHistory.push({ t: now, cpu: totals.cpu, memory: totals.memory });
+  const cutoff = now - TASK_HISTORY_LIMIT * TASK_SAMPLE_MS;
+  while (resourceHistory.length > 1 && resourceHistory[0].t < cutoff) resourceHistory.shift();
+}
+
+function taskChartCoords(points, key, start, range) {
+  const values = points.map((point) => Math.max(0, Math.min(100, point[key])));
+  let min = Math.min(...values);
+  let max = Math.max(...values);
+  const span = Math.max(max - min, 8);
+  const centre = (min + max) / 2;
+  min = Math.max(0, centre - span / 2 - 2);
+  max = Math.min(100, centre + span / 2 + 2);
+  const valueRange = Math.max(1, max - min);
+  return points.map((point) => {
+    const x = Math.max(0, Math.min(TASK_CHART_WIDTH, ((point.t - start) / range) * TASK_CHART_WIDTH));
+    const value = Math.max(0, Math.min(100, point[key]));
+    const y = TASK_CHART_BOTTOM - ((value - min) / valueRange) * (TASK_CHART_BOTTOM - TASK_CHART_TOP);
+    return [x, y];
+  });
+}
+
+function taskChartLine(coords) {
+  return coords
+    .map(([x, y], index) => `${index ? "L" : "M"}${x.toFixed(2)} ${y.toFixed(2)}`)
+    .join(" ");
+}
+
+function taskChartArea(coords) {
+  const first = coords[0];
+  const last = coords[coords.length - 1];
+  const floor = TASK_CHART_BOTTOM.toFixed(2);
+  return `M${first[0].toFixed(2)} ${floor} ${coords
+    .map(([x, y]) => `L${x.toFixed(2)} ${y.toFixed(2)}`)
+    .join(" ")} L${last[0].toFixed(2)} ${floor} Z`;
+}
+
+function renderTaskCharts() {
+  const now = Date.now();
+  const rangeMs = taskRange * 1000;
+  const start = now - rangeMs;
+  let points = resourceHistory.filter((point) => point.t >= start);
+  if (points.length < 2) points = resourceHistory.slice(-2);
+  if (!points.length) return;
+
+  ["cpu", "memory"].forEach((key) => {
+    const coords = taskChartCoords(points, key, start, rangeMs);
+    document.querySelector(`[data-tm-line="${key}"]`)?.setAttribute("d", taskChartLine(coords));
+    document.querySelector(`[data-tm-area="${key}"]`)?.setAttribute("d", taskChartArea(coords));
+  });
+
+  const totals = taskTotals();
+  document.querySelectorAll("[data-tm-chart-cpu]").forEach((node) => {
+    node.textContent = `${Math.round(totals.cpu)}%`;
+  });
+  document.querySelectorAll("[data-tm-chart-memory]").forEach((node) => {
+    node.textContent = `${Math.round(totals.memory)}%`;
+  });
+  document.querySelectorAll("[data-tm-window]").forEach((node) => {
+    node.textContent = `Last ${TASK_RANGES[taskRange]} · sampled every 6s`;
+  });
+}
+
+seedResourceHistory();
 
 function taskRowHtml(task) {
   const selected = selectedTask === task.name;
@@ -3189,12 +3291,15 @@ function sampleResources() {
   });
   updateTaskRows();
   syncResourceUi();
+  recordResourceHistory();
+  renderTaskCharts();
 }
 
 function openTaskManager() {
   openWindow("taskmanager");
   renderTaskRows();
   syncResourceUi();
+  renderTaskCharts();
 }
 
 document.addEventListener("click", (event) => {
@@ -3211,12 +3316,26 @@ document.querySelector("[data-task-end]")?.addEventListener("click", () => {
   selectedTask = null;
   renderTaskRows();
   syncResourceUi();
+  recordResourceHistory();
+  renderTaskCharts();
   toast(`Ended ${ended.name}`);
 });
 
 document.querySelector("[data-task-sample]")?.addEventListener("click", () => {
   sampleResources();
   toast("Resource sample refreshed");
+});
+
+document.querySelectorAll("[data-tm-range]").forEach((button) => {
+  button.addEventListener("click", () => {
+    taskRange = Number(button.dataset.tmRange);
+    document.querySelectorAll("[data-tm-range]").forEach((option) => {
+      const active = option === button;
+      option.classList.toggle("is-active", active);
+      option.setAttribute("aria-selected", String(active));
+    });
+    renderTaskCharts();
+  });
 });
 
 /* ------------------------------------------------ menu bar usage display */
@@ -3300,10 +3419,12 @@ document.querySelector("[data-task-display-reset]")?.addEventListener("click", r
 
 const taskDisplayPanel = document.querySelector("[data-task-display]");
 const taskDisplayToggle = document.querySelector("[data-task-display-toggle]");
+const taskManagerPanel = document.querySelector(".os-taskmanager");
 
 function setTaskDisplayOpen(open) {
   if (!taskDisplayPanel) return;
   taskDisplayPanel.hidden = !open;
+  taskManagerPanel?.classList.toggle("is-sidebar-open", open);
   taskDisplayToggle?.setAttribute("aria-expanded", String(open));
 }
 
@@ -3311,13 +3432,21 @@ taskDisplayToggle?.addEventListener("click", () => {
   setTaskDisplayOpen(taskDisplayPanel?.hidden);
 });
 
+document.querySelector("[data-task-display-close]")?.addEventListener("click", () => {
+  setTaskDisplayOpen(false);
+  taskDisplayToggle?.focus({ preventScroll: true });
+});
+
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") setTaskDisplayOpen(false);
+  if (event.key === "Escape" && taskDisplayPanel && !taskDisplayPanel.hidden) {
+    setTaskDisplayOpen(false);
+  }
 });
 
 applyResourceDisplay();
 renderTaskRows();
 syncResourceUi();
+renderTaskCharts();
 
 window.setInterval(() => {
   if (document.hidden) return;

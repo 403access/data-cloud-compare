@@ -1068,35 +1068,90 @@
           </div>
         </header>
         <div class="os-taskmanager">
-          <section class="os-tm-overview" aria-label="Resource usage">
-            <article class="os-tm-card" data-resource-card="cpu">
-              <header><span>CPU</span><b data-tm-cpu>25%</b></header>
-              <div class="os-tm-meter" aria-hidden="true"><i data-resource-fill="cpu" style="width:25%"></i></div>
-              <small data-tm-cpu-detail>13 processes · 8 cores</small>
-            </article>
-            <article class="os-tm-card" data-resource-card="memory">
-              <header><span>Memory</span><b data-tm-memory>61%</b></header>
-              <div class="os-tm-meter" aria-hidden="true"><i data-resource-fill="memory" style="width:61%"></i></div>
-              <small data-tm-memory-detail>9.8 GB of 16 GB</small>
-            </article>
-            <article class="os-tm-card" data-resource-card="storage">
-              <header><span>Storage</span><b data-tm-storage>812 GB</b></header>
-              <div class="os-tm-meter" aria-hidden="true"><i data-resource-fill="storage" style="width:79%"></i></div>
-              <small data-tm-storage-detail>left of 1 TB</small>
-            </article>
-          </section>
+          <div class="os-tm-main">
+            <section class="os-tm-overview" aria-label="Resource usage">
+              <article class="os-tm-card" data-resource-card="cpu">
+                <header><span>CPU</span><b data-tm-cpu>25%</b></header>
+                <div class="os-tm-meter" aria-hidden="true"><i data-resource-fill="cpu" style="width:25%"></i></div>
+                <small data-tm-cpu-detail>13 processes · 8 cores</small>
+              </article>
+              <article class="os-tm-card" data-resource-card="memory">
+                <header><span>Memory</span><b data-tm-memory>61%</b></header>
+                <div class="os-tm-meter" aria-hidden="true"><i data-resource-fill="memory" style="width:61%"></i></div>
+                <small data-tm-memory-detail>9.8 GB of 16 GB</small>
+              </article>
+              <article class="os-tm-card" data-resource-card="storage">
+                <header><span>Storage</span><b data-tm-storage>812 GB</b></header>
+                <div class="os-tm-meter" aria-hidden="true"><i data-resource-fill="storage" style="width:79%"></i></div>
+                <small data-tm-storage-detail>left of 1 TB</small>
+              </article>
+            </section>
 
-          <div class="os-tm-toolbar">
-            <h3>Processes</h3>
-            <span class="os-tm-updated">Live · updates every 6s</span>
-            <button class="os-tm-sample" type="button" data-task-sample><svg class="icon"><use href="#i-sync"/></svg>Sample</button>
-            <button class="os-tm-sample" type="button" data-task-display-toggle aria-controls="os-tm-display" aria-expanded="false"><svg class="icon"><use href="#i-gear"/></svg>Display</button>
+            <section class="os-tm-usage" aria-label="Usage over time">
+              <header class="os-tm-usage-head">
+                <div class="os-tm-usage-title">
+                  <h3>Usage over time</h3>
+                  <small data-tm-window>Last 5 minutes · sampled every 6s</small>
+                </div>
+                <div class="ds-segmented os-tm-range" role="group" aria-label="Usage time frame">
+                  <button class="ds-segment" type="button" data-tm-range="60" aria-selected="false">1m</button>
+                  <button class="ds-segment is-active" type="button" data-tm-range="300" aria-selected="true">5m</button>
+                  <button class="ds-segment" type="button" data-tm-range="900" aria-selected="false">15m</button>
+                  <button class="ds-segment" type="button" data-tm-range="3600" aria-selected="false">1h</button>
+                </div>
+              </header>
+              <div class="os-tm-charts">
+                <figure class="os-tm-chart" data-tm-chart="cpu">
+                  <figcaption><span><i class="os-tm-legend-dot" aria-hidden="true"></i>CPU</span><b data-tm-chart-cpu>25%</b></figcaption>
+                  <svg class="os-tm-graph" viewBox="0 0 120 40" preserveAspectRatio="none" aria-hidden="true">
+                    <g class="os-tm-graph-grid">
+                      <line x1="0" y1="10" x2="120" y2="10"></line>
+                      <line x1="0" y1="20" x2="120" y2="20"></line>
+                      <line x1="0" y1="30" x2="120" y2="30"></line>
+                    </g>
+                    <path class="os-tm-graph-area" data-tm-area="cpu" d=""></path>
+                    <path class="os-tm-graph-line" data-tm-line="cpu" d=""></path>
+                  </svg>
+                </figure>
+                <figure class="os-tm-chart" data-tm-chart="memory">
+                  <figcaption><span><i class="os-tm-legend-dot" aria-hidden="true"></i>Memory</span><b data-tm-chart-memory>61%</b></figcaption>
+                  <svg class="os-tm-graph" viewBox="0 0 120 40" preserveAspectRatio="none" aria-hidden="true">
+                    <g class="os-tm-graph-grid">
+                      <line x1="0" y1="10" x2="120" y2="10"></line>
+                      <line x1="0" y1="20" x2="120" y2="20"></line>
+                      <line x1="0" y1="30" x2="120" y2="30"></line>
+                    </g>
+                    <path class="os-tm-graph-area" data-tm-area="memory" d=""></path>
+                    <path class="os-tm-graph-line" data-tm-line="memory" d=""></path>
+                  </svg>
+                </figure>
+              </div>
+            </section>
+
+            <div class="os-tm-toolbar">
+              <h3>Processes</h3>
+              <span class="os-tm-updated">Live · updates every 6s</span>
+              <button class="os-tm-sample" type="button" data-task-sample><svg class="icon"><use href="#i-sync"/></svg>Sample</button>
+              <button class="os-tm-sample" type="button" data-task-display-toggle aria-controls="os-tm-display" aria-expanded="false"><svg class="icon"><use href="#i-gear"/></svg>Display</button>
+            </div>
+
+            <div class="os-tm-list">
+              <div class="os-tm-head" aria-hidden="true">
+                <span>Process</span><span>CPU</span><span>Memory</span><span>Status</span>
+              </div>
+              <div class="os-tm-rows ds-scroll" data-task-rows role="listbox" aria-label="Processes"></div>
+            </div>
+
+            <footer class="os-tm-foot">
+              <span data-task-selection>Select a process to see actions.</span>
+              <button class="ds-btn ds-btn--small ds-btn--ghost" type="button" data-task-end disabled>End task</button>
+            </footer>
           </div>
 
-          <div class="os-tm-display" id="os-tm-display" data-task-display hidden>
-            <header>
-              <span><b>Menu bar usage</b><small>CPU, RAM, and storage</small></span>
-              <button class="os-tm-display-reset" type="button" data-task-display-reset>Reset</button>
+          <aside class="os-tm-display" id="os-tm-display" data-task-display aria-label="Menu bar usage display settings" hidden>
+            <header class="os-tm-display-head">
+              <span class="os-tm-display-title"><b>Display</b><small>Menu bar usage</small></span>
+              <button class="os-tm-display-close" type="button" data-task-display-close aria-label="Close display settings" title="Close display settings"><svg class="icon"><use href="#i-x"/></svg></button>
             </header>
             <div class="os-tm-display-grid">
               <label class="os-tm-display-row" title="Show the usage meters in the menu bar">
@@ -1124,19 +1179,11 @@
                 <span class="ds-switch"><input type="checkbox" data-resource-display-setting="dividers" aria-label="Show usage dividers"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
               </label>
             </div>
-          </div>
-
-          <div class="os-tm-list">
-            <div class="os-tm-head" aria-hidden="true">
-              <span>Process</span><span>CPU</span><span>Memory</span><span>Status</span>
-            </div>
-            <div class="os-tm-rows ds-scroll" data-task-rows role="listbox" aria-label="Processes"></div>
-          </div>
-
-          <footer class="os-tm-foot">
-            <span data-task-selection>Select a process to see actions.</span>
-            <button class="ds-btn ds-btn--small ds-btn--ghost" type="button" data-task-end disabled>End task</button>
-          </footer>
+            <footer class="os-tm-display-foot">
+              <p>Changes apply to the menu bar and are saved on this device.</p>
+              <button class="os-tm-display-reset" type="button" data-task-display-reset>Reset to defaults</button>
+            </footer>
+          </aside>
         </div>
       </section>
 
