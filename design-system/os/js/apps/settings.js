@@ -29,7 +29,7 @@ const SETTINGS_DEFAULTS = {
   dockMagnify: false,
   dockPosition: "bottom",
   minimizeEffect: "genie",
-  desktopWidgets: true,
+  desktopWidgets: false,
   desktopIcons: false,
   stageManager: false,
   notifications: true,
@@ -64,6 +64,9 @@ const RANGE_SUFFIX = {
 };
 
 const settingsWindow = document.querySelector('[data-window="settings"]');
+const desktopRail = document.querySelector(".os-rail");
+const desktopIcons = document.querySelector(".os-desk-icons");
+const desktopWidget = document.querySelector(".os-widget");
 const tabButtons = Array.from(document.querySelectorAll("[data-settings-tab]"));
 const navGroups = Array.from(document.querySelectorAll("[data-settings-nav-group]"));
 const panes = Array.from(document.querySelectorAll("[data-settings-pane]"));
@@ -138,8 +141,19 @@ function syncPreferences() {
     });
   });
 
+  applyDesktopVisibility();
   syncThemeCards();
   updateMotionPreference();
+}
+
+function applyDesktopVisibility() {
+  const showIcons = Boolean(settingValue("desktopIcons"));
+  const showWidgets = Boolean(settingValue("desktopWidgets"));
+  document.documentElement.dataset.desktopIcons = showIcons ? "on" : "off";
+  document.documentElement.dataset.desktopWidgets = showWidgets ? "on" : "off";
+  if (desktopIcons) desktopIcons.hidden = !showIcons;
+  if (desktopWidget) desktopWidget.hidden = !showWidgets;
+  if (desktopRail) desktopRail.hidden = !showIcons && !showWidgets;
 }
 
 function syncThemeCards() {

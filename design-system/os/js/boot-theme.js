@@ -30,6 +30,14 @@
     var windowWave = localStorage.getItem("explorer-os-window-wave") || water.windowWave;
     if (["off", "calm", "tide", "surge"].indexOf(windowWave) === -1) windowWave = "tide";
     root.dataset.waterWindowWave = windowWave;
+    var osSettings = {};
+    try {
+      osSettings = JSON.parse(localStorage.getItem("explorer-os-settings-v1") || "null") || {};
+    } catch (e) {
+      osSettings = {};
+    }
+    root.dataset.desktopIcons = osSettings.desktopIcons === true ? "on" : "off";
+    root.dataset.desktopWidgets = osSettings.desktopWidgets === true ? "on" : "off";
     var resourceDisplay = {};
     try {
       resourceDisplay = JSON.parse(localStorage.getItem("explorer-os-resource-display") || "null") || {};

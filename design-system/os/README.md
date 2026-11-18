@@ -116,6 +116,9 @@ Battery, Notifications, Privacy & Security, and Storage.
 - Appearance wraps the Water controls, so theme, tone, speed, drips, glass, font
   size, and window layout keep using the same saved preferences as the rest of
   the desktop.
+- Desktop & Dock controls the shared window layout and hides the right-rail
+  shortcut grid and widget stack independently, so the desktop can run with
+  neither.
 - Network, Bluetooth, Sound, and Battery reuse the live state owned by their
   feature modules. Changes made in Settings are reflected in the tray, the
   standalone apps, and the command bar.

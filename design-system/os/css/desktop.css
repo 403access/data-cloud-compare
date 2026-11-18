@@ -24,6 +24,17 @@
 
 .os-rail > * { pointer-events: auto; }
 
+/* Desktop & Dock settings. The data attributes are applied before paint by
+   boot-theme.js; the [hidden] rules cover the same state once modules load. */
+:root[data-desktop-icons="off"] .os-desk-icons,
+:root[data-desktop-widgets="off"] .os-widget,
+:root[data-desktop-icons="off"][data-desktop-widgets="off"] .os-rail,
+.os-desk-icons[hidden],
+.os-widget[hidden],
+.os-rail[hidden] {
+  display: none;
+}
+
 .os-desk-icons {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
