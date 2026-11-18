@@ -147,8 +147,8 @@ when the tab is hidden.
 ## Aether OS concept
 
 [`os/`](os/index.html) is a desktop-environment concept: a glass menu bar, a
-dock, draggable windows, and a command bar built around a faithful reproduction
-of the real explorer application.
+dock, draggable and resizable windows, and a command bar built around a
+faithful reproduction of the real explorer application.
 
 - The Explorer window follows `app/src/web`: app bar, two five-column panes,
   toolbar and breadcrumbs, search with scope and status filters, sortable
@@ -166,6 +166,11 @@ of the real explorer application.
   rim when a focused window is also hovered. Ring animation stops under
   `prefers-reduced-motion`. The choice is saved as `explorer-os-window-wave`
   (mirrored in `explorer-water-settings`) and applies before paint.
+- Every window can be resized from any outside edge or corner. The resize bands
+  follow the inside of the border, preserve a 280 × 180 minimum, stay inside
+  the desktop, and use the family's line-icon language for the bottom-right
+  grip. Handles are hidden below 820px, where windows become full-width stacked
+  panels.
 - The command bar mirrors the app's command catalog and file search: Navigation,
   Search, View, Columns, Sort, Filters, Appearance, and Provider groups, `>`
   commands-only mode, fuzzy matching, and local/remote file results.

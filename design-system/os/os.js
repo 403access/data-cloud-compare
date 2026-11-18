@@ -1206,6 +1206,20 @@ const windows = Array.from(document.querySelectorAll("[data-window]"));
 const activeApp = document.querySelector("[data-active-app]");
 let zCounter = 20;
 
+const MIN_WINDOW_WIDTH = 280;
+const MIN_WINDOW_HEIGHT = 180;
+const RESIZE_DIRECTIONS = ["n", "s", "e", "w", "ne", "nw", "se", "sw"];
+const RESIZE_CURSORS = {
+  n: "ns-resize",
+  s: "ns-resize",
+  e: "ew-resize",
+  w: "ew-resize",
+  ne: "nesw-resize",
+  sw: "nesw-resize",
+  nw: "nwse-resize",
+  se: "nwse-resize",
+};
+
 const dockMap = {
   "open-explorer": "explorer",
   "open-settings": "settings",
@@ -1271,7 +1285,9 @@ function closeWindow(win) {
   const wasFocused = win.classList.contains("is-focused");
   restoreMaximized(win);
   win.hidden = true;
-  win.classList.remove("is-open", "is-focused", "is-minimized", "is-dragging");
+  win.classList.remove("is-open", "is-focused", "is-minimized", "is-dragging", "is-resizing");
+  document.body.classList.remove("is-resizing-window");
+  root.style.removeProperty("--os-resize-cursor");
   if (wasFocused) {
     const next = topmostWindow();
     if (next) focusWindow(next);
@@ -1380,8 +1396,97 @@ function startDrag(event, win) {
   event.preventDefault();
 }
 
+function addResizeHandles(win) {
+  RESIZE_DIRECTIONS.forEach((direction) => {
+    const handle = document.createElement("div");
+    handle.className = `os-resize-handle os-resize-handle--${direction}`;
+    handle.dataset.resize = direction;
+    handle.setAttribute("aria-hidden", "true");
+    if (direction === "se") {
+      handle.innerHTML =
+        '<svg class="icon" aria-hidden="true"><use href="#i-resize"/></svg>';
+    }
+    handle.addEventListener("pointerdown", (event) => startResize(event, win, direction));
+    win.appendChild(handle);
+  });
+}
+
+function startResize(event, win, direction) {
+  if (window.innerWidth <= 820) return;
+  if (event.button !== 0 || win.classList.contains("is-maximized")) return;
+
+  focusWindow(win);
+
+  const desktopRect = desktop.getBoundingClientRect();
+  const rect = win.getBoundingClientRect();
+  const start = {
+    left: rect.left - desktopRect.left,
+    top: rect.top - desktopRect.top,
+    width: rect.width,
+    height: rect.height,
+  };
+  const startRight = start.left + start.width;
+  const startBottom = start.top + start.height;
+  const east = direction.includes("e");
+  const west = direction.includes("w");
+  const south = direction.includes("s");
+  const north = direction.includes("n");
+
+  win.style.left = `${start.left}px`;
+  win.style.top = `${start.top}px`;
+  win.style.right = "auto";
+  win.style.bottom = "auto";
+  win.style.width = `${start.width}px`;
+  win.style.height = `${start.height}px`;
+  win.classList.add("is-resizing");
+  root.style.setProperty("--os-resize-cursor", RESIZE_CURSORS[direction]);
+  document.body.classList.add("is-resizing-window");
+
+  function move(moveEvent) {
+    const dx = moveEvent.clientX - event.clientX;
+    const dy = moveEvent.clientY - event.clientY;
+    let { left, top, width, height } = start;
+
+    if (east) {
+      const maxWidth = Math.max(MIN_WINDOW_WIDTH, desktopRect.width - start.left);
+      width = Math.min(Math.max(MIN_WINDOW_WIDTH, start.width + dx), maxWidth);
+    } else if (west) {
+      left = Math.max(0, Math.min(start.left + dx, startRight - MIN_WINDOW_WIDTH));
+      width = startRight - left;
+    }
+
+    if (south) {
+      const maxHeight = Math.max(MIN_WINDOW_HEIGHT, desktopRect.height - start.top);
+      height = Math.min(Math.max(MIN_WINDOW_HEIGHT, start.height + dy), maxHeight);
+    } else if (north) {
+      top = Math.max(0, Math.min(start.top + dy, startBottom - MIN_WINDOW_HEIGHT));
+      height = startBottom - top;
+    }
+
+    win.style.left = `${left}px`;
+    win.style.top = `${top}px`;
+    win.style.width = `${width}px`;
+    win.style.height = `${height}px`;
+  }
+
+  function end() {
+    win.classList.remove("is-resizing");
+    root.style.removeProperty("--os-resize-cursor");
+    document.body.classList.remove("is-resizing-window");
+    document.removeEventListener("pointermove", move);
+    document.removeEventListener("pointerup", end);
+    document.removeEventListener("pointercancel", end);
+  }
+
+  document.addEventListener("pointermove", move);
+  document.addEventListener("pointerup", end);
+  document.addEventListener("pointercancel", end);
+  event.preventDefault();
+}
+
 windows.forEach((win) => {
   win.addEventListener("pointerdown", () => focusWindow(win), true);
+  addResizeHandles(win);
 
   win.querySelectorAll("[data-drag-handle]").forEach((handle) => {
     handle.addEventListener("pointerdown", (event) => startDrag(event, win));

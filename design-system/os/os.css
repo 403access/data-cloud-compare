@@ -762,6 +762,100 @@ body.os code { font-family: var(--ds-font-mono); }
   pointer-events: none;
 }
 
+/* ------------------------------------------------------- resize handles
+   The hit area follows the inside of the window border. The bottom-right
+   handle also carries a grip icon in the same 24px line style as the rest
+   of the OS icon sprite. */
+.os-resize-handle {
+  position: absolute;
+  z-index: 4;
+  touch-action: none;
+}
+
+.os-resize-handle--n,
+.os-resize-handle--s {
+  left: 14px;
+  right: 14px;
+  height: 6px;
+}
+
+.os-resize-handle--n { top: 0; cursor: ns-resize; }
+.os-resize-handle--s { bottom: 0; cursor: ns-resize; }
+
+.os-resize-handle--e,
+.os-resize-handle--w {
+  top: 14px;
+  bottom: 14px;
+  width: 6px;
+}
+
+.os-resize-handle--e { right: 0; cursor: ew-resize; }
+.os-resize-handle--w { left: 0; cursor: ew-resize; }
+
+.os-resize-handle--ne,
+.os-resize-handle--nw,
+.os-resize-handle--se,
+.os-resize-handle--sw {
+  width: 18px;
+  height: 18px;
+}
+
+.os-resize-handle--ne { top: 0; right: 0; cursor: nesw-resize; }
+.os-resize-handle--nw { top: 0; left: 0; cursor: nwse-resize; }
+.os-resize-handle--se { right: 0; bottom: 0; cursor: nwse-resize; }
+.os-resize-handle--sw { bottom: 0; left: 0; cursor: nesw-resize; }
+
+.os-resize-handle--se {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 2px 3px 3px 2px;
+  border-radius: 0 0 var(--ds-radius-lg) 0;
+  color: var(--ds-text-3);
+  opacity: 0.38;
+  transition:
+    opacity var(--ds-motion-fast) ease,
+    color var(--ds-motion-fast) ease,
+    filter var(--ds-motion-fast) ease;
+}
+
+.os-resize-handle--se .icon {
+  width: 13px;
+  height: 13px;
+  pointer-events: none;
+}
+
+.os-window:not(.is-focused) .os-resize-handle--se { opacity: 0.22; }
+.os-window:hover .os-resize-handle--se { opacity: 0.72; }
+.os-window.is-focused .os-resize-handle--se { opacity: 0.55; }
+
+.os-resize-handle--se:hover {
+  color: var(--ds-accent);
+  opacity: 1;
+  filter: drop-shadow(0 0 4px var(--ds-glow));
+}
+
+.os-window.is-resizing {
+  --os-rim: color-mix(in srgb, var(--ds-accent) 82%, #ffffff);
+}
+
+.os-window.is-resizing .os-resize-handle--se {
+  color: var(--ds-accent);
+  opacity: 1;
+  filter: drop-shadow(0 0 4px var(--ds-glow));
+}
+
+.os-window.is-maximized .os-resize-handle,
+.os-window.is-minimized .os-resize-handle {
+  display: none;
+}
+
+body.is-resizing-window,
+body.is-resizing-window * {
+  user-select: none;
+  cursor: var(--os-resize-cursor, default) !important;
+}
+
 .os-window--explorer {
   top: 16px;
   left: 16px;
@@ -2359,6 +2453,7 @@ body.os code { font-family: var(--ds-font-mono); }
   }
   .os-titlebar { touch-action: pan-y; }
   .os-window.is-minimized { display: none; }
+  .os-resize-handle { display: none; }
   .os-window--music,
   .os-window--about { height: 300px !important; min-height: 300px; }
   .os-window--terminal { height: 360px !important; min-height: 360px; }
@@ -3130,7 +3225,7 @@ body.os code { font-family: var(--ds-font-mono); }
   gap: 12px;
   flex: none;
   height: 34px;
-  padding: 0 12px;
+  padding: 0 20px 0 12px;
   border-top: 1px solid var(--ds-line);
   background: color-mix(in srgb, var(--ds-surface-2) 74%, transparent);
   backdrop-filter: blur(16px);
