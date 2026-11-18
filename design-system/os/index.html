@@ -1136,15 +1136,17 @@
               <button class="os-tm-sample" type="button" data-task-display-toggle aria-controls="os-tm-display" aria-expanded="false"><svg class="icon"><use href="#i-gear"/></svg>Display</button>
             </div>
 
+            <div class="os-tm-filters" data-task-filters role="group" aria-label="Filter processes by category"></div>
+
             <div class="os-tm-list">
               <div class="os-tm-head" aria-hidden="true">
-                <span>Process</span><span>CPU</span><span>Memory</span><span>Status</span>
+                <span>Process</span><span>CPU</span><span>Memory</span><span>Category</span>
               </div>
-              <div class="os-tm-rows ds-scroll" data-task-rows role="listbox" aria-label="Processes"></div>
+              <div class="os-tm-rows ds-scroll" data-task-rows role="tree" aria-label="Processes"></div>
             </div>
 
             <footer class="os-tm-foot">
-              <span data-task-selection>Select a process to see actions.</span>
+              <span data-task-selection>Select a process to see details.</span>
               <button class="ds-btn ds-btn--small ds-btn--ghost" type="button" data-task-end disabled>End task</button>
             </footer>
           </div>
