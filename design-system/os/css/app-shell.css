@@ -1,0 +1,291 @@
+/* ==========================================================================
+   Explorer application (faithful to app/src/web)
+   --------------------------------------------------------------------------
+   The window contains the real explorer structure: app bar, two panes with
+   five columns, search and status filters, status bar, side panels, and the
+   command bar. Classes are prefixed osx- so they do not collide with the
+   design-system primitives used elsewhere on the desktop.
+   ========================================================================== */
+
+.os-window--explorer {
+  top: 16px;
+  left: 16px;
+  width: min(1080px, calc(100vw - 336px));
+  height: min(680px, calc(100dvh - 190px));
+}
+
+.os-window--explorer.has-side { width: calc(100vw - 32px); }
+
+.osx-app {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  background: color-mix(in srgb, var(--ds-surface-solid) 72%, transparent);
+}
+
+/* ------------------------------------------------------------- app bar */
+
+.osx-appbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: none;
+  height: 54px;
+  padding: 0 10px;
+  border-bottom: 1px solid var(--ds-line);
+  background: color-mix(in srgb, var(--ds-surface-2) 58%, transparent);
+}
+
+.osx-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 178px;
+  flex: none;
+}
+
+.osx-brand-icon { width: 30px; height: 30px; flex: none; }
+.osx-brand-icon svg { width: 100%; height: 100%; }
+.osx-brand-icon .brand-a { fill: var(--ds-accent); }
+.osx-brand-icon .brand-b { fill: var(--ds-brand-b); }
+.osx-brand-icon .brand-line {
+  stroke: var(--ds-text-2);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.osx-brand-text { min-width: 0; }
+.osx-brand-text h1 {
+  margin: 0;
+  color: var(--ds-text);
+  font-size: var(--ds-text-base);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+.osx-brand-text h1 span { color: var(--ds-text-3); font-weight: 500; }
+.osx-brand-text h1 [data-provider-label] { color: var(--ds-text); font-weight: 650; }
+.osx-brand-text p {
+  margin: 1px 0 0;
+  color: var(--ds-text-2);
+  font-size: calc(9.5px * var(--os-font-scale, 1));
+  white-space: nowrap;
+}
+
+.osx-provider-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex: none;
+  padding: 2px;
+  border: 1px solid var(--ds-line);
+  border-radius: var(--ds-radius-sm);
+  background: var(--ds-sidebar);
+}
+
+.osx-provider-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ds-text-2);
+  font-size: var(--ds-text-2xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.osx-provider-choice:hover { background: var(--ds-hover); color: var(--ds-text); }
+.osx-provider-choice.is-active {
+  background: var(--ds-surface-solid);
+  color: var(--ds-text);
+  box-shadow: 0 1px 2px rgba(0, 8, 14, 0.22);
+}
+.osx-provider-dot {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--ds-text-3);
+}
+.osx-provider-dot.jottacloud { background: #5e5ce6; }
+.osx-provider-dot.google {
+  background: conic-gradient(#4285f4 0 25%, #34a853 0 50%, #fbbc05 0 75%, #ea4335 0);
+}
+
+.osx-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  min-width: 0;
+  flex: none;
+}
+
+.osx-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 26px;
+  padding: 0 9px;
+  border: 1px solid var(--ds-line);
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--ds-surface-solid) 72%, transparent);
+  color: var(--ds-text);
+  font-size: var(--ds-text-2xs);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.osx-btn:hover { background: var(--ds-hover); }
+.osx-btn:disabled { opacity: 0.38; cursor: default; }
+.osx-btn--icon { width: 26px; padding: 0; }
+.osx-btn--icon .icon { width: 15px; height: 15px; }
+.osx-btn--ghost { border-color: transparent; background: transparent; color: var(--ds-text-2); }
+.osx-btn--ghost:hover { background: var(--ds-hover); color: var(--ds-text); }
+.osx-btn--subtle { border-color: transparent; background: transparent; color: var(--ds-text-2); }
+.osx-btn--subtle:hover { background: var(--ds-hover); color: var(--ds-text); }
+.osx-btn--primary {
+  border-color: transparent;
+  background: var(--ds-accent);
+  color: var(--ds-text-inverse);
+  font-weight: 650;
+  padding: 0 12px;
+}
+.osx-btn--primary:hover { filter: brightness(1.06); }
+.osx-btn--primary:disabled { background: var(--ds-gray-bg); color: var(--ds-text-3); }
+
+.osx-command-trigger {
+  padding: 0 7px;
+  color: var(--ds-text-2);
+  background: color-mix(in srgb, var(--ds-surface-solid) 52%, transparent);
+}
+.osx-command-trigger:hover { color: var(--ds-text); }
+.osx-command-trigger .icon { width: 13px; height: 13px; }
+.osx-command-trigger span { font-size: calc(10px * var(--os-font-scale, 1)); font-weight: 550; }
+.osx-command-trigger kbd {
+  padding: 1px 5px;
+  border: 1px solid var(--ds-line);
+  border-radius: 5px;
+  background: var(--ds-sidebar);
+  color: var(--ds-text-3);
+  font-family: var(--ds-font);
+  font-size: calc(8.5px * var(--os-font-scale, 1));
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.osx-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--ds-text-2);
+  font-size: var(--ds-text-2xs);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+.osx-toggle input { position: absolute; opacity: 0; pointer-events: none; }
+.osx-toggle-track {
+  position: relative;
+  width: 26px;
+  height: 15px;
+  border-radius: 999px;
+  background: var(--ds-gray-bg);
+  transition: background var(--ds-motion-fast) ease;
+}
+.osx-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  transition: transform var(--ds-motion-fast) ease;
+}
+.osx-toggle input:checked + .osx-toggle-track { background: var(--ds-accent); }
+.osx-toggle input:checked + .osx-toggle-track .osx-toggle-thumb { transform: translateX(11px); }
+
+.osx-theme-picker {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 6px;
+  border: 1px solid var(--ds-line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ds-surface-solid) 52%, transparent);
+  color: var(--ds-text-2);
+}
+.osx-theme-picker:hover { border-color: color-mix(in srgb, var(--ds-accent) 34%, var(--ds-line)); }
+.osx-theme-picker:focus-within { border-color: color-mix(in srgb, var(--ds-accent) 55%, var(--ds-line)); box-shadow: var(--ds-focus-ring); }
+.osx-theme-icon { width: 13px; height: 13px; color: var(--ds-accent); }
+.osx-theme-picker select {
+  appearance: none;
+  -webkit-appearance: none;
+  max-width: 76px;
+  height: 100%;
+  padding: 0 14px 0 5px;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--ds-text);
+  font: inherit;
+  font-size: calc(10px * var(--os-font-scale, 1));
+  font-weight: 600;
+  cursor: pointer;
+}
+.osx-theme-picker select option { background: var(--ds-popover); color: var(--ds-text); }
+.osx-theme-chevron {
+  position: absolute;
+  right: 6px;
+  width: 9px;
+  height: 9px;
+  color: var(--ds-text-3);
+  pointer-events: none;
+}
+
+.osx-legend {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 10px;
+  z-index: 30;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px 18px;
+  width: min(500px, calc(100vw - 48px));
+  padding: 14px 16px;
+  border: 1px solid var(--ds-line-strong);
+  border-radius: var(--ds-radius-lg);
+  background: var(--ds-popover);
+  box-shadow: var(--ds-shadow-pop);
+}
+.osx-legend h4 {
+  grid-column: 1 / -1;
+  margin: 0 0 3px;
+  color: var(--ds-text-3);
+  font-size: calc(9.5px * var(--os-font-scale, 1));
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.osx-legend h4:not(:first-child) { margin-top: 8px; }
+.osx-legend-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 3px 0;
+  color: var(--ds-text-2);
+  font-size: calc(10px * var(--os-font-scale, 1));
+  line-height: 1.4;
+}
+.osx-legend-row b { color: var(--ds-text); font-weight: 650; }
+.osx-legend-row .osx-status-chip { margin-top: 1px; flex: none; }
+.osx-legend-row .osx-status-chip .dot { width: 6px; height: 6px; }

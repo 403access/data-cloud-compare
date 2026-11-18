@@ -1,0 +1,525 @@
+/* --------------------------------------------------------------- windows */
+
+/* The tide line that runs around a hovered or focused window. The gradient
+   angle is a registered custom property, so it can be animated smoothly. */
+@property --os-wave-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes os-window-tide {
+  to { --os-wave-angle: 360deg; }
+}
+
+:root {
+  --os-wave-cycle: 8s;
+  --os-wave-rate: 1;
+  --os-wave-ring: 2.5px;
+  --os-wave-peak: 0.85;
+}
+
+:root[data-water-speed="calm"] { --os-wave-rate: 1.55; }
+:root[data-water-speed="rapid"] { --os-wave-rate: 0.6; }
+
+:root[data-water-window-wave="calm"] {
+  --os-wave-cycle: 12s;
+  --os-wave-ring: 2px;
+  --os-wave-peak: 0.55;
+}
+
+:root[data-water-window-wave="tide"] {
+  --os-wave-cycle: 8s;
+  --os-wave-ring: 2.5px;
+  --os-wave-peak: 0.85;
+}
+
+:root[data-water-window-wave="surge"] {
+  --os-wave-cycle: 4.5s;
+  --os-wave-ring: 3.5px;
+  --os-wave-peak: 1;
+}
+
+:root[data-water-window-wave="off"] .os-window::before,
+:root[data-water-window-wave="off"] .osx-command::before,
+:root[data-water-effects="off"] .os-window::before,
+:root[data-water-effects="off"] .osx-command::before {
+  display: none;
+}
+
+.os-window {
+  --os-rim: var(--ds-line-strong);
+  --os-rim-glow: transparent;
+  position: absolute;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  min-width: 280px;
+  min-height: 180px;
+  border: 1px solid var(--os-rim);
+  border-radius: var(--ds-radius-lg);
+  background: color-mix(in srgb, var(--ds-surface-solid) 92%, transparent);
+  box-shadow:
+    0 30px 80px rgba(0, 8, 14, 0.55),
+    0 3px 12px rgba(0, 8, 14, 0.4),
+    0 0 0 1px transparent,
+    0 0 0 0 transparent,
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  backdrop-filter: blur(24px) saturate(145%);
+  -webkit-backdrop-filter: blur(24px) saturate(145%);
+  transition: border-color var(--ds-motion-fast) ease, box-shadow var(--ds-motion-fast) ease;
+}
+
+/* Only the ring is painted: the mask punches out the inside of the window. */
+.os-window::before,
+.osx-command::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  padding: var(--os-wave-ring);
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--os-wave-angle),
+    transparent 0deg,
+    color-mix(in srgb, var(--ds-accent) 45%, transparent) 34deg,
+    color-mix(in srgb, #ffffff 82%, var(--ds-accent)) 52deg,
+    color-mix(in srgb, var(--ds-accent) 45%, transparent) 70deg,
+    transparent 104deg,
+    transparent 208deg,
+    color-mix(in srgb, var(--ds-accent) 35%, transparent) 232deg,
+    color-mix(in srgb, #ffffff 72%, var(--ds-accent)) 248deg,
+    color-mix(in srgb, var(--ds-accent) 35%, transparent) 264deg,
+    transparent 292deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  pointer-events: none;
+  filter: none;
+  transition: opacity 220ms ease;
+}
+
+.os-window:hover::before,
+.os-window.is-focused::before,
+.osx-command::before {
+  filter: url(#os-window-wave);
+  animation: os-window-tide calc(var(--os-wave-cycle) * var(--os-wave-rate)) linear infinite;
+}
+
+.os-window:hover::before { opacity: calc(var(--os-wave-peak) * 0.6); }
+
+.os-window.is-focused::before { opacity: var(--os-wave-peak); }
+
+.os-window.is-focused:hover::before { opacity: 1; }
+
+/* The command bar is a modal active surface, so its tide line is always on. */
+.osx-command::before { opacity: var(--os-wave-peak); }
+
+.osx-command:hover::before { opacity: 1; }
+
+.os-window:focus { outline: none; }
+
+.os-window:hover {
+  --os-rim: color-mix(in srgb, var(--ds-accent) 34%, var(--ds-line-strong));
+  --os-rim-glow: color-mix(in srgb, var(--ds-accent) 8%, transparent);
+  box-shadow:
+    0 32px 84px rgba(0, 8, 14, 0.58),
+    0 3px 12px rgba(0, 8, 14, 0.4),
+    0 0 0 1px color-mix(in srgb, var(--ds-accent) 10%, transparent),
+    0 0 30px var(--os-rim-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.os-window.is-focused {
+  --os-rim: color-mix(in srgb, var(--ds-accent) 64%, var(--ds-line));
+  --os-rim-glow: color-mix(in srgb, var(--ds-accent) 18%, transparent);
+  box-shadow:
+    0 34px 90px rgba(0, 8, 14, 0.62),
+    0 3px 12px rgba(0, 8, 14, 0.4),
+    0 0 0 1px color-mix(in srgb, var(--ds-accent) 20%, transparent),
+    0 0 44px var(--os-rim-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.os-window.is-focused:hover {
+  --os-rim: color-mix(in srgb, var(--ds-accent) 80%, #ffffff);
+  --os-rim-glow: color-mix(in srgb, var(--ds-accent) 28%, transparent);
+  box-shadow:
+    0 36px 96px rgba(0, 8, 14, 0.64),
+    0 3px 12px rgba(0, 8, 14, 0.4),
+    0 0 0 1px color-mix(in srgb, var(--ds-accent) 30%, transparent),
+    0 0 58px var(--os-rim-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.os-window.is-minimized {
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(22px) scale(0.94);
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------- resize handles
+   The hit area follows the inside of the window border. The bottom-right
+   handle also carries a grip icon in the same 24px line style as the rest
+   of the OS icon sprite. */
+.os-resize-handle {
+  position: absolute;
+  z-index: 4;
+  touch-action: none;
+}
+
+.os-resize-handle--n,
+.os-resize-handle--s {
+  left: 14px;
+  right: 14px;
+  height: 6px;
+}
+
+.os-resize-handle--n { top: 0; cursor: ns-resize; }
+.os-resize-handle--s { bottom: 0; cursor: ns-resize; }
+
+.os-resize-handle--e,
+.os-resize-handle--w {
+  top: 14px;
+  bottom: 14px;
+  width: 6px;
+}
+
+.os-resize-handle--e { right: 0; cursor: ew-resize; }
+.os-resize-handle--w { left: 0; cursor: ew-resize; }
+
+.os-resize-handle--ne,
+.os-resize-handle--nw,
+.os-resize-handle--se,
+.os-resize-handle--sw {
+  width: 18px;
+  height: 18px;
+}
+
+.os-resize-handle--ne { top: 0; right: 0; cursor: nesw-resize; }
+.os-resize-handle--nw { top: 0; left: 0; cursor: nwse-resize; }
+.os-resize-handle--se { right: 0; bottom: 0; cursor: nwse-resize; }
+.os-resize-handle--sw { bottom: 0; left: 0; cursor: nesw-resize; }
+
+.os-resize-handle--se {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 2px 3px 3px 2px;
+  border-radius: 0 0 var(--ds-radius-lg) 0;
+  color: var(--ds-text-3);
+  opacity: 0.38;
+  transition:
+    opacity var(--ds-motion-fast) ease,
+    color var(--ds-motion-fast) ease,
+    filter var(--ds-motion-fast) ease;
+}
+
+.os-resize-handle--se .icon {
+  width: 13px;
+  height: 13px;
+  pointer-events: none;
+}
+
+.os-window:not(.is-focused) .os-resize-handle--se { opacity: 0.22; }
+.os-window:hover .os-resize-handle--se { opacity: 0.72; }
+.os-window.is-focused .os-resize-handle--se { opacity: 0.55; }
+
+.os-resize-handle--se:hover {
+  color: var(--ds-accent);
+  opacity: 1;
+  filter: drop-shadow(0 0 4px var(--ds-glow));
+}
+
+.os-window.is-resizing {
+  --os-rim: color-mix(in srgb, var(--ds-accent) 82%, #ffffff);
+}
+
+.os-window.is-resizing .os-resize-handle--se {
+  color: var(--ds-accent);
+  opacity: 1;
+  filter: drop-shadow(0 0 4px var(--ds-glow));
+}
+
+.os-window.is-maximized .os-resize-handle,
+.os-window.is-minimized .os-resize-handle {
+  display: none;
+}
+
+body.is-resizing-window,
+body.is-resizing-window * {
+  user-select: none;
+  cursor: var(--os-resize-cursor, default) !important;
+}
+
+.os-window--explorer {
+  top: 16px;
+  left: 16px;
+  width: min(1080px, calc(100vw - 336px));
+  height: min(680px, calc(100dvh - 190px));
+}
+
+.os-window--settings {
+  top: 34px;
+  left: calc(50% - 280px);
+  width: min(560px, calc(100vw - 32px));
+  height: min(610px, calc(100dvh - 170px));
+}
+
+.os-window--network {
+  top: 58px;
+  left: calc(50% - 255px);
+  width: min(510px, calc(100vw - 32px));
+  height: min(600px, calc(100dvh - 150px));
+}
+
+.os-window--devices {
+  top: 70px;
+  left: calc(50% - 270px);
+  width: min(540px, calc(100vw - 32px));
+  height: min(560px, calc(100dvh - 150px));
+}
+
+.os-window--battery {
+  top: 66px;
+  left: calc(50% - 245px);
+  width: min(490px, calc(100vw - 32px));
+  height: min(650px, calc(100dvh - 150px));
+}
+
+.os-window--calendar {
+  top: 50px;
+  left: calc(50% - 350px);
+  width: min(700px, calc(100vw - 32px));
+  height: min(590px, calc(100dvh - 140px));
+}
+
+.os-window--taskmanager {
+  top: 62px;
+  left: calc(50% - 320px);
+  width: min(640px, calc(100vw - 32px));
+  height: min(640px, calc(100dvh - 150px));
+}
+
+.os-window--terminal {
+  top: 96px;
+  left: calc(50% - 268px);
+  width: min(536px, calc(100vw - 32px));
+  height: 350px;
+}
+
+.os-window--music {
+  right: 18px;
+  bottom: 98px;
+  width: 320px;
+  height: 198px;
+}
+
+.os-window--about {
+  top: 112px;
+  left: calc(50% - 216px);
+  width: min(432px, calc(100vw - 32px));
+  height: 356px;
+}
+
+/* ------------------------------------------------------------- titlebar */
+
+.os-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+  height: 40px;
+  padding: 0 10px;
+  border-bottom: 1px solid var(--ds-line);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--ds-surface-2) 72%, transparent), transparent),
+    color-mix(in srgb, var(--ds-bg-soft) 42%, transparent);
+  user-select: none;
+  touch-action: none;
+  cursor: default;
+}
+
+.os-window:not(.is-focused) .os-titlebar { opacity: 0.78; }
+
+.os-lights {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+}
+
+.os-light {
+  position: relative;
+  width: 11px;
+  height: 11px;
+  padding: 0;
+  border: 1px solid rgba(0, 8, 14, 0.28);
+  border-radius: 50%;
+  transition: filter var(--ds-motion-fast) ease;
+}
+
+.os-light--close { background: #ff8a92; }
+.os-light--min { background: #ffd27a; }
+.os-light--max { background: #5ef2b0; }
+.os-light:hover { filter: brightness(1.16); }
+
+.os-light::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: rgba(0, 20, 28, 0.72);
+  font-size: calc(8px * var(--os-font-scale, 1));
+  font-weight: 800;
+  line-height: 1;
+  opacity: 0;
+}
+
+.os-titlebar:hover .os-light::before { opacity: 1; }
+.os-light--close::before { content: "×"; }
+.os-light--min::before { content: "−"; }
+.os-light--max::before { content: "+"; }
+
+.os-titlebar__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  color: var(--ds-text-2);
+  font-size: var(--ds-text-xs);
+  white-space: nowrap;
+}
+
+.os-titlebar__title b {
+  color: var(--ds-text);
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.os-titlebar__sub {
+  overflow: hidden;
+  color: var(--ds-text-3);
+  text-overflow: ellipsis;
+}
+
+.os-titlebar__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+}
+
+.os-app-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  flex: none;
+  border: 1px solid color-mix(in srgb, var(--app, var(--ds-accent)) 30%, var(--ds-line));
+  border-radius: var(--ds-radius-xs);
+  background: color-mix(in srgb, var(--app, var(--ds-accent)) 14%, transparent);
+  color: var(--app, var(--ds-accent));
+}
+
+.os-app-mark .icon { width: 13px; height: 13px; }
+.os-app-mark--explorer { --app: var(--ds-accent); }
+.os-app-mark--settings { --app: var(--ds-green); }
+.os-app-mark--terminal { --app: var(--ds-blue); }
+.os-app-mark--music { --app: var(--ds-pink); }
+.os-app-mark--network { --app: var(--ds-accent); }
+.os-app-mark--devices { --app: var(--ds-blue); }
+.os-app-mark--battery { --app: var(--ds-green); }
+.os-app-mark--calendar { --app: var(--ds-violet); }
+.os-app-mark--taskmanager { --app: var(--ds-amber); }
+
+.os-icon-button {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid transparent;
+  border-radius: var(--ds-radius-xs);
+  color: var(--ds-text-2);
+  transition: background var(--ds-motion-fast) ease, color var(--ds-motion-fast) ease, border-color var(--ds-motion-fast) ease;
+}
+
+.os-icon-button:hover {
+  border-color: var(--ds-line);
+  background: var(--ds-hover);
+  color: var(--ds-text);
+}
+
+.os-icon-button:disabled {
+  opacity: 0.32;
+  cursor: default;
+}
+
+.os-icon-button:disabled:hover {
+  border-color: transparent;
+  background: transparent;
+  color: var(--ds-text-2);
+}
+
+.os-icon-button .icon { width: 14px; height: 14px; }
+
+/* ---------------------------------------------------------------- tabs */
+
+.os-tabbar {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  flex: none;
+  height: 38px;
+  padding: 0 10px;
+  border-bottom: 1px solid var(--ds-line);
+  background: color-mix(in srgb, var(--ds-bg-soft) 34%, transparent);
+}
+
+.os-tab {
+  height: 28px;
+  max-width: 210px;
+  padding: 0 13px;
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-radius: var(--ds-radius-sm) var(--ds-radius-sm) 0 0;
+  color: var(--ds-text-3);
+  font-size: var(--ds-text-xs);
+  font-weight: 550;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: background var(--ds-motion-fast) ease, color var(--ds-motion-fast) ease;
+}
+
+.os-tab:hover { background: var(--ds-hover); color: var(--ds-text); }
+
+.os-tab.is-active {
+  border-color: var(--ds-line);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+}
+
+.os-tab--add {
+  min-width: 28px;
+  padding: 0;
+  color: var(--ds-text-3);
+  font-size: var(--ds-text-md);
+}
+
+.os-tabbar__spacer { flex: 1; min-width: 8px; }
+
+.os-tabbar .ds-segmented { margin-bottom: 5px; }
+.os-tabbar .ds-segment { height: 24px; font-size: var(--ds-text-2xs); }
+.os-tabbar .ds-segment .icon { width: 12px; height: 12px; }

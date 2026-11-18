@@ -1,0 +1,53 @@
+/* ------------------------------------------------------------ shortcuts */
+
+.os-window--shortcuts {
+  top: 90px;
+  left: calc(50% - 262px);
+  width: min(524px, calc(100vw - 32px));
+  height: min(540px, calc(100dvh - 160px));
+}
+.osx-shortcuts {
+  flex: 1;
+  min-height: 0;
+  padding: 16px;
+  overflow-y: auto;
+  
+  background: color-mix(in srgb, var(--ds-surface-solid) 74%, transparent);
+}
+.osx-shortcuts section { margin-bottom: 16px; }
+.osx-shortcuts h3 {
+  margin: 0 0 6px;
+  color: var(--ds-text-3);
+  font-size: calc(9px * var(--os-font-scale, 1));
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.osx-shortcut-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 8px;
+  border-bottom: 1px solid var(--ds-line);
+  color: var(--ds-text-2);
+  font-size: calc(10.5px * var(--os-font-scale, 1));
+}
+.osx-keys { display: inline-flex; align-items: center; gap: 3px; flex: none; }
+.osx-keys kbd,
+.osx-shortcut-row kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border: 1px solid var(--ds-line);
+  border-radius: 5px;
+  background: var(--ds-sidebar);
+  color: var(--ds-text-2);
+  font-family: var(--ds-font);
+  font-size: calc(9px * var(--os-font-scale, 1));
+  font-weight: 600;
+}
+.osx-shortcuts-note { margin: 4px 0 0; color: var(--ds-text-3); font-size: calc(9px * var(--os-font-scale, 1)); line-height: 1.5; }

@@ -1,0 +1,118 @@
+/* -------------------------------------------------------------- terminal */
+
+.os-terminal {
+  flex: 1;
+  min-height: 0;
+  padding: 14px 16px;
+  overflow-y: auto;
+  background:
+    radial-gradient(ellipse at 10% 0%, color-mix(in srgb, var(--ds-green) 7%, transparent), transparent 54%),
+    color-mix(in srgb, #010c10 82%, var(--ds-bg));
+  color: #c9f6ea;
+  font-family: var(--ds-font-mono);
+  font-size: calc(10.5px * var(--os-font-scale, 1));
+  line-height: 1.9;
+}
+
+[data-theme="light"] .os-terminal {
+  background: color-mix(in srgb, #062b30 88%, var(--ds-bg));
+}
+
+/* The terminal keeps its dark palette in the light theme, so the token
+   colours meant for light surfaces have to be swapped for their dark
+   counterparts here. */
+[data-theme="light"] .os-terminal .os-term-prompt { color: #38d6ff; }
+[data-theme="light"] .os-terminal .os-term-path { color: #c3a8ff; }
+[data-theme="light"] .os-terminal .os-term-ok { color: #5ef2b0; }
+[data-theme="light"] .os-terminal .os-term-key { color: #ffd27a; }
+[data-theme="light"] .os-terminal .os-term-muted,
+[data-theme="light"] .os-terminal .os-term-hint { color: #7fb0ad; }
+[data-theme="light"] .os-terminal .os-term-cmd { color: #e9fbff; }
+[data-theme="light"] .os-terminal .os-term-input { color: #e9fbff; }
+[data-theme="light"] .os-terminal .os-term-error { color: #ff8a9b; }
+
+.os-term-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 7px;
+  opacity: 0;
+  animation: os-term-in 0.32s var(--ds-ease-out) forwards;
+}
+
+.os-term-line:nth-child(1) { animation-delay: 0.1s; }
+.os-term-line:nth-child(2) { animation-delay: 0.45s; }
+.os-term-line:nth-child(3) { animation-delay: 0.8s; }
+.os-term-line:nth-child(4) { animation-delay: 1.15s; }
+.os-term-line:nth-child(5) { animation-delay: 1.5s; }
+.os-term-line:nth-child(6) { animation-delay: 1.85s; }
+.os-term-line:nth-child(7) { animation-delay: 2.2s; }
+.os-term-line:nth-child(8) { animation-delay: 2.55s; }
+
+@keyframes os-term-in {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: none; }
+}
+
+.os-term-muted { color: #6d9d9a; }
+.os-term-ok { color: var(--ds-green); }
+.os-term-prompt { color: var(--ds-accent); font-weight: 600; }
+.os-term-path { color: var(--ds-violet); }
+.os-term-cmd { color: #e9fbff; }
+.os-term-key { color: var(--ds-amber); }
+.os-term-error { color: #ff8a9b; }
+.os-term-hint { color: #6d9d9a; }
+
+.os-term-line--input {
+  margin: 0;
+  align-items: baseline;
+  flex-wrap: nowrap;
+  border-radius: 2px;
+  transition: background-color var(--ds-motion-fast) ease;
+}
+
+.os-term-line--input:focus-within {
+  background: color-mix(in srgb, var(--ds-accent) 12%, transparent);
+}
+
+.os-terminal .os-term-input:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+.os-term-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #e9fbff;
+  font: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  caret-color: var(--ds-accent);
+  outline: none;
+}
+
+.os-term-input::placeholder {
+  color: #4c7a78;
+}
+
+.os-term-input::selection {
+  background: color-mix(in srgb, var(--ds-accent) 45%, transparent);
+  color: #effdff;
+}
+
+.os-terminal__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex: none;
+  padding: 5px 10px;
+  border-top: 1px solid var(--ds-line);
+  color: var(--ds-text-3);
+  font-size: calc(9px * var(--os-font-scale, 1));
+}
+
+.os-terminal__foot .ds-btn { min-height: 24px; }

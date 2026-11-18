@@ -1,0 +1,157 @@
+/* ==========================================================================
+   Aether OS — a desktop concept built on the Water design system
+   --------------------------------------------------------------------------
+   Page layout, window chrome, dock, and desktop shell only. Colour, type,
+   spacing, glass, badges, panes, menus and command surfaces come from
+   tokens.css and components.css.
+   ========================================================================== */
+
+* { box-sizing: border-box; }
+
+[hidden] { display: none !important; }
+
+html,
+body { height: 100%; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Comfortable is the default so the OS reads at the same scale as the live
+   explorer demo. Compact restores the original, tighter concept type. */
+html {
+  --os-font-scale: 1.14;
+}
+
+html[data-font-size="compact"] { --os-font-scale: 1; }
+html[data-font-size="comfortable"] { --os-font-scale: 1.14; }
+html[data-font-size="large"] { --os-font-scale: 1.28; }
+
+body.os {
+  /* Scale the shared typography tokens too, so badges, buttons, and chips
+     inside the OS follow the same choice as the fixed-size OS text. */
+  --ds-text-2xs: calc(0.625rem * var(--os-font-scale, 1));
+  --ds-text-xs: calc(0.6875rem * var(--os-font-scale, 1));
+  --ds-text-sm: calc(0.75rem * var(--os-font-scale, 1));
+  --ds-text-base: calc(0.8125rem * var(--os-font-scale, 1));
+  --ds-text-md: calc(0.875rem * var(--os-font-scale, 1));
+  --ds-text-lg: calc(1rem * var(--os-font-scale, 1));
+  --ds-text-xl: calc(1.25rem * var(--os-font-scale, 1));
+  --ds-text-2xl: calc(1.625rem * var(--os-font-scale, 1));
+  --ds-text-3xl: calc(2.125rem * var(--os-font-scale, 1));
+  --ds-text-4xl: calc(2.875rem * var(--os-font-scale, 1));
+  margin: 0;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: var(--ds-bg);
+  background-image: var(--ds-bg-grad);
+  background-attachment: fixed;
+  color: var(--ds-text);
+  font-family: var(--ds-font);
+  font-size: var(--ds-text-base);
+  line-height: var(--ds-leading-normal);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button {
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+a { color: inherit; text-decoration: none; }
+body.os svg { display: block; }
+body.os code { font-family: var(--ds-font-mono); }
+
+.icon {
+  width: 1.05em;
+  height: 1.05em;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.skip-link {
+  position: fixed;
+  top: 44px;
+  left: 12px;
+  z-index: 2000;
+  padding: 9px 15px;
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-accent);
+  color: var(--ds-text-inverse);
+  font-weight: 700;
+  transform: translateY(-260%);
+  transition: transform 0.2s ease;
+}
+
+.skip-link:focus { transform: translateY(0); }
+
+.sr-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.faint { color: var(--ds-text-3); font-weight: 500; }
+
+/* ------------------------------------------------------------ background */
+
+.os-water {
+  position: fixed;
+  inset: 0;
+  /* Above the windows and chrome so drips and ripples cross every surface,
+     but below the command overlay (1000) and toasts (1100). */
+  z-index: 900;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.82;
+  mix-blend-mode: screen;
+}
+
+[data-water-effects="off"] .os-water { opacity: 0; }
+[data-theme="light"] .os-water { opacity: 0.34; }
+
+.os-vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 90% at 50% 0%, transparent 46%, rgba(0, 8, 14, 0.24) 100%),
+    linear-gradient(180deg, transparent 72%, rgba(1, 12, 18, 0.38) 100%);
+}
+
+[data-theme="light"] .os-vignette { opacity: 0.45; }
+
+/* ---------------------------------------------------------------- shell */
+
+.os-shell {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  min-height: 0;
+}

@@ -255,6 +255,14 @@ design-system/
   showcase.js      showcase controls
   os/              Aether OS desktop concept
     index.html     desktop shell, windows, dock, command bar
-    os.css         window chrome and desktop layout
-    os.js          window manager and explorer interactions
+    os.css         stylesheet entry; imports css/*.css in cascade order
+    css/           one stylesheet per surface or app
+    js/main.js     module entry; imports features and starts the desktop
+    js/core/       shared state, fixture data, helpers, toasts
+    js/shell/      windows, popovers, clock, command bar, shortcuts
+    js/explorer/   comparison model, view, interactions, verify
+    js/features/   appearance and water settings
+    js/apps/       calendar, network, devices, battery, music, sound, terminal, task manager
 ```
+
+See [`os/README.md`](os/README.md) for the module map and naming conventions.

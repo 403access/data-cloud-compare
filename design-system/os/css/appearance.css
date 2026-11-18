@@ -1,0 +1,5 @@
+/* ------------------------------------------------- non-water appearances */
+
+:root[data-water-mode="light"] .ds-sea,
+:root[data-water-mode="dark"] .ds-sea,
+:root[data-water-mode="system"] .ds-sea { opacity: 0; }

@@ -1,0 +1,172 @@
+/* --------------------------------------------------------------- devices */
+
+.os-tray--devices { width: 300px; padding: 9px; }
+
+.os-device-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 34px;
+  padding: 5px 7px;
+  border-radius: var(--ds-radius-xs);
+  text-align: left;
+}
+
+.os-device-row:hover { background: var(--ds-hover); }
+
+.os-device-row__icon {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  flex: none;
+  border: 1px solid var(--ds-line);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--ds-surface) 55%, transparent);
+  color: var(--ds-text-2);
+}
+
+.os-device-row__icon .icon { width: 13px; height: 13px; }
+.os-device-row__text { display: grid; gap: 1px; flex: 1; min-width: 0; }
+
+.os-device-row__text b {
+  overflow: hidden;
+  color: var(--ds-text);
+  font-size: calc(9.5px * var(--os-font-scale, 1));
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.os-device-row__text small {
+  overflow: hidden;
+  color: var(--ds-text-3);
+  font-size: calc(8px * var(--os-font-scale, 1));
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.os-device-row__value {
+  width: 27px;
+  flex: none;
+  color: var(--ds-text-2);
+  font-size: calc(8.5px * var(--os-font-scale, 1));
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.os-device-battery {
+  width: 34px;
+  height: 4px;
+  flex: none;
+  border-radius: 999px;
+  background: var(--ds-gray-bg);
+  overflow: hidden;
+}
+
+.os-device-battery--wide { width: 64px; }
+
+.os-device-battery i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--ds-green);
+  transition: width 400ms var(--ds-ease-out);
+}
+
+.os-device-battery i.is-mid { background: var(--ds-amber); }
+.os-device-battery i.is-low { background: var(--ds-red); }
+
+.os-device-list { display: grid; gap: 7px; }
+
+.os-device-card {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 9px;
+  border: 1px solid var(--ds-line);
+  border-radius: var(--ds-radius-sm);
+  background: color-mix(in srgb, var(--ds-surface) 48%, transparent);
+}
+
+.os-device-card.is-off { opacity: 0.62; }
+.os-device-card.is-highlight { animation: os-device-highlight 1.6s var(--ds-ease-out); }
+
+@keyframes os-device-highlight {
+  0%, 100% { border-color: var(--ds-line); box-shadow: none; }
+  18% {
+    border-color: color-mix(in srgb, var(--ds-accent) 55%, var(--ds-line));
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--ds-accent) 18%, transparent);
+  }
+}
+
+.os-device-card__icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--ds-line);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--ds-surface) 60%, transparent);
+  color: var(--ds-text-2);
+}
+
+.os-device-card__icon .icon { width: 17px; height: 17px; }
+.os-device-card__body { min-width: 0; }
+.os-device-card__body header { display: flex; align-items: center; gap: 6px; min-width: 0; }
+
+.os-device-card__body header b {
+  overflow: hidden;
+  color: var(--ds-text);
+  font-size: calc(10.5px * var(--os-font-scale, 1));
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.os-device-card__tag {
+  margin-left: auto;
+  flex: none;
+  color: var(--ds-text-3);
+  font-size: calc(8px * var(--os-font-scale, 1));
+  white-space: nowrap;
+}
+
+.os-device-card__tag.is-on { color: var(--ds-green); }
+
+.os-device-card__body p {
+  margin: 2px 0 4px;
+  overflow: hidden;
+  color: var(--ds-text-3);
+  font-size: calc(8.5px * var(--os-font-scale, 1));
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.os-device-card__battery {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ds-text-3);
+  font-size: calc(8px * var(--os-font-scale, 1));
+}
+
+.os-device-card__battery b {
+  color: var(--ds-text-2);
+  font-size: calc(8.5px * var(--os-font-scale, 1));
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.os-device-card .ds-btn { min-height: 24px; flex: none; }
+.os-devices-note { margin: 0; padding: 0 2px; color: var(--ds-text-3); font-size: calc(8.5px * var(--os-font-scale, 1)); line-height: 1.5; }
+.os-app-hero__mark--devices { --app: var(--ds-blue); }
+
+@media (max-width: 560px) {
+  .os-device-card { grid-template-columns: 30px minmax(0, 1fr); align-items: start; }
+  .os-device-card .ds-btn { grid-column: 1 / -1; justify-self: start; }
+  .os-device-card__icon { width: 30px; height: 30px; }
+}

@@ -1,0 +1,66 @@
+/* ----------------------------------------------------------------- about */
+
+.os-about {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  flex: 1;
+  padding: 22px 26px;
+  text-align: center;
+  overflow-y: auto;
+}
+
+.os-about__mark {
+  width: 56px;
+  height: 56px;
+  color: var(--ds-accent);
+  filter: drop-shadow(0 8px 22px var(--ds-glow));
+}
+
+.os-about__mark svg { width: 100%; height: 100%; }
+
+.os-about h2 {
+  margin: 2px 0 0;
+  font-size: var(--ds-text-xl);
+  font-weight: 730;
+  letter-spacing: -0.03em;
+}
+
+.os-about h2 span {
+  color: var(--ds-text-3);
+  font-family: var(--ds-font-mono);
+  font-size: var(--ds-text-xs);
+  font-weight: 500;
+}
+
+.os-about p {
+  max-width: 330px;
+  margin: 0;
+  color: var(--ds-text-2);
+  font-size: var(--ds-text-xs);
+  line-height: 1.65;
+}
+
+.os-about__meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+  margin: 3px 0;
+}
+
+.os-about__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.os-about__fine {
+  margin-top: auto;
+  padding-top: 8px;
+  color: var(--ds-text-3);
+  font-size: calc(8.5px * var(--os-font-scale, 1));
+}

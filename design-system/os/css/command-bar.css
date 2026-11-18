@@ -1,0 +1,202 @@
+/* ------------------------------------------------------------ command bar */
+
+.os-command-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: clamp(60px, 11vh, 130px) 16px 32px;
+  background: rgba(1, 12, 18, 0.44);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+.osx-command {
+  --os-rim: color-mix(in srgb, var(--ds-accent) 64%, var(--ds-line));
+  --os-rim-glow: color-mix(in srgb, var(--ds-accent) 18%, transparent);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(680px, 100%);
+  max-height: min(72vh, 680px);
+  overflow: hidden;
+  border: 1px solid var(--os-rim);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--ds-popover) 96%, transparent);
+  box-shadow:
+    var(--ds-shadow-pop),
+    0 0 0 1px color-mix(in srgb, var(--ds-accent) 20%, transparent),
+    0 0 44px var(--os-rim-glow);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  transition: border-color var(--ds-motion-fast) ease, box-shadow var(--ds-motion-fast) ease;
+  animation: osx-command-in 180ms var(--ds-ease-out);
+}
+
+.osx-command:hover {
+  --os-rim: color-mix(in srgb, var(--ds-accent) 80%, #ffffff);
+  --os-rim-glow: color-mix(in srgb, var(--ds-accent) 28%, transparent);
+  box-shadow:
+    var(--ds-shadow-pop),
+    0 0 0 1px color-mix(in srgb, var(--ds-accent) 30%, transparent),
+    0 0 58px var(--os-rim-glow);
+}
+@keyframes osx-command-in {
+  from { opacity: 0; transform: translateY(-8px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+.osx-command-input-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: none;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--ds-line);
+}
+.osx-command-input-icon { width: 17px; height: 17px; color: var(--ds-text-3); flex: none; }
+.osx-command-input-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 2px 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--ds-text);
+  font: inherit;
+  font-size: calc(15px * var(--os-font-scale, 1));
+  letter-spacing: -0.01em;
+}
+.osx-command-input-row input::placeholder { color: var(--ds-text-3); }
+.osx-command-esc {
+  flex: none;
+  padding: 2px 7px;
+  border: 1px solid var(--ds-line);
+  border-radius: 6px;
+  background: var(--ds-sidebar);
+  color: var(--ds-text-2);
+  font-size: calc(9px * var(--os-font-scale, 1));
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.osx-command-esc:hover { background: var(--ds-hover); color: var(--ds-text); }
+.osx-spinner {
+  width: 13px;
+  height: 13px;
+  flex: none;
+  border: 2px solid var(--ds-line-strong);
+  border-top-color: var(--ds-accent);
+  border-radius: 50%;
+  animation: osx-spin 0.7s linear infinite;
+}
+@keyframes osx-spin { to { transform: rotate(360deg); } }
+.osx-command-results {
+  flex: 1;
+  min-height: 0;
+  padding: 6px 6px 8px;
+  overflow-y: auto;
+  
+}
+.osx-command-group {
+  padding: 8px 10px 4px;
+  color: var(--ds-text-3);
+  font-size: calc(9.5px * var(--os-font-scale, 1));
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  user-select: none;
+}
+.osx-command-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 40px;
+  padding: 5px 8px;
+  border: 0;
+  border-radius: var(--ds-radius-pill);
+  background: transparent;
+  color: var(--ds-text);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--ds-motion-fast) ease;
+}
+.osx-command-item.is-active { background: color-mix(in srgb, var(--ds-accent) 19%, transparent); }
+.osx-command-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--ds-sidebar) 82%, transparent);
+  color: var(--ds-text-2);
+}
+.osx-command-icon .icon { width: 15px; height: 15px; }
+.osx-command-main { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
+.osx-command-title {
+  overflow: hidden;
+  color: var(--ds-text);
+  font-size: calc(12px * var(--os-font-scale, 1));
+  font-weight: 550;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.osx-command-title mark { background: transparent; color: var(--ds-accent); font-weight: 700; }
+.osx-command-sub {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ds-text-3);
+  font-size: calc(10px * var(--os-font-scale, 1));
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.osx-command-sub .dot { width: 5px; height: 5px; flex: none; border-radius: 50%; background: currentColor; }
+.osx-command-aside {
+  flex: none;
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: var(--ds-sidebar);
+  color: var(--ds-text-3);
+  font-size: calc(9.5px * var(--os-font-scale, 1));
+  font-variant-numeric: tabular-nums;
+}
+.osx-command-check { flex: none; width: 16px; height: 16px; display: grid; place-items: center; color: var(--ds-accent); }
+.osx-command-check .icon { width: 13px; height: 13px; }
+.osx-command-empty {
+  padding: 30px 22px 26px;
+  text-align: center;
+  color: var(--ds-text-3);
+}
+.osx-command-empty p { margin: 0; color: var(--ds-text-2); font-size: calc(12px * var(--os-font-scale, 1)); font-weight: 600; }
+.osx-command-empty span { display: block; margin-top: 4px; font-size: calc(10.5px * var(--os-font-scale, 1)); line-height: 1.45; }
+.osx-command-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex: none;
+  padding: 7px 13px;
+  border-top: 1px solid var(--ds-line);
+  background: color-mix(in srgb, var(--ds-surface-2) 55%, transparent);
+  color: var(--ds-text-3);
+  font-size: calc(9px * var(--os-font-scale, 1));
+  white-space: nowrap;
+}
+.osx-command-foot kbd {
+  display: inline-block;
+  margin: 0 1px;
+  padding: 1px 5px;
+  border: 1px solid var(--ds-line);
+  border-radius: 4px;
+  background: var(--ds-sidebar);
+  color: var(--ds-text-2);
+  font-family: var(--ds-font);
+  font-size: calc(8.5px * var(--os-font-scale, 1));
+  font-weight: 600;
+  line-height: 1.4;
+}
