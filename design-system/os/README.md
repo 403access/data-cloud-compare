@@ -50,6 +50,7 @@ os/
     task-manager.css     Task Manager
     calendar-app.css     Calendar app
     menu-meters.css      menu bar resource meters
+    builder.css          App Studio GUI builder
   js/
     main.js
     boot-theme.js
@@ -84,7 +85,37 @@ os/
       terminal.js        simulated shell
       task-processes.js  process catalog fixtures
       task-manager.js    process tree, charts, sampler
+      builder-projects.js App Studio project seeds and component palette
+      builder-variables.js live system-variable catalog
+      gui-builder.js     project rail, artboard, inspector, variable binding
 ```
+
+## App Studio
+
+`App Studio` is the desktop's GUI builder. It opens with one editable project
+for every application on the system — Explorer, Water settings, Network,
+Devices, Battery, Calendar, Task Manager, Terminal, Tide Radio, Keyboard
+shortcuts, and About — and deliberately has no project for itself. Projects
+store percentage-based component boxes on a 16:10 artboard, so the same
+project renders at any window size.
+
+- The left rail lists system projects and custom apps. **New app** creates a
+  custom project from a blank canvas or an existing app, and the project
+  inspector can rename, recolour, duplicate, or delete it.
+- The centre is a drag-and-resize artboard. The palette adds app bars, panels,
+  text, buttons, switches, fields, tabs, lists, meters, charts, gauges, art,
+  month grids, detail tables, consoles, icons, and dividers. Undo, redo,
+  duplicate, delete, and arrow-key nudging are available.
+- The right side has an inspector for the selected component and a searchable
+  **Variables** catalog. A component can bind to any variable, so the canvas
+  follows live values from the rest of the desktop. Clicking a variable with
+  nothing selected copies a `{{variable.id}}` template.
+- `builder-variables.js` covers system identity, viewport and appearance,
+  design tokens, resources, battery, network, devices, clock and calendar,
+  the explorer model, Tide Radio and sound, the terminal, and the studio
+  itself. Values refresh once per second while the builder is open.
+- Projects are saved as `explorer-os-builder-v1` in `localStorage`; the footer
+  resets them to the shipped system set.
 
 ## Conventions
 

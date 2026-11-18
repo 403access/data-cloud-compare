@@ -214,6 +214,13 @@ faithful reproduction of the real explorer application.
   with colour-coded battery meters. Disconnecting an accessory removes it from
   the tray menu, and turning Bluetooth off disables the accessory controls
   while preserving the paired state for the next time it is enabled.
+- **App Studio** is a GUI builder with an editable project for every
+  application on the desktop except itself. New custom apps can start blank or
+  copy an existing project. Components drag and resize on a 16:10 artboard,
+  and any component can bind to a searchable catalog of live system variables
+  covering appearance and design tokens, resources, battery, network,
+  devices, calendar, the explorer model, media, the terminal, and the studio
+  itself. Projects persist in `localStorage` and reset from the footer.
 - **Terminal** is a working simulated shell, not a static transcript. Click the
   window and type: `help` lists what it knows (`tank compare [--provider
   jottacloud|gdrive]`, `ls`, `cat`, `open <app>`, `clear`, `whoami`, `pwd`,

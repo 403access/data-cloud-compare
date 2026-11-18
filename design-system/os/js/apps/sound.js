@@ -11,7 +11,7 @@ setTrackChangeHandler(syncSoundUi);
 
 /* --------------------------------------------------------------- sound */
 
-const soundState = {
+export const soundState = {
   volume: 42,
   muted: false,
   output: "Harbour speakers",

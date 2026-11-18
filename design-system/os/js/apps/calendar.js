@@ -82,6 +82,11 @@ function addCalendarEvent(offset, time, title, detail) {
 
 CALENDAR_EVENTS.forEach((events) => events.sort((a, b) => a.time.localeCompare(b.time)));
 
+export function calendarEventsFor(value) {
+  const target = value instanceof Date ? value : new Date();
+  return CALENDAR_EVENTS.get(dayKey(target)) || [];
+}
+
 function renderCalendar() {
   if (!calendarPop || !calendarGrid || !calendarWeekdays || !calendarMonth) return;
   const now = new Date();

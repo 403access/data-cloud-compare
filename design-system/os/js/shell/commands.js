@@ -15,6 +15,7 @@ import {
 } from "../features/appearance.js";
 import { openCalendarApp } from "../apps/calendar.js";
 import { openDevices } from "../apps/devices.js";
+import { openBuilder } from "../apps/gui-builder.js";
 import { changeTrack, togglePlay } from "../apps/music.js";
 import { openTaskManager } from "../apps/task-manager.js";
 import { focusTerminalInput, rerunTerminal } from "../apps/terminal.js";
@@ -46,6 +47,9 @@ export function runCommand(command) {
       break;
     case "open-taskmanager":
       openTaskManager();
+      break;
+    case "open-builder":
+      openBuilder();
       break;
     case "open-terminal":
       openWindow("terminal");

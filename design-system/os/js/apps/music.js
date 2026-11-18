@@ -42,6 +42,10 @@ function syncPlayState() {
   });
 }
 
+export function isPlaying() {
+  return playing;
+}
+
 export function togglePlay() {
   playing = !playing;
   syncPlayState();

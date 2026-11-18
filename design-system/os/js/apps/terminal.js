@@ -12,9 +12,9 @@ const terminalEl = document.querySelector("[data-terminal]");
 const terminalForm = document.querySelector("[data-terminal-form]");
 const terminalInput = document.querySelector("[data-terminal-input]");
 
-const TERM_PROMPT = { user: "tide@water", path: "~/tank" };
+export const TERM_PROMPT = { user: "tide@water", path: "~/tank" };
 
-const TERM_SNAPSHOTS = {
+export const TERM_SNAPSHOTS = {
   jottacloud: {
     root: "Archive",
     entries: "1,434,971",

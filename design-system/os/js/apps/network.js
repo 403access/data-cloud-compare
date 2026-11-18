@@ -7,7 +7,7 @@ import { registerTray } from "../shell/popovers.js";
 
 /* ------------------------------------------------------------- network */
 
-const NETWORKS = [
+export const NETWORKS = [
   { name: "Harbour 5G", band: "5 GHz", security: "WPA3", strength: 4, known: true },
   { name: "Sandbar 2.4", band: "2.4 GHz", security: "WPA2", strength: 3, known: true },
   { name: "Lighthouse", band: "5 GHz", security: "WPA2", strength: 2, known: true },
@@ -19,6 +19,14 @@ export const networkState = {
   wifi: true,
   connected: "Harbour 5G",
   vpn: false,
+};
+
+/* Values shown in the Network app's Details section. */
+export const NETWORK_DETAILS = {
+  ip: "192.168.1.24",
+  router: "192.168.1.1",
+  dns: "1.1.1.1, 9.9.9.9",
+  mac: "3C:22:FB:2A:91:0D",
 };
 
 const networkToggleNodes = document.querySelectorAll("[data-network-wifi]");

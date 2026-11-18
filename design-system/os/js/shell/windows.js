@@ -31,6 +31,7 @@ const RESIZE_CURSORS = {
 const dockMap = {
   "open-explorer": "explorer",
   "open-settings": "settings",
+  "open-builder": "builder",
   "open-terminal": "terminal",
   "open-music": "music",
   "open-about": "about",

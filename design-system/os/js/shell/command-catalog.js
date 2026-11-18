@@ -25,6 +25,7 @@ import {
 import { connectedDeviceCount, devicesState, openDevices } from "../apps/devices.js";
 import { networkState } from "../apps/network.js";
 import { openTaskManager, taskTotals } from "../apps/task-manager.js";
+import { openBuilder } from "../apps/gui-builder.js";
 import { STORAGE_FREE_GB } from "../apps/task-processes.js";
 
 function fuzzyScore(text, query) {
@@ -89,6 +90,7 @@ export function commandIcon(name) {
     battery: "i-battery",
     calendar: "i-calendar",
     taskmanager: "i-activity",
+    builder: "i-studio",
   };
   return ids[name] || "i-command";
 }
@@ -447,6 +449,13 @@ function commandCatalog() {
     subtitle: `CPU ${Math.round(taskTotals().cpu)}% · Memory ${Math.round(taskTotals().memory)}% · ${STORAGE_FREE_GB} GB left`,
     keywords: "activity monitor processes cpu memory ram storage resources performance",
     run: () => openTaskManager(),
+  });
+  addCommand(items, groups, "System", "Open App Studio", {
+    key: "open-builder",
+    icon: "builder",
+    subtitle: "GUI builder with a project for every system app",
+    keywords: "builder gui design studio app project variables components",
+    run: () => openBuilder(),
   });
 
   Object.values(PROVIDERS).forEach((info) => {

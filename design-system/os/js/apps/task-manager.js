@@ -31,6 +31,14 @@ const TASK_CHART_WIDTH = 120;
 const TASK_CHART_TOP = 2;
 const TASK_CHART_BOTTOM = 38;
 
+export function taskProcessCount() {
+  return taskProcesses.length;
+}
+
+export function topProcess() {
+  return [...taskProcesses].sort((a, b) => b.cpu - a.cpu)[0] || null;
+}
+
 export function taskTotals() {
   const cpu = taskProcesses.reduce((sum, task) => sum + task.cpu, 0);
   const memory = taskProcesses.reduce((sum, task) => sum + task.memory, 0);

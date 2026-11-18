@@ -83,6 +83,8 @@
     <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
     <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
     <symbol id="i-command" viewBox="0 0 24 24"><path d="M9 6.5a2.5 2.5 0 1 0-2.5 2.5H9m6 0h2.5A2.5 2.5 0 1 0 15 6.5V9m0 6v2.5a2.5 2.5 0 1 0 2.5-2.5H15m-6 0H6.5A2.5 2.5 0 1 0 9 17.5V15m0-6h6v6H9z"/></symbol>
+    <symbol id="i-studio" viewBox="0 0 24 24"><rect x="3" y="3.5" width="18" height="17" rx="2.5"/><path d="M3 8h18M8.5 8v12.5"/><rect x="11.5" y="11" width="6.5" height="4.5" rx="1"/><path d="M11.5 19h6.5"/></symbol>
+    <symbol id="i-variable" viewBox="0 0 24 24"><path d="M4 7h16M4 12h9M4 17h12"/><circle cx="18" cy="12" r="2"/><circle cx="18" cy="17" r="2"/></symbol>
     <symbol id="i-resize" viewBox="0 0 24 24"><path d="M9 20.5 20.5 9M14 20.5 20.5 14M18.5 20.5 20.5 18.5"/></symbol>
     <symbol id="i-local" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="7" rx="2" fill="currentColor" stroke="none" opacity=".92"/><rect x="3" y="11.6" width="18" height="8.4" rx="2" fill="currentColor" stroke="none" opacity=".55"/><circle cx="6.4" cy="7.5" r="1" fill="var(--ds-surface-solid)" stroke="none"/></symbol>
     <symbol id="i-keyboard" viewBox="0 0 24 24"><rect x="2.5" y="5.5" width="19" height="13" rx="2.4"/><path d="M5.8 9h.01M8.8 9h.01M11.8 9h.01M14.8 9h.01M17.8 9h.01M5.8 12h.01M8.8 12h.01M11.8 12h.01M14.8 12h.01M17.8 12h.01M7.4 15h9.2"/></symbol>
@@ -160,6 +162,7 @@
               <button type="button" role="menuitem" data-cmd="open-battery"><svg class="icon"><use href="#i-battery"/></svg>Battery</button>
               <button type="button" role="menuitem" data-cmd="open-calendar"><svg class="icon"><use href="#i-calendar"/></svg>Calendar</button>
               <button type="button" role="menuitem" data-cmd="open-taskmanager"><svg class="icon"><use href="#i-activity"/></svg>Task Manager</button>
+              <button type="button" role="menuitem" data-cmd="open-builder"><svg class="icon"><use href="#i-studio"/></svg>App Studio</button>
               <button type="button" role="menuitem" data-cmd="open-terminal"><svg class="icon"><use href="#i-terminal"/></svg>Terminal</button>
               <button type="button" role="menuitem" data-cmd="open-music"><svg class="icon"><use href="#i-volume"/></svg>Tide Radio</button>
               <button type="button" role="menuitem" data-cmd="open-shortcuts"><svg class="icon"><use href="#i-keyboard"/></svg>Keyboard shortcuts</button>
@@ -391,6 +394,11 @@
             <span class="os-desk-icon__tile" style="--tile:#5ef2b0"><svg class="icon"><use href="#i-gear"/></svg></span>
             <span>Settings</span>
             <small>Water &amp; display</small>
+          </button>
+          <button class="os-desk-icon" type="button" data-cmd="open-builder">
+            <span class="os-desk-icon__tile" style="--tile:#c3a8ff"><svg class="icon"><use href="#i-studio"/></svg></span>
+            <span>App Studio</span>
+            <small>GUI builder</small>
           </button>
           <a class="os-desk-icon" href="../">
             <span class="os-desk-icon__tile" style="--tile:#ffd27a"><svg class="icon"><use href="#i-layers"/></svg></span>
@@ -1165,6 +1173,137 @@
         </div>
       </section>
 
+      <!-- ----------------------------------------------------------- app studio -->
+      <section class="os-window os-window--builder" id="win-builder" data-window="builder" data-title="App Studio" role="dialog" aria-label="App Studio GUI builder" tabindex="-1" hidden>
+        <header class="os-titlebar" data-drag-handle>
+          <div class="os-lights">
+            <button class="os-light os-light--close" type="button" data-window-action="close" aria-label="Close App Studio" title="Close"></button>
+            <button class="os-light os-light--min" type="button" data-window-action="minimize" aria-label="Minimise App Studio" title="Minimise"></button>
+            <button class="os-light os-light--max" type="button" data-window-action="maximize" aria-label="Maximise App Studio" title="Maximise"></button>
+          </div>
+          <div class="os-titlebar__title">
+            <span class="os-app-mark os-app-mark--builder"><svg class="icon"><use href="#i-studio"/></svg></span>
+            <b>App Studio</b>
+            <span class="os-titlebar__sub">GUI builder · projects and live system variables</span>
+          </div>
+          <div class="os-titlebar__actions">
+            <span class="ds-badge ds-badge--muted"><span class="ds-dot" style="color:var(--ds-green)"></span>Local</span>
+          </div>
+        </header>
+
+        <div class="osb" data-builder>
+          <header class="osb-topbar">
+            <div class="osb-brand">
+              <span class="osb-brand__mark"><svg class="icon"><use href="#i-studio"/></svg></span>
+              <div class="osb-brand__text">
+                <b>App Studio</b>
+                <small>Build the next Aether app</small>
+              </div>
+            </div>
+            <div class="osb-topbar__stats">
+              <span class="ds-chip"><span class="ds-dot"></span><b data-builder-project-count>0</b> apps</span>
+              <button class="ds-chip osb-chipbtn" type="button" data-builder-tab="variables" aria-label="Show system variables">
+                <svg class="icon"><use href="#i-variable"/></svg><b data-builder-variable-count>0</b> variables
+              </button>
+            </div>
+            <div class="osb-topbar__actions">
+              <button class="osb-btn" type="button" data-builder-preview aria-pressed="false">
+                <svg class="icon"><use href="#i-grid"/></svg><span>Preview</span>
+              </button>
+              <button class="osb-btn osb-btn--primary" type="button" data-builder-new>
+                <svg class="icon"><use href="#i-plus"/></svg>New app
+              </button>
+            </div>
+          </header>
+
+          <div class="osb-body">
+            <aside class="osb-projects">
+              <header class="osb-projects__head">
+                <span>Projects</span><b data-builder-project-count>0</b>
+              </header>
+              <label class="osb-search">
+                <svg class="icon"><use href="#i-search"/></svg>
+                <input type="search" data-project-search placeholder="Filter projects…" aria-label="Filter projects" autocomplete="off" spellcheck="false">
+              </label>
+              <div class="osb-projects__list ds-scroll" data-builder-projects></div>
+
+              <form class="osb-newform" data-builder-newform hidden autocomplete="off">
+                <header class="osb-newform__head">
+                  <b>New app</b>
+                  <button type="button" data-new-cancel aria-label="Cancel new app">Cancel</button>
+                </header>
+                <label class="osb-field"><span>Name</span><input data-new-name placeholder="Birthday planner" maxlength="40"></label>
+                <label class="osb-field"><span>Description</span><input data-new-description placeholder="What does it do?" maxlength="120"></label>
+                <div class="osb-grid2">
+                  <label class="osb-field"><span>Icon</span><select data-new-icon></select></label>
+                  <label class="osb-field"><span>Accent</span><select data-new-accent></select></label>
+                </div>
+                <label class="osb-field"><span>Start from</span><select data-new-template></select></label>
+                <button class="osb-btn osb-btn--primary osb-btn--block" type="submit">Create app</button>
+              </form>
+            </aside>
+
+            <main class="osb-canvas-wrap">
+              <header class="osb-canvas__head">
+                <div class="osb-canvas__title">
+                  <b data-builder-title>App Studio</b>
+                  <small data-builder-subtitle>Select or create a project.</small>
+                </div>
+                <div class="osb-canvas__actions">
+                  <button class="osb-iconbtn" type="button" data-builder-undo title="Undo" aria-label="Undo" disabled>
+                    <span aria-hidden="true">↶</span>
+                  </button>
+                  <button class="osb-iconbtn" type="button" data-builder-redo title="Redo" aria-label="Redo" disabled>
+                    <span aria-hidden="true">↷</span>
+                  </button>
+                </div>
+              </header>
+              <div class="osb-stage ds-scroll" data-builder-stage>
+                <div class="osb-frame" data-builder-frame>
+                  <div class="osb-artboard" data-builder-canvas></div>
+                </div>
+              </div>
+              <div class="osb-palette" data-builder-palette></div>
+            </main>
+
+            <aside class="osb-side">
+              <div class="osb-tabs" role="tablist" aria-label="Builder panels">
+                <button class="osb-tab" type="button" role="tab" data-builder-tab="inspect" aria-selected="false">
+                  <svg class="icon"><use href="#i-gear"/></svg>Inspect
+                </button>
+                <button class="osb-tab is-active" type="button" role="tab" data-builder-tab="variables" aria-selected="true">
+                  <svg class="icon"><use href="#i-variable"/></svg>Variables
+                </button>
+              </div>
+
+              <div class="osb-panel osb-panel--inspect" data-builder-inspect hidden>
+                <div class="osb-panel__scroll ds-scroll" data-builder-inspector></div>
+              </div>
+
+              <div class="osb-panel osb-panel--vars" data-builder-vars>
+                <header class="osb-vars__head">
+                  <span>System variables</span><b data-builder-variable-count>0</b>
+                </header>
+                <label class="osb-search">
+                  <svg class="icon"><use href="#i-search"/></svg>
+                  <input type="search" data-variable-search placeholder="Filter variables…" aria-label="Filter system variables" autocomplete="off" spellcheck="false">
+                </label>
+                <p class="osb-vars__hint" data-variable-hint>Select a component to bind a variable.</p>
+                <div class="osb-vars__list ds-scroll" data-builder-variable-list></div>
+              </div>
+            </aside>
+          </div>
+
+          <footer class="osb-status">
+            <span class="osb-status__left" data-builder-status>No project selected</span>
+            <span class="osb-status__right">
+              <span data-builder-save>Saved locally</span>
+              <button class="osb-status__reset" type="button" data-builder-reset>Reset projects</button>
+            </span>
+          </footer>
+        </div>
+      </section>
+
       <!-- ------------------------------------------------------------- terminal -->
       <section class="os-window os-window--terminal" id="win-terminal" data-window="terminal" data-title="Terminal" role="dialog" aria-label="Terminal" tabindex="-1" hidden>
         <header class="os-titlebar" data-drag-handle>
@@ -1317,6 +1456,9 @@
         </button>
         <button class="os-dock__item" type="button" data-cmd="open-settings" data-label="Settings" aria-label="System settings">
           <span class="os-dock__tile" style="--tile:#5ef2b0"><svg class="icon"><use href="#i-gear"/></svg></span>
+        </button>
+        <button class="os-dock__item" type="button" data-cmd="open-builder" data-label="App Studio" aria-label="App Studio GUI builder">
+          <span class="os-dock__tile" style="--tile:#c3a8ff"><svg class="icon"><use href="#i-studio"/></svg></span>
         </button>
         <button class="os-dock__item" type="button" data-cmd="open-terminal" data-label="Terminal" aria-label="Terminal">
           <span class="os-dock__tile" style="--tile:#6fd5ff"><svg class="icon"><use href="#i-terminal"/></svg></span>
