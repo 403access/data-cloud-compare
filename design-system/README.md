@@ -91,6 +91,7 @@ stylesheet.
 | Segmented | `.ds-segmented`, `.ds-segment` |
 | Breadcrumb | `.ds-breadcrumbs`, `.ds-crumb`, `.ds-crumb-sep` |
 | Search | `.ds-search` |
+| Scroll area | `.ds-scroll` |
 | Pane | `.ds-pane` + `__head`, `__title`, `__icon`, `__titles`, `__toolbar`, `__columns`, `__rows`, `__row`, `__name`, `__size`, `__foot` |
 | Command bar | `.ds-command` + `__input`, `__list`, `__group`, `__item`, `__foot` |
 | Toast | `.ds-toast` |
@@ -176,6 +177,10 @@ of the real explorer application.
 - **Task Manager** shows CPU, memory, and storage cards above a process table.
   It samples every six seconds (or on demand), updates rows in place, and lets
   you select and end a process, which recalculates the totals and meters.
+- Every scrollable window surface uses `.ds-scroll`: a 10px transparent track,
+  a rounded `--ds-text-3` thumb, and an accent-tinted hover. Firefox gets the
+  native thin scrollbar via an `@supports` fallback so it does not lose the
+  token colours.
 - One viewport-wide water canvas sits above the windows, menu bar, and dock
   (below the command bar and toasts) and listens on `window`, so caustics, cursor
   drips, and click ripples play across every surface, not just the desktop.
