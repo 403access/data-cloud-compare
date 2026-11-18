@@ -636,7 +636,9 @@ body.os code { font-family: var(--ds-font-mono); }
 }
 
 :root[data-water-window-wave="off"] .os-window::before,
-:root[data-water-effects="off"] .os-window::before {
+:root[data-water-window-wave="off"] .osx-command::before,
+:root[data-water-effects="off"] .os-window::before,
+:root[data-water-effects="off"] .osx-command::before {
   display: none;
 }
 
@@ -665,7 +667,8 @@ body.os code { font-family: var(--ds-font-mono); }
 }
 
 /* Only the ring is painted: the mask punches out the inside of the window. */
-.os-window::before {
+.os-window::before,
+.osx-command::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -700,7 +703,8 @@ body.os code { font-family: var(--ds-font-mono); }
 }
 
 .os-window:hover::before,
-.os-window.is-focused::before {
+.os-window.is-focused::before,
+.osx-command::before {
   filter: url(#os-window-wave);
   animation: os-window-tide calc(var(--os-wave-cycle) * var(--os-wave-rate)) linear infinite;
 }
@@ -710,6 +714,11 @@ body.os code { font-family: var(--ds-font-mono); }
 .os-window.is-focused::before { opacity: var(--os-wave-peak); }
 
 .os-window.is-focused:hover::before { opacity: 1; }
+
+/* The command bar is a modal active surface, so its tide line is always on. */
+.osx-command::before { opacity: var(--os-wave-peak); }
+
+.osx-command:hover::before { opacity: 1; }
 
 .os-window:focus { outline: none; }
 
@@ -2368,7 +2377,8 @@ body.os code { font-family: var(--ds-font-mono); }
   .os-desk-icon { transition: none; }
   .os-window::before,
   .os-window:hover::before,
-  .os-window.is-focused::before { animation: none; filter: none; }
+  .os-window.is-focused::before,
+  .osx-command::before { animation: none; filter: none; }
   .os-row.is-flash { animation: none; }
 }
 /* ==========================================================================
@@ -3495,18 +3505,34 @@ body.os code { font-family: var(--ds-font-mono); }
   -webkit-backdrop-filter: blur(5px);
 }
 .osx-command {
+  --os-rim: color-mix(in srgb, var(--ds-accent) 64%, var(--ds-line));
+  --os-rim-glow: color-mix(in srgb, var(--ds-accent) 18%, transparent);
+  position: relative;
   display: flex;
   flex-direction: column;
   width: min(680px, 100%);
   max-height: min(72vh, 680px);
   overflow: hidden;
-  border: 1px solid var(--ds-line-strong);
+  border: 1px solid var(--os-rim);
   border-radius: 18px;
   background: color-mix(in srgb, var(--ds-popover) 96%, transparent);
-  box-shadow: var(--ds-shadow-pop);
+  box-shadow:
+    var(--ds-shadow-pop),
+    0 0 0 1px color-mix(in srgb, var(--ds-accent) 20%, transparent),
+    0 0 44px var(--os-rim-glow);
   backdrop-filter: blur(24px) saturate(150%);
   -webkit-backdrop-filter: blur(24px) saturate(150%);
+  transition: border-color var(--ds-motion-fast) ease, box-shadow var(--ds-motion-fast) ease;
   animation: osx-command-in 180ms var(--ds-ease-out);
+}
+
+.osx-command:hover {
+  --os-rim: color-mix(in srgb, var(--ds-accent) 80%, #ffffff);
+  --os-rim-glow: color-mix(in srgb, var(--ds-accent) 28%, transparent);
+  box-shadow:
+    var(--ds-shadow-pop),
+    0 0 0 1px color-mix(in srgb, var(--ds-accent) 30%, transparent),
+    0 0 58px var(--os-rim-glow);
 }
 @keyframes osx-command-in {
   from { opacity: 0; transform: translateY(-8px) scale(0.985); }
