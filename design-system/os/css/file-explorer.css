@@ -18,6 +18,27 @@
   width: 170px;
 }
 
+.os-file.is-sidebar-collapsed .os-file-sidebar { display: none; }
+
+.os-file-sidebar-toggle {
+  width: 23px;
+  height: 23px;
+  flex: none;
+  border-color: transparent;
+  background: transparent;
+  color: var(--ds-text-2);
+}
+
+.os-file-sidebar-toggle:hover {
+  background: var(--ds-hover);
+  color: var(--ds-text);
+}
+
+.os-file-sidebar-toggle[aria-pressed="false"] {
+  background: var(--ds-selection);
+  color: var(--ds-accent);
+}
+
 .os-file-sidebar .os-side-item svg { flex: none; }
 
 .os-file-sidebar .os-sidebar__foot p {
@@ -100,6 +121,7 @@
 
 @media (max-width: 820px) {
   .os-window--explorer { height: min(560px, calc(100dvh - 170px)) !important; }
+  .os-file-sidebar-toggle { display: none; }
 
   .os-file-head,
   .os-file-row {

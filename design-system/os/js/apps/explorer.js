@@ -11,6 +11,7 @@ import { openWindow, windowById } from "../shell/windows.js";
 const ROOT = "/mnt/tank";
 
 const win = windowById("explorer");
+const fileEl = win?.querySelector("[data-file-explorer]");
 const rowsEl = win?.querySelector("[data-file-rows]");
 const crumbsEl = win?.querySelector("[data-file-crumbs]");
 const placesEl = win?.querySelector("[data-file-places]");
@@ -22,6 +23,7 @@ const titleEl = win?.querySelector("[data-file-title]");
 const searchEl = win?.querySelector("[data-file-search]");
 const hiddenEl = win?.querySelector("[data-file-hidden]");
 const compareEl = win?.querySelector("[data-file-compare]");
+const sidebarToggleEl = win?.querySelector("[data-file-sidebar-toggle]");
 const navButtons = win ? Array.from(win.querySelectorAll("[data-file-nav]")) : [];
 
 const view = {
@@ -446,6 +448,14 @@ function bindEvents() {
   });
 
   compareEl?.addEventListener("click", openCompare);
+
+  sidebarToggleEl?.addEventListener("click", () => {
+    const collapsed = Boolean(fileEl?.classList.toggle("is-sidebar-collapsed"));
+    const label = collapsed ? "Show sidebar" : "Hide sidebar";
+    sidebarToggleEl.setAttribute("aria-pressed", String(!collapsed));
+    sidebarToggleEl.setAttribute("aria-label", label);
+    sidebarToggleEl.title = label;
+  });
 
   win?.addEventListener("pointerdown", () => {
     renderNavButtons();
