@@ -202,12 +202,12 @@ faithful reproduction of the real explorer application.
   recalculates the totals and meters. Processes are grouped into expandable
   parent/child trees, carry a purpose category (Apps, Media, System, Sync,
   Indexing, Security), and can be filtered by those categories. Selecting a
-  process opens an inline inspector with its PID, parent, category, status,
-  usage, thread count, uptime, and a description; ending a group also ends its
-  child processes. Its **Display** button opens the menu bar usage settings in a
-  right-hand sidebar instead of expanding the process stack: show in menu bar,
-  border (off by default), captions, bars, values, and dividers (off by default).
-  Border and dividers are independent finishes. Choices are saved as
+  process opens a process-details sidebar with its PID, parent, category,
+  status, usage, thread count, uptime, and a description; ending a group also
+  ends its child processes. Its **Display** button opens the menu bar usage
+  settings in the same right-hand sidebar instead of expanding the process
+  stack: show in menu bar, border (off by default), captions, bars, values, and
+  dividers (off by default). Border and dividers are independent finishes. Choices are saved as
   `explorer-os-resource-display`, apply before paint, and reset to the defaults
   from the same sidebar.
 - **Devices** shows the paired Tide Mouse, Harbour Keyboard, and Drift Earbuds

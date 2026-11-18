@@ -5095,7 +5095,7 @@ body.is-resizing-window * {
 .os-tm-sample:hover { background: var(--ds-hover); color: var(--ds-text); }
 .os-tm-sample .icon { width: 11px; height: 11px; }
 
-.os-tm-display {
+.os-tm-sidebar {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -5108,9 +5108,9 @@ body.is-resizing-window * {
   overflow-y: auto;
 }
 
-.os-tm-display[hidden] { display: none; }
+.os-tm-sidebar[hidden] { display: none; }
 
-.os-taskmanager.is-sidebar-open .os-tm-display {
+.os-taskmanager.is-sidebar-open .os-tm-sidebar {
   animation: os-tm-sidebar-in 180ms var(--ds-ease-out);
 }
 
@@ -5119,7 +5119,7 @@ body.is-resizing-window * {
   to { opacity: 1; transform: none; }
 }
 
-.os-tm-display-head {
+.os-tm-sidebar-head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -5128,7 +5128,7 @@ body.is-resizing-window * {
   border-bottom: 1px solid var(--ds-line);
 }
 
-.os-tm-display-title b {
+.os-tm-sidebar-title b {
   display: block;
   color: var(--ds-text);
   font-size: calc(10.5px * var(--os-font-scale, 1));
@@ -5136,14 +5136,14 @@ body.is-resizing-window * {
   letter-spacing: -0.01em;
 }
 
-.os-tm-display-title small {
+.os-tm-sidebar-title small {
   display: block;
   margin-top: 1px;
   color: var(--ds-text-3);
   font-size: calc(8px * var(--os-font-scale, 1));
 }
 
-.os-tm-display-close {
+.os-tm-sidebar-close {
   display: grid;
   place-items: center;
   width: 22px;
@@ -5153,12 +5153,12 @@ body.is-resizing-window * {
   color: var(--ds-text-3);
 }
 
-.os-tm-display-close:hover {
+.os-tm-sidebar-close:hover {
   background: var(--ds-hover);
   color: var(--ds-text);
 }
 
-.os-tm-display-close .icon { width: 11px; height: 11px; }
+.os-tm-sidebar-close .icon { width: 11px; height: 11px; }
 
 .os-tm-display-grid {
   display: flex;
@@ -5209,7 +5209,7 @@ body.is-resizing-window * {
 .os-tm-display-reset:hover { text-decoration: underline; }
 
 @media (max-width: 680px) {
-  .os-tm-display {
+  .os-tm-sidebar {
     position: absolute;
     inset: 0 0 0 auto;
     z-index: 6;
@@ -5221,7 +5221,7 @@ body.is-resizing-window * {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .os-taskmanager.is-sidebar-open .os-tm-display { animation: none; }
+  .os-taskmanager.is-sidebar-open .os-tm-sidebar { animation: none; }
 }
 
 .os-tm-filters {
@@ -5473,13 +5473,13 @@ body.is-resizing-window * {
   background: color-mix(in srgb, var(--ds-green) 9%, transparent);
 }
 
-.os-tm-detail {
-  padding: 10px 12px 11px;
-  border-bottom: 1px solid var(--ds-line);
-  background: color-mix(in srgb, var(--ds-sidebar) 74%, transparent);
+.os-tm-detail-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.os-tm-detail-head {
+.os-tm-detail-hero {
   display: flex;
   align-items: flex-start;
   gap: 8px;
@@ -5519,24 +5519,10 @@ body.is-resizing-window * {
   white-space: nowrap;
 }
 
-.os-tm-detail-close {
-  display: grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  flex: none;
-  border-radius: var(--ds-radius-xs);
-  color: var(--ds-text-3);
-}
-
-.os-tm-detail-close:hover { background: var(--ds-hover); color: var(--ds-text); }
-.os-tm-detail-close .icon { width: 11px; height: 11px; }
-
 .os-tm-detail-facts {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 5px;
-  margin-top: 8px;
 }
 
 .os-tm-detail-fact {
@@ -5571,7 +5557,7 @@ body.is-resizing-window * {
 }
 
 .os-tm-detail-note {
-  margin: 7px 0 0;
+  margin: 0;
   color: var(--ds-text-3);
   font-size: calc(8.5px * var(--os-font-scale, 1));
   line-height: 1.45;
@@ -5579,15 +5565,16 @@ body.is-resizing-window * {
 
 .os-tm-detail-actions {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 6px;
-  margin-top: 8px;
 }
 
 .os-tm-detail-action {
   display: inline-flex;
   align-items: center;
-  height: 24px;
+  justify-content: center;
+  width: 100%;
+  min-height: 26px;
   padding: 0 8px;
   border: 1px solid var(--ds-line);
   border-radius: var(--ds-radius-xs);
@@ -5653,11 +5640,9 @@ body.is-resizing-window * {
       calc(62px * var(--os-font-scale, 1));
   }
   .os-tm-head span:last-child,
-  .os-tm-category { display: none; }
+  .os-tm-row .os-tm-category { display: none; }
   .os-tm-updated { display: none; }
   .os-tm-filters { padding: 0 12px 8px; }
-  .os-tm-detail { padding: 9px 10px 10px; }
-  .os-tm-detail-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .os-tm-list { margin: 0 12px; }
   .os-tm-foot { padding: 8px 12px 10px; }
 }

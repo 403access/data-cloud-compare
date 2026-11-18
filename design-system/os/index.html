@@ -1151,10 +1151,10 @@
             </footer>
           </div>
 
-          <aside class="os-tm-display" id="os-tm-display" data-task-display aria-label="Menu bar usage display settings" hidden>
-            <header class="os-tm-display-head">
-              <span class="os-tm-display-title"><b>Display</b><small>Menu bar usage</small></span>
-              <button class="os-tm-display-close" type="button" data-task-display-close aria-label="Close display settings" title="Close display settings"><svg class="icon"><use href="#i-x"/></svg></button>
+          <aside class="os-tm-display os-tm-sidebar" id="os-tm-display" data-task-display aria-label="Menu bar usage display settings" hidden>
+            <header class="os-tm-sidebar-head">
+              <span class="os-tm-sidebar-title"><b>Display</b><small>Menu bar usage</small></span>
+              <button class="os-tm-sidebar-close" type="button" data-task-display-close aria-label="Close display settings" title="Close display settings"><svg class="icon"><use href="#i-x"/></svg></button>
             </header>
             <div class="os-tm-display-grid">
               <label class="os-tm-display-row" title="Show the usage meters in the menu bar">
@@ -1186,6 +1186,14 @@
               <p>Changes apply to the menu bar and are saved on this device.</p>
               <button class="os-tm-display-reset" type="button" data-task-display-reset>Reset to defaults</button>
             </footer>
+          </aside>
+
+          <aside class="os-tm-detail os-tm-sidebar" id="os-tm-detail" data-task-detail aria-label="Process details" hidden>
+            <header class="os-tm-sidebar-head">
+              <span class="os-tm-sidebar-title"><b>Process details</b><small>Live sample</small></span>
+              <button class="os-tm-sidebar-close" type="button" data-task-detail-close aria-label="Close process details" title="Close process details"><svg class="icon"><use href="#i-x"/></svg></button>
+            </header>
+            <div class="os-tm-detail-body" data-task-detail-body></div>
           </aside>
         </div>
       </section>

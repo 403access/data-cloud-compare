@@ -3343,6 +3343,7 @@ const PROCESS_SEED = [
 let taskProcesses = PROCESS_SEED.map((task) => ({ ...task }));
 let selectedTask = null;
 let taskFilter = "all";
+let taskSidebarMode = null;
 let expandedTaskGroups = new Set(["explorer", "jottacloud-sync"]);
 
 const TASK_SAMPLE_MS = 6000;
@@ -3567,12 +3568,10 @@ function taskDetailHtml(task) {
   const children = taskChildren(task.id);
   const descendants = taskDescendantIds(task.id).size;
   const expanded = expandedTaskGroups.has(task.id);
-  return `<div class="os-tm-detail" data-task-detail data-task-detail-for="${esc(task.id)}" role="region" aria-label="${esc(task.name)} details">
-    <header class="os-tm-detail-head">
+  return `<div class="os-tm-detail-hero">
       <span class="os-tm-detail-icon"><svg class="icon"><use href="#${task.icon}"/></svg></span>
       <div class="os-tm-detail-title"><b>${esc(task.name)}</b><span class="os-tm-category is-${task.category}"><span class="dot"></span>${category.label}</span></div>
-      <button class="os-tm-detail-close" type="button" data-task-detail-close aria-label="Close process details" title="Close details"><svg class="icon"><use href="#i-x"/></svg></button>
-    </header>
+    </div>
     <div class="os-tm-detail-facts">
       <div class="os-tm-detail-fact"><span>Process ID</span><b>${task.pid}</b></div>
       <div class="os-tm-detail-fact"><span>Parent</span><b>${esc(parent ? parent.name : "launchd")}</b></div>
@@ -3587,29 +3586,34 @@ function taskDetailHtml(task) {
     <div class="os-tm-detail-actions">
       ${children.length ? `<button class="os-tm-detail-action" type="button" data-task-detail-fold="${esc(task.id)}">${expanded ? "Hide children" : `Show ${children.length} child ${children.length === 1 ? "process" : "processes"}`}</button>` : ""}
       <button class="os-tm-detail-action is-danger" type="button" data-task-detail-end>End task${descendants ? ` and ${descendants} child ${descendants === 1 ? "process" : "processes"}` : ""}</button>
-    </div>
-  </div>`;
+    </div>`;
 }
 
 function renderTaskDetail() {
-  const host = document.querySelector("[data-task-rows]");
-  if (!host) return;
-  const existing = host.querySelector("[data-task-detail]");
-  const task = selectedTask ? taskById(selectedTask) : null;
-  const row = selectedTask ? host.querySelector(`[data-task-row="${CSS.escape(selectedTask)}"]`) : null;
-  if (!task || !row) {
-    existing?.remove();
+  const panel = document.querySelector("[data-task-detail]");
+  const body = document.querySelector("[data-task-detail-body]");
+  if (!panel || !body) return;
+  const task = taskSidebarMode === "detail" && selectedTask ? taskById(selectedTask) : null;
+  if (!task) {
+    panel.hidden = true;
+    syncTaskSidebar();
     return;
   }
-  if (existing && existing.dataset.taskDetailFor === task.id) {
-    const cpu = existing.querySelector('[data-task-detail-value="cpu"]');
-    const memory = existing.querySelector('[data-task-detail-value="memory"]');
+  panel.hidden = false;
+  const display = document.querySelector("[data-task-display]");
+  if (display) display.hidden = true;
+  document.querySelector("[data-task-display-toggle]")?.setAttribute("aria-expanded", "false");
+  if (panel.dataset.taskDetailFor === task.id) {
+    const cpu = body.querySelector('[data-task-detail-value="cpu"]');
+    const memory = body.querySelector('[data-task-detail-value="memory"]');
     if (cpu) cpu.textContent = `${task.cpu.toFixed(1)}%`;
     if (memory) memory.textContent = taskMemoryLabel(task.memory);
+    syncTaskSidebar();
     return;
   }
-  existing?.remove();
-  row.insertAdjacentHTML("afterend", taskDetailHtml(task));
+  body.innerHTML = taskDetailHtml(task);
+  panel.dataset.taskDetailFor = task.id;
+  syncTaskSidebar();
 }
 
 function renderTaskSelection() {
@@ -3645,20 +3649,21 @@ function setTaskFilter(filter) {
   if (filter !== "all" && !TASK_CATEGORIES[filter]) return;
   taskFilter = filter;
   if (filter !== "all") expandTaskAncestors();
-  if (selectedTask && !taskVisibleIds().has(selectedTask)) selectedTask = null;
+  if (selectedTask && !taskVisibleIds().has(selectedTask)) {
+    selectedTask = null;
+    if (taskSidebarMode === "detail") taskSidebarMode = null;
+  }
   renderTaskFilters();
   renderTaskRows();
 }
 
 function selectTask(id) {
   if (!taskById(id)) return;
-  const changed = selectedTask !== id;
   selectedTask = id;
+  taskSidebarMode = "detail";
   renderTaskSelection();
-  if (changed) {
-    const detail = document.querySelector("[data-task-detail]");
-    detail?.scrollIntoView({ block: "nearest", behavior: prefersReducedMotion() ? "auto" : "smooth" });
-  }
+  const panel = document.querySelector("[data-task-detail]");
+  if (panel) panel.scrollTop = 0;
 }
 
 function endSelectedTask() {
@@ -3669,6 +3674,7 @@ function endSelectedTask() {
   taskProcesses = taskProcesses.filter((task) => !removeIds.has(task.id));
   removeIds.forEach((id) => expandedTaskGroups.delete(id));
   selectedTask = null;
+  taskSidebarMode = null;
   renderTaskFilters();
   renderTaskRows();
   syncResourceUi();
@@ -3749,6 +3755,7 @@ document.addEventListener("click", (event) => {
   const detailClose = event.target.closest("[data-task-detail-close]");
   if (detailClose) {
     selectedTask = null;
+    taskSidebarMode = null;
     renderTaskSelection();
     return;
   }
@@ -3878,13 +3885,28 @@ document.querySelector("[data-task-display-reset]")?.addEventListener("click", r
 
 const taskDisplayPanel = document.querySelector("[data-task-display]");
 const taskDisplayToggle = document.querySelector("[data-task-display-toggle]");
+const taskDetailPanel = document.querySelector("[data-task-detail]");
 const taskManagerPanel = document.querySelector(".os-taskmanager");
+
+function syncTaskSidebar() {
+  const open = Boolean(
+    (taskDisplayPanel && !taskDisplayPanel.hidden) ||
+    (taskDetailPanel && !taskDetailPanel.hidden)
+  );
+  taskManagerPanel?.classList.toggle("is-sidebar-open", open);
+}
 
 function setTaskDisplayOpen(open) {
   if (!taskDisplayPanel) return;
   taskDisplayPanel.hidden = !open;
-  taskManagerPanel?.classList.toggle("is-sidebar-open", open);
+  if (open) {
+    taskSidebarMode = "display";
+    if (taskDetailPanel) taskDetailPanel.hidden = true;
+  } else if (taskSidebarMode === "display") {
+    taskSidebarMode = null;
+  }
   taskDisplayToggle?.setAttribute("aria-expanded", String(open));
+  syncTaskSidebar();
 }
 
 taskDisplayToggle?.addEventListener("click", () => {
@@ -3897,8 +3919,13 @@ document.querySelector("[data-task-display-close]")?.addEventListener("click", (
 });
 
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && taskDisplayPanel && !taskDisplayPanel.hidden) {
+  if (event.key !== "Escape") return;
+  if (taskDisplayPanel && !taskDisplayPanel.hidden) {
     setTaskDisplayOpen(false);
+  } else if (taskDetailPanel && !taskDetailPanel.hidden) {
+    selectedTask = null;
+    taskSidebarMode = null;
+    renderTaskSelection();
   }
 });
 
