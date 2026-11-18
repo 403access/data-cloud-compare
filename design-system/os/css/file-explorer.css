@@ -8,6 +8,7 @@
 }
 
 .os-file {
+  position: relative;
   display: flex;
   flex: 1;
   min-height: 0;
@@ -15,7 +16,7 @@
 }
 
 .os-file-sidebar {
-  width: 170px;
+  width: var(--os-file-sidebar-width, 170px);
 }
 
 .os-file.is-sidebar-collapsed .os-file-sidebar { display: none; }

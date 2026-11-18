@@ -706,7 +706,16 @@
         </header>
 
         <div class="os-file" data-file-explorer>
-          <aside class="os-sidebar os-file-sidebar" aria-label="Places">
+          <aside class="os-sidebar os-file-sidebar" aria-label="Places"
+            data-resize-sidebar
+            data-resize-key="explorer-places"
+            data-resize-var="--os-file-sidebar-width"
+            data-resize-host="self"
+            data-resize-edge="start"
+            data-resize-min="140"
+            data-resize-max="360"
+            data-resize-min-main="300"
+            data-resize-label="Explorer places sidebar">
             <div class="os-sidebar__group">
               <h3>Favourites</h3>
               <button class="os-side-item is-active" type="button" data-file-place="/mnt/tank">
