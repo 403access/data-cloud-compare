@@ -398,11 +398,11 @@ function commandCatalog() {
   });
   const settingsWindow = windowById("settings");
   const settingsOpen = isOpen(settingsWindow);
-  addCommand(items, groups, "Appearance", settingsOpen ? "Close settings" : "Open settings", {
+  addCommand(items, groups, "System", settingsOpen ? "Close settings" : "Open settings", {
     key: "toggle-water-panel",
-    icon: "water",
-    subtitle: "Command palette, water, and layout",
-    keywords: "water settings theme command palette",
+    icon: "settings",
+    subtitle: "Appearance, network, displays, privacy, and storage",
+    keywords: "settings system preferences appearance network displays privacy security storage",
     check: settingsOpen,
     run: () => {
       if (isOpen(settingsWindow)) closeWindow(settingsWindow);

@@ -83,6 +83,9 @@
     <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
     <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
     <symbol id="i-command" viewBox="0 0 24 24"><path d="M9 6.5a2.5 2.5 0 1 0-2.5 2.5H9m6 0h2.5A2.5 2.5 0 1 0 15 6.5V9m0 6v2.5a2.5 2.5 0 1 0 2.5-2.5H15m-6 0H6.5A2.5 2.5 0 1 0 9 17.5V15m0-6h6v6H9z"/></symbol>
+    <symbol id="i-display" viewBox="0 0 24 24"><rect x="2.8" y="4" width="18.4" height="12.5" rx="2.2"/><path d="M9 20.5h6M12 16.5v4"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6.5 10a5.5 5.5 0 0 1 11 0c0 4 1.3 5.6 2.2 6.5H4.3c.9-.9 2.2-2.5 2.2-6.5Z"/><path d="M10 20a2.2 2.2 0 0 0 4 0"/></symbol>
+    <symbol id="i-accessibility" viewBox="0 0 24 24"><circle cx="12" cy="4.8" r="1.9"/><path d="M4.5 8.5c2.3.8 4.8 1.3 7.5 1.3s5.2-.5 7.5-1.3"/><path d="M12 9.8v4.4l-3 6.3M12 14.2l3 6.3"/></symbol>
     <symbol id="i-studio" viewBox="0 0 24 24"><rect x="3" y="3.5" width="18" height="17" rx="2.5"/><path d="M3 8h18M8.5 8v12.5"/><rect x="11.5" y="11" width="6.5" height="4.5" rx="1"/><path d="M11.5 19h6.5"/></symbol>
     <symbol id="i-variable" viewBox="0 0 24 24"><path d="M4 7h16M4 12h9M4 17h12"/><circle cx="18" cy="12" r="2"/><circle cx="18" cy="17" r="2"/></symbol>
     <symbol id="i-resize" viewBox="0 0 24 24"><path d="M9 20.5 20.5 9M14 20.5 20.5 14M18.5 20.5 20.5 18.5"/></symbol>
@@ -230,7 +233,7 @@
             </div>
             <footer class="os-tray__foot">
               <span class="os-tray__hint">VPN <b data-network-vpn-label>Off</b></span>
-              <button class="os-tray__link" type="button" data-cmd="open-network">Network Settings…</button>
+              <button class="os-tray__link" type="button" data-cmd="open-settings-network">Network Settings…</button>
             </footer>
           </div>
         </div>
@@ -260,7 +263,7 @@
             </div>
             <footer class="os-tray__foot">
               <span class="os-tray__hint">Wireless <b data-devices-count>2</b></span>
-              <button class="os-tray__link" type="button" data-cmd="open-devices">Bluetooth Settings…</button>
+              <button class="os-tray__link" type="button" data-cmd="open-settings-bluetooth">Bluetooth Settings…</button>
             </footer>
           </div>
         </div>
@@ -297,7 +300,7 @@
             </label>
             <footer class="os-tray__foot">
               <span class="os-tray__hint">Health <b data-battery-health-label>96%</b></span>
-              <button class="os-tray__link" type="button" data-cmd="open-battery">Battery Settings…</button>
+              <button class="os-tray__link" type="button" data-cmd="open-settings-battery">Battery Settings…</button>
             </footer>
           </div>
         </div>
@@ -393,7 +396,7 @@
           <button class="os-desk-icon" type="button" data-cmd="open-settings">
             <span class="os-desk-icon__tile" style="--tile:#5ef2b0"><svg class="icon"><use href="#i-gear"/></svg></span>
             <span>Settings</span>
-            <small>Water &amp; display</small>
+            <small>System preferences</small>
           </button>
           <button class="os-desk-icon" type="button" data-cmd="open-builder">
             <span class="os-desk-icon__tile" style="--tile:#c3a8ff"><svg class="icon"><use href="#i-studio"/></svg></span>
@@ -503,7 +506,7 @@
               <button class="osx-btn osx-btn--icon" type="button" data-cmd="shortcuts" title="Keyboard shortcuts" aria-label="Keyboard shortcuts">
                 <svg class="icon"><use href="#i-keyboard"/></svg>
               </button>
-              <button class="osx-btn osx-btn--icon" type="button" data-cmd="open-settings" title="Water theme settings" aria-label="Water theme settings">
+              <button class="osx-btn osx-btn--icon" type="button" data-cmd="open-settings" title="System settings" aria-label="System settings">
                 <svg class="icon"><use href="#i-gear"/></svg>
               </button>
             </div>
@@ -681,7 +684,7 @@
         </div>
       </section>
 
-      <!-- ------------------------------------------------------------- settings -->
+<!-- ------------------------------------------------------------- settings -->
       <section class="os-window os-window--settings" id="win-settings" data-window="settings" data-title="Settings" role="dialog" aria-label="Settings" tabindex="-1" hidden>
         <header class="os-titlebar" data-drag-handle>
           <div class="os-lights">
@@ -692,169 +695,885 @@
           <div class="os-titlebar__title">
             <span class="os-app-mark os-app-mark--settings"><svg class="icon"><use href="#i-gear"/></svg></span>
             <b>Settings</b>
-            <span class="os-titlebar__sub">Command palette, water, and layout.</span>
+            <span class="os-titlebar__sub" data-settings-sub>General</span>
           </div>
-          <div class="os-titlebar__actions"></div>
+          <div class="os-titlebar__actions">
+            <span class="ds-badge ds-badge--muted"><span class="ds-dot"></span>Demo device</span>
+          </div>
         </header>
 
-        <div class="osx-theme-panel">
-          <div class="osx-theme-body ds-scroll">
-          <section class="osx-theme-group" data-settings-section="command">
-            <h3>Command palette</h3>
-            <label class="osx-theme-row">
-              <span class="osx-theme-text"><b>Show commands</b><small>Navigation, view, appearance, and system actions.</small></span>
-              <span class="ds-switch"><input type="checkbox" data-command-setting="showCommands" checked><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+        <div class="os-settings-app">
+          <aside class="os-settings-sidebar" aria-label="Settings categories">
+            <label class="os-settings-search">
+              <svg class="icon"><use href="#i-search"/></svg>
+              <input type="search" data-settings-search placeholder="Search settings" autocomplete="off" spellcheck="false" aria-label="Search settings">
+              <button class="os-settings-search__clear" type="button" data-settings-search-clear aria-label="Clear search" hidden><svg class="icon"><use href="#i-x"/></svg></button>
             </label>
-            <label class="osx-theme-row">
-              <span class="osx-theme-text"><b>Search local files</b><small>Match paths from the local index.</small></span>
-              <span class="ds-switch"><input type="checkbox" data-command-setting="localFiles" checked><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
-            </label>
-            <label class="osx-theme-row">
-              <span class="osx-theme-text"><b>Search remote files</b><small>Match paths from the current provider snapshot.</small></span>
-              <span class="ds-switch"><input type="checkbox" data-command-setting="remoteFiles" checked><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
-            </label>
-            <label class="osx-theme-row osx-theme-row--select">
-              <span class="osx-theme-text"><b>Start file search after</b><small>How many characters before file matches appear.</small></span>
-              <select class="osx-select" data-command-setting="minFileChars" aria-label="File search threshold">
-                <option value="1">1 character</option>
-                <option value="2" selected>2 characters</option>
-                <option value="3">3 characters</option>
-                <option value="4">4 characters</option>
-              </select>
-            </label>
-            <label class="osx-theme-row">
-              <span class="osx-theme-text"><b>Only commands that apply now</b><small>Hide navigation actions that cannot run in this view.</small></span>
-              <span class="ds-switch"><input type="checkbox" data-command-setting="onlyRelevant"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
-            </label>
-            <div class="osx-command-groups">
-              <span class="osx-command-groups-label">Command groups</span>
-              <div class="osx-command-groups-grid">
-                <label class="osx-command-toggle"><input type="checkbox" data-command-group="Navigation" checked><span>Navigation</span></label>
-                <label class="osx-command-toggle"><input type="checkbox" data-command-group="Search" checked><span>Search</span></label>
-                <label class="osx-command-toggle"><input type="checkbox" data-command-group="View" checked><span>View</span></label>
-                <label class="osx-command-toggle"><input type="checkbox" data-command-group="Columns" checked><span>Columns</span></label>
-                <label class="osx-command-toggle"><input type="checkbox" data-command-group="Sort" checked><span>Sort</span></label>
-                <label class="osx-command-toggle"><input type="checkbox" data-command-group="Filters" checked><span>Filters</span></label>
-                <label class="osx-command-toggle"><input type="checkbox" data-command-group="Appearance" checked><span>Appearance</span></label>
-                <label class="osx-command-toggle"><input type="checkbox" data-command-group="System" checked><span>System</span></label>
-                <label class="osx-command-toggle"><input type="checkbox" data-command-group="Provider" checked><span>Provider</span></label>
+
+            <div class="os-settings-profile">
+              <span class="os-settings-avatar" aria-hidden="true">OM</span>
+              <span class="os-settings-profile__text"><b>Oliver Molnar</b><small>Aether ID · Administrator</small></span>
+              <span class="os-settings-profile__status" aria-hidden="true"></span>
+            </div>
+
+            <nav class="os-settings-nav ds-scroll" data-settings-nav role="tablist" aria-orientation="vertical" aria-label="Settings categories">
+              <div class="os-settings-nav__group" data-settings-nav-group>
+                <p class="os-settings-nav__label">System</p>
+                <button class="os-settings-tab is-active" type="button" role="tab" id="settings-tab-general" aria-selected="true" aria-controls="settings-pane-general" tabindex="0" data-settings-tab="general" data-settings-keywords="general about software update language region date time startup reset aether">
+                  <span class="os-settings-tab__icon" style="--tab:var(--ds-green)"><svg class="icon"><use href="#i-gear"/></svg></span>
+                  <span>General</span>
+                </button>
+                <button class="os-settings-tab" type="button" role="tab" id="settings-tab-appearance" aria-selected="false" aria-controls="settings-pane-appearance" tabindex="-1" data-settings-tab="appearance" data-settings-keywords="appearance theme water light dark colour color tone effects glass font">
+                  <span class="os-settings-tab__icon" style="--tab:var(--ds-amber)"><svg class="icon"><use href="#i-drop"/></svg></span>
+                  <span>Appearance</span>
+                </button>
+                <button class="os-settings-tab" type="button" role="tab" id="settings-tab-displays" aria-selected="false" aria-controls="settings-pane-displays" tabindex="-1" data-settings-tab="displays" data-settings-keywords="displays display monitor screen resolution brightness night shift true tone arrangement">
+                  <span class="os-settings-tab__icon" style="--tab:var(--ds-violet)"><svg class="icon"><use href="#i-display"/></svg></span>
+                  <span>Displays</span>
+                </button>
+                <button class="os-settings-tab" type="button" role="tab" id="settings-tab-desktop" aria-selected="false" aria-controls="settings-pane-desktop" tabindex="-1" data-settings-tab="desktop" data-settings-keywords="desktop dock window layout split overlap magnification minimize widgets stage manager">
+                  <span class="os-settings-tab__icon" style="--tab:var(--ds-blue)"><svg class="icon"><use href="#i-grid"/></svg></span>
+                  <span>Desktop &amp; Dock</span>
+                </button>
+                <button class="os-settings-tab" type="button" role="tab" id="settings-tab-commands" aria-selected="false" aria-controls="settings-pane-commands" tabindex="-1" data-settings-tab="commands" data-settings-keywords="commands command palette search files groups threshold spotlight">
+                  <span class="os-settings-tab__icon" style="--tab:var(--ds-accent)"><svg class="icon"><use href="#i-command"/></svg></span>
+                  <span>Search &amp; Commands</span>
+                </button>
+                <button class="os-settings-tab" type="button" role="tab" id="settings-tab-accessibility" aria-selected="false" aria-controls="settings-pane-accessibility" tabindex="-1" data-settings-tab="accessibility" data-settings-keywords="accessibility vision motion contrast transparency text size hearing keyboard">
+                  <span class="os-settings-tab__icon" style="--tab:var(--ds-green)"><svg class="icon"><use href="#i-accessibility"/></svg></span>
+                  <span>Accessibility</span>
+                </button>
               </div>
-              <p class="osx-command-settings-note" data-command-settings-note></p>
-            </div>
-          </section>
 
-          <div class="osx-theme-status" data-theme-status>
-            <span class="osx-theme-status-dot" aria-hidden="true"></span>
-            <p data-theme-status-text>Water effects are active. Drips follow your cursor.</p>
-            <button type="button" class="osx-theme-status-action" data-cmd="use-water-theme" hidden>Use Water</button>
+              <div class="os-settings-nav__group" data-settings-nav-group>
+                <p class="os-settings-nav__label">Connectivity</p>
+                <button class="os-settings-tab" type="button" role="tab" id="settings-tab-network" aria-selected="false" aria-controls="settings-pane-network" tabindex="-1" data-settings-tab="network" data-settings-keywords="network wifi wi-fi internet vpn router dns ip address">
+                  <span class="os-settings-tab__icon" style="--tab:var(--ds-accent)"><svg class="icon"><use href="#i-globe"/></svg></span>
+                  <span>Network</span>
+                </button>
+                <button class="os-settings-tab" type="button" role="tab" id="settings-tab-bluetooth" aria-selected="false" aria-controls="settings-pane-bluetooth" tabindex="-1" data-settings-tab="bluetooth" data-settings-keywords="bluetooth devices mouse keyboard headphones accessories wireless">
+                  <span class="os-settings-tab__icon" style="--tab:var(--ds-blue)"><svg class="icon"><use href="#i-bluetooth"/></svg></span>
+                  <span>Bluetooth</span>
+                </button>
+                <button class="os-settings-tab" type="button" role="tab" id="settings-tab-sound" aria-selected="false" aria-controls="settings-pane-sound" tabindex="-1" data-settings-tab="sound" data-settings-keywords="sound audio volume output speakers mute alert">
+                  <span class="os-settings-tab__icon" style="--tab:var(--ds-pink)"><svg class="icon"><use href="#i-volume"/></svg></span>
+                  <span>Sound</span>
+                </button>
+              </div>
+
+              <div class="os-settings-nav__group" data-settings-nav-group>
+                <p class="os-settings-nav__label">Power &amp; privacy</p>
+                <button class="os-settings-tab" type="button" role="tab" id="settings-tab-battery" aria-selected="false" aria-controls="settings-pane-battery" tabindex="-1" data-settings-tab="battery" data-settings-keywords="battery power energy charging low power health">
+                  <span class="os-settings-tab__icon" style="--tab:var(--ds-green)"><svg class="icon"><use href="#i-battery"/></svg></span>
+                  <span>Battery</span>
+                </button>
+                <button class="os-settings-tab" type="button" role="tab" id="settings-tab-notifications" aria-selected="false" aria-controls="settings-pane-notifications" tabindex="-1" data-settings-tab="notifications" data-settings-keywords="notifications alerts focus do not disturb previews banners">
+                  <span class="os-settings-tab__icon" style="--tab:var(--ds-amber)"><svg class="icon"><use href="#i-bell"/></svg></span>
+                  <span>Notifications</span>
+                </button>
+                <button class="os-settings-tab" type="button" role="tab" id="settings-tab-security" aria-selected="false" aria-controls="settings-pane-security" tabindex="-1" data-settings-tab="security" data-settings-keywords="privacy security filevault firewall lock screen location services analytics encryption">
+                  <span class="os-settings-tab__icon" style="--tab:var(--ds-red)"><svg class="icon"><use href="#i-shield"/></svg></span>
+                  <span>Privacy &amp; Security</span>
+                </button>
+                <button class="os-settings-tab" type="button" role="tab" id="settings-tab-storage" aria-selected="false" aria-controls="settings-pane-storage" tabindex="-1" data-settings-tab="storage" data-settings-keywords="storage disk space archive trash optimise optimize">
+                  <span class="os-settings-tab__icon" style="--tab:var(--ds-orange)"><svg class="icon"><use href="#i-database"/></svg></span>
+                  <span>Storage</span>
+                </button>
+              </div>
+            </nav>
+
+            <footer class="os-settings-sidebar__foot">
+              <span>Aether OS 2.4</span>
+              <small>Build 26A341</small>
+            </footer>
+          </aside>
+
+          <div class="os-settings-content ds-scroll" data-settings-content>
+            <!-- general -->
+            <section class="os-settings-pane is-active" id="settings-pane-general" role="tabpanel" aria-labelledby="settings-tab-general" data-settings-pane="general">
+              <header class="os-settings-pane__head">
+                <span class="os-settings-pane__mark" style="--pane:var(--ds-green)"><svg class="icon"><use href="#i-gear"/></svg></span>
+                <div><h2 data-settings-pane-title>General</h2><p>System version, updates, language, and startup.</p></div>
+              </header>
+
+              <section class="os-settings-card">
+                <h3>About</h3>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Aether OS</b><small>Concept build · Water design system</small></span>
+                  <span class="os-settings-value">2.4</span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Chip</b><small>8-core CPU · 10-core GPU</small></span>
+                  <span class="os-settings-value">Aether M3 Pro</span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Memory</b><small>Unified memory</small></span>
+                  <span class="os-settings-value">16 GB</span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Serial number</b><small>Demo device</small></span>
+                  <span class="os-settings-value">C02AETHER24</span>
+                </div>
+                <div class="os-settings-card__foot">
+                  <button class="ds-btn ds-btn--small ds-btn--ghost" type="button" data-cmd="open-about">About This Mac</button>
+                </div>
+              </section>
+
+              <section class="os-settings-card">
+                <h3>Software Update</h3>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Automatic updates</b><small>Download and install security updates overnight.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="autoUpdate" checked aria-label="Automatic updates"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Aether OS 2.4</b><small>Your software is up to date.</small></span>
+                  <button class="ds-btn ds-btn--small ds-btn--primary" type="button" data-settings-action="check-updates">Check for updates</button>
+                </div>
+              </section>
+
+              <section class="os-settings-card">
+                <h3>Language &amp; Region</h3>
+                <label class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Language</b><small>Used across the desktop and apps.</small></span>
+                  <select class="osx-select" data-os-setting="language" aria-label="Language">
+                    <option value="en-GB" selected>English (UK)</option>
+                    <option value="en-US">English (US)</option>
+                    <option value="nb-NO">Norsk bokmål</option>
+                    <option value="de-DE">Deutsch</option>
+                  </select>
+                </label>
+                <label class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Region</b><small>Formats dates, numbers, and currency.</small></span>
+                  <select class="osx-select" data-os-setting="region" aria-label="Region">
+                    <option value="eu-oslo" selected>Europe · Oslo</option>
+                    <option value="eu-london">Europe · London</option>
+                    <option value="us-east">United States · East</option>
+                  </select>
+                </label>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>24-hour time</b><small>Show 18:40 instead of 6:40 PM.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="hour24" checked aria-label="24-hour time"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+              </section>
+
+              <section class="os-settings-card">
+                <h3>Date &amp; Time</h3>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Set time automatically</b><small>Keep the clock aligned with the archive gateway.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="autoTime" checked aria-label="Set time automatically"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+              </section>
+            </section>
+
+            <!-- appearance -->
+            <section class="os-settings-pane" id="settings-pane-appearance" role="tabpanel" aria-labelledby="settings-tab-appearance" data-settings-pane="appearance" hidden>
+              <header class="os-settings-pane__head">
+                <span class="os-settings-pane__mark" style="--pane:var(--ds-amber)"><svg class="icon"><use href="#i-drop"/></svg></span>
+                <div><h2 data-settings-pane-title>Appearance</h2><p>Pick a theme, then shape the current and the calm.</p></div>
+              </header>
+
+              <section class="os-settings-card">
+                <h3>Theme</h3>
+                <div class="os-settings-themes" role="group" aria-label="Theme">
+                  <button class="os-settings-theme" type="button" data-settings-theme="system" aria-pressed="false">
+                    <span class="os-settings-theme__preview os-settings-theme__preview--system"><i></i></span>
+                    <span>System</span>
+                  </button>
+                  <button class="os-settings-theme" type="button" data-settings-theme="light" aria-pressed="false">
+                    <span class="os-settings-theme__preview os-settings-theme__preview--light"><i></i></span>
+                    <span>Light</span>
+                  </button>
+                  <button class="os-settings-theme" type="button" data-settings-theme="dark" aria-pressed="false">
+                    <span class="os-settings-theme__preview os-settings-theme__preview--dark"><i></i></span>
+                    <span>Dark</span>
+                  </button>
+                  <button class="os-settings-theme" type="button" data-settings-theme="water" aria-pressed="false">
+                    <span class="os-settings-theme__preview os-settings-theme__preview--water"><i></i></span>
+                    <span>Water</span>
+                  </button>
+                </div>
+              </section>
+
+              <section class="os-settings-card">
+                <h3>Water effects</h3>
+                <div class="osx-theme-status" data-theme-status>
+                  <span class="osx-theme-status-dot" aria-hidden="true"></span>
+                  <p data-theme-status-text>Water effects are active. Drips follow your cursor.</p>
+                  <button type="button" class="osx-theme-status-action" data-cmd="use-water-theme" hidden>Use Water</button>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Water effects</b><small>Master switch for ripples, shimmer, and window waves.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-water-setting="effects" checked aria-label="Water effects"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Drips follow the cursor</b><small>Small, soft rings trail your pointer.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-water-setting="drips" checked aria-label="Drips follow the cursor"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Ripples on click</b><small>Clicking sends one larger ring outward.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-water-setting="clickRipples" checked aria-label="Ripples on click"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Caustic shimmer</b><small>Slow light patterns drift behind the app.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-water-setting="caustics" checked aria-label="Caustic shimmer"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Animated row highlights</b><small>Hover and selection colours flow between states.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-water-setting="rowMotion" checked aria-label="Animated row highlights"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <label class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Window waves</b><small>A liquid rim around active windows and the command bar.</small></span>
+                  <select class="osx-select" data-water-setting="windowWave" aria-label="Window waves">
+                    <option value="off">Off</option>
+                    <option value="calm">Calm</option>
+                    <option value="tide" selected>Tide</option>
+                    <option value="surge">Surge</option>
+                  </select>
+                </label>
+              </section>
+
+              <section class="os-settings-card">
+                <h3>Current</h3>
+                <label class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Flow speed</b><small>How quickly the water moves.</small></span>
+                  <select class="osx-select" data-water-setting="speed" aria-label="Flow speed">
+                    <option value="calm">Calm</option>
+                    <option value="flowing" selected>Flowing</option>
+                    <option value="rapid">Rapid</option>
+                  </select>
+                </label>
+                <label class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Drip energy</b><small>How lively cursor drips feel.</small></span>
+                  <select class="osx-select" data-water-setting="intensity" aria-label="Drip energy">
+                    <option value="subtle" selected>Subtle</option>
+                    <option value="balanced">Balanced</option>
+                    <option value="lively">Lively</option>
+                  </select>
+                </label>
+              </section>
+
+              <section class="os-settings-card">
+                <h3>Look</h3>
+                <label class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Font size</b><small>Comfortable matches the live explorer demo.</small></span>
+                  <select class="osx-select" data-water-setting="fontSize" aria-label="Font size">
+                    <option value="compact">Compact</option>
+                    <option value="comfortable" selected>Comfortable</option>
+                    <option value="large">Large</option>
+                  </select>
+                </label>
+                <label class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Background</b><small>A still gradient or a living sea.</small></span>
+                  <select class="osx-select" data-water-setting="background" aria-label="Background">
+                    <option value="still" selected>Still gradient</option>
+                    <option value="sea">Sea and waves</option>
+                  </select>
+                </label>
+                <label class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Water tone</b><small>Choose the palette of the sea.</small></span>
+                  <select class="osx-select" data-water-setting="tone" aria-label="Water tone">
+                    <option value="lagoon">Lagoon</option>
+                    <option value="ocean" selected>Ocean</option>
+                    <option value="deep">Deep</option>
+                  </select>
+                </label>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Glass surfaces</b><small>Frosted panes over the moving water.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-water-setting="glass" checked aria-label="Glass surfaces"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+              </section>
+
+              <div class="os-settings-actions">
+                <button class="ds-btn ds-btn--small ds-btn--ghost" type="button" data-cmd="reset-water-settings">Reset water settings</button>
+              </div>
+            </section>
+
+            <!-- commands -->
+            <section class="os-settings-pane" id="settings-pane-commands" role="tabpanel" aria-labelledby="settings-tab-commands" data-settings-pane="commands" hidden>
+              <header class="os-settings-pane__head">
+                <span class="os-settings-pane__mark" style="--pane:var(--ds-accent)"><svg class="icon"><use href="#i-command"/></svg></span>
+                <div><h2 data-settings-pane-title>Search &amp; Commands</h2><p>Choose the sources, groups, and conditions the command bar uses.</p></div>
+              </header>
+
+              <section class="os-settings-card" data-settings-section="command">
+                <h3>Command palette</h3>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Show commands</b><small>Navigation, view, appearance, and system actions.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-command-setting="showCommands" checked aria-label="Show commands"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Search local files</b><small>Match paths from the local index.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-command-setting="localFiles" checked aria-label="Search local files"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Search remote files</b><small>Match paths from the current provider snapshot.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-command-setting="remoteFiles" checked aria-label="Search remote files"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <label class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Start file search after</b><small>How many characters before file matches appear.</small></span>
+                  <select class="osx-select" data-command-setting="minFileChars" aria-label="File search threshold">
+                    <option value="1">1 character</option>
+                    <option value="2" selected>2 characters</option>
+                    <option value="3">3 characters</option>
+                    <option value="4">4 characters</option>
+                  </select>
+                </label>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Only commands that apply now</b><small>Hide navigation actions that cannot run in this view.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-command-setting="onlyRelevant" aria-label="Only commands that apply now"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <div class="osx-command-groups">
+                  <span class="osx-command-groups-label">Command groups</span>
+                  <div class="osx-command-groups-grid">
+                    <label class="osx-command-toggle"><input type="checkbox" data-command-group="Navigation" checked><span>Navigation</span></label>
+                    <label class="osx-command-toggle"><input type="checkbox" data-command-group="Search" checked><span>Search</span></label>
+                    <label class="osx-command-toggle"><input type="checkbox" data-command-group="View" checked><span>View</span></label>
+                    <label class="osx-command-toggle"><input type="checkbox" data-command-group="Columns" checked><span>Columns</span></label>
+                    <label class="osx-command-toggle"><input type="checkbox" data-command-group="Sort" checked><span>Sort</span></label>
+                    <label class="osx-command-toggle"><input type="checkbox" data-command-group="Filters" checked><span>Filters</span></label>
+                    <label class="osx-command-toggle"><input type="checkbox" data-command-group="Appearance" checked><span>Appearance</span></label>
+                    <label class="osx-command-toggle"><input type="checkbox" data-command-group="System" checked><span>System</span></label>
+                    <label class="osx-command-toggle"><input type="checkbox" data-command-group="Provider" checked><span>Provider</span></label>
+                  </div>
+                  <p class="osx-command-settings-note" data-command-settings-note></p>
+                </div>
+              </section>
+
+              <div class="os-settings-actions">
+                <button class="ds-btn ds-btn--small ds-btn--ghost" type="button" data-cmd="reset-command-settings">Reset command palette</button>
+              </div>
+            </section>
+
+            <!-- displays -->
+            <section class="os-settings-pane" id="settings-pane-displays" role="tabpanel" aria-labelledby="settings-tab-displays" data-settings-pane="displays" hidden>
+              <header class="os-settings-pane__head">
+                <span class="os-settings-pane__mark" style="--pane:var(--ds-violet)"><svg class="icon"><use href="#i-display"/></svg></span>
+                <div><h2 data-settings-pane-title>Displays</h2><p>Resolution, brightness, colour, and arrangement.</p></div>
+              </header>
+
+              <section class="os-settings-card os-settings-card--display">
+                <div class="os-settings-display" data-settings-display-preview style="--settings-brightness:72%">
+                  <span class="os-settings-display__screen"><i>Harbour 5G</i></span>
+                  <span class="os-settings-display__stand" aria-hidden="true"></span>
+                  <span class="os-settings-display__caption"><b>Aether Display</b><small>27″ · 5K Retina · Built-in</small></span>
+                </div>
+                <label class="os-settings-row os-settings-row--stack">
+                  <span class="os-settings-row__text"><b>Brightness</b><small>Adjust the built-in display.</small></span>
+                  <span class="os-settings-slider">
+                    <svg class="icon"><use href="#i-sun"/></svg>
+                    <input type="range" min="10" max="100" step="1" value="72" data-os-setting="brightness" data-settings-suffix="%" aria-label="Brightness">
+                    <output data-settings-value="brightness">72%</output>
+                  </span>
+                </label>
+                <div class="os-settings-row os-settings-row--stack">
+                  <span class="os-settings-row__text"><b>Resolution</b><small>Choose more space or larger text.</small></span>
+                  <div class="ds-segmented os-settings-segmented" data-settings-choice="displayResolution" role="group" aria-label="Resolution">
+                    <button class="ds-segment is-active" type="button" data-settings-choice-value="default" aria-selected="true">Default</button>
+                    <button class="ds-segment" type="button" data-settings-choice-value="more" aria-selected="false">More space</button>
+                    <button class="ds-segment" type="button" data-settings-choice-value="larger" aria-selected="false">Larger text</button>
+                  </div>
+                </div>
+              </section>
+
+              <section class="os-settings-card">
+                <h3>Colour</h3>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Automatically adjust brightness</b><small>Adapt to the light in the room.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="autoBrightness" checked aria-label="Automatically adjust brightness"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>True Tone</b><small>Match the warmth of the room.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="trueTone" checked aria-label="True Tone"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Night Shift</b><small>Warm the display after sunset.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="nightShift" aria-label="Night Shift"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <label class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Schedule</b><small>When Night Shift should run.</small></span>
+                  <select class="osx-select" data-os-setting="nightShiftSchedule" aria-label="Night Shift schedule">
+                    <option value="sunset" selected>Sunset to sunrise</option>
+                    <option value="custom">Custom schedule</option>
+                    <option value="off">Off</option>
+                  </select>
+                </label>
+              </section>
+
+              <section class="os-settings-card">
+                <h3>Arrangement</h3>
+                <div class="os-settings-arrangement">
+                  <span class="os-settings-arrangement__screen is-primary"><i></i><b>Built-in</b></span>
+                  <span class="os-settings-arrangement__screen"><i></i><b>Studio Display</b></span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Mirror displays</b><small>Show the same image on both displays.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="mirrorDisplays" aria-label="Mirror displays"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+              </section>
+            </section>
+
+            <!-- desktop & dock -->
+            <section class="os-settings-pane" id="settings-pane-desktop" role="tabpanel" aria-labelledby="settings-tab-desktop" data-settings-pane="desktop" hidden>
+              <header class="os-settings-pane__head">
+                <span class="os-settings-pane__mark" style="--pane:var(--ds-blue)"><svg class="icon"><use href="#i-grid"/></svg></span>
+                <div><h2 data-settings-pane-title>Desktop &amp; Dock</h2><p>Window layout, the dock, and what the desktop shows.</p></div>
+              </header>
+
+              <section class="os-settings-card">
+                <h3>Windows</h3>
+                <label class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Window layout</b><small>Split shares the desktop between open apps. Overlap keeps their own positions and sizes.</small></span>
+                  <select class="osx-select" data-layout-setting aria-label="Window layout">
+                    <option value="split" selected>Split</option>
+                    <option value="overlap">Overlap</option>
+                  </select>
+                </label>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Stage Manager</b><small>Keep recent windows in a strip beside the active app.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="stageManager" aria-label="Stage Manager"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+              </section>
+
+              <section class="os-settings-card">
+                <h3>Dock</h3>
+                <label class="os-settings-row os-settings-row--stack">
+                  <span class="os-settings-row__text"><b>Size</b><small>Scale the dock icons.</small></span>
+                  <span class="os-settings-slider">
+                    <svg class="icon"><use href="#i-minus"/></svg>
+                    <input type="range" min="32" max="72" step="2" value="48" data-os-setting="dockSize" data-settings-suffix=" px" aria-label="Dock size">
+                    <output data-settings-value="dockSize">48 px</output>
+                  </span>
+                </label>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Magnification</b><small>Enlarge icons as the pointer passes.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="dockMagnify" aria-label="Magnification"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <label class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Position on screen</b><small>Where the dock sits.</small></span>
+                  <select class="osx-select" data-os-setting="dockPosition" aria-label="Position on screen">
+                    <option value="bottom" selected>Bottom</option>
+                    <option value="left">Left</option>
+                    <option value="right">Right</option>
+                  </select>
+                </label>
+                <label class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Minimise windows using</b><small>Animation when an app goes to the dock.</small></span>
+                  <select class="osx-select" data-os-setting="minimizeEffect" aria-label="Minimise windows using">
+                    <option value="genie" selected>Genie effect</option>
+                    <option value="scale">Scale effect</option>
+                    <option value="suck">Suck effect</option>
+                  </select>
+                </label>
+              </section>
+
+              <section class="os-settings-card">
+                <h3>Desktop</h3>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Widgets</b><small>Show the clock, verification, and resource widgets.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="desktopWidgets" checked aria-label="Widgets"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Show items on desktop</b><small>Shortcuts for the explorer, cloud, and App Studio.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="desktopIcons" aria-label="Show items on desktop"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+              </section>
+            </section>
+
+            <!-- network -->
+            <section class="os-settings-pane" id="settings-pane-network" role="tabpanel" aria-labelledby="settings-tab-network" data-settings-pane="network" hidden>
+              <header class="os-settings-pane__head">
+                <span class="os-settings-pane__mark" style="--pane:var(--ds-accent)"><svg class="icon"><use href="#i-globe"/></svg></span>
+                <div><h2 data-settings-pane-title>Network</h2><p>Wi-Fi, VPN, and the local archive route.</p></div>
+              </header>
+
+              <section class="os-settings-card">
+                <h3>Connection</h3>
+                <div class="os-settings-status">
+                  <span class="os-settings-status__dot" aria-hidden="true"></span>
+                  <span class="os-settings-status__text"><b data-network-app-title>Harbour 5G</b><small data-network-app-summary>Wi-Fi · 5 GHz · WPA3</small></span>
+                  <span class="ds-badge ds-badge--same" data-network-app-badge><span class="ds-dot"></span><span data-network-app-badge-text>Connected</span></span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Wi-Fi</b><small>Discover and join nearby networks.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-network-wifi checked aria-label="Wi-Fi"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>VPN</b><small>Route traffic through the archive gateway.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-network-vpn aria-label="VPN"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+              </section>
+
+              <section class="os-settings-card">
+                <h3>Networks</h3>
+                <div class="os-network-list" data-network-app-list></div>
+                <div class="os-app-empty" data-network-app-off hidden>
+                  <svg class="icon"><use href="#i-wifi-off"/></svg>
+                  <span>Wi-Fi is off.</span>
+                </div>
+              </section>
+
+              <section class="os-settings-card">
+                <h3>Details</h3>
+                <dl class="os-detail-grid">
+                  <dt>IP address</dt><dd>192.168.1.24</dd>
+                  <dt>Router</dt><dd>192.168.1.1</dd>
+                  <dt>DNS</dt><dd>1.1.1.1, 9.9.9.9</dd>
+                  <dt>MAC address</dt><dd>3C:22:FB:2A:91:0D</dd>
+                  <dt>Band</dt><dd data-network-band>5 GHz</dd>
+                  <dt>Security</dt><dd data-network-security>WPA3</dd>
+                </dl>
+              </section>
+            </section>
+
+            <!-- bluetooth -->
+            <section class="os-settings-pane" id="settings-pane-bluetooth" role="tabpanel" aria-labelledby="settings-tab-bluetooth" data-settings-pane="bluetooth" hidden>
+              <header class="os-settings-pane__head">
+                <span class="os-settings-pane__mark" style="--pane:var(--ds-blue)"><svg class="icon"><use href="#i-bluetooth"/></svg></span>
+                <div><h2 data-settings-pane-title>Bluetooth</h2><p>Wireless accessories and nearby devices.</p></div>
+              </header>
+
+              <section class="os-settings-card">
+                <h3>Bluetooth</h3>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Bluetooth</b><small data-devices-hero-summary>On · 2 accessories connected</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-device-bluetooth checked aria-label="Bluetooth"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Discoverable</b><small>Let nearby devices find this Mac.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-device-discoverable aria-label="Discoverable"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+              </section>
+
+              <section class="os-settings-card">
+                <h3>My devices</h3>
+                <div class="os-settings-devices" data-settings-devices-list></div>
+                <p class="os-settings-note" data-devices-note>Battery levels update from the accessory.</p>
+              </section>
+
+              <section class="os-settings-card">
+                <h3>Nearby devices</h3>
+                <div class="os-settings-empty">
+                  <svg class="icon"><use href="#i-bluetooth"/></svg>
+                  <span>No nearby devices found.</span>
+                </div>
+              </section>
+            </section>
+
+            <!-- sound -->
+            <section class="os-settings-pane" id="settings-pane-sound" role="tabpanel" aria-labelledby="settings-tab-sound" data-settings-pane="sound" hidden>
+              <header class="os-settings-pane__head">
+                <span class="os-settings-pane__mark" style="--pane:var(--ds-pink)"><svg class="icon"><use href="#i-volume"/></svg></span>
+                <div><h2 data-settings-pane-title>Sound</h2><p>Output, volume, and alert sounds.</p></div>
+              </header>
+
+              <section class="os-settings-card">
+                <h3>Output</h3>
+                <label class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Output device</b><small>Where sound should play.</small></span>
+                  <select class="osx-select" data-settings-output aria-label="Output device">
+                    <option value="Harbour speakers" selected>Harbour speakers</option>
+                    <option value="Studio monitors">Studio monitors</option>
+                    <option value="Drift Earbuds">Drift Earbuds</option>
+                  </select>
+                </label>
+                <div class="os-settings-row os-settings-row--stack">
+                  <span class="os-settings-row__text"><b>Volume</b><small>Currently using <span data-sound-output-label>Harbour speakers</span>.</small></span>
+                  <span class="os-settings-slider">
+                    <button class="os-settings-mute" type="button" data-sound-mute aria-label="Mute" aria-pressed="false"><svg class="icon"><use href="#i-volume"/></svg></button>
+                    <input type="range" min="0" max="100" step="1" value="42" data-sound-slider aria-label="Volume">
+                    <output data-sound-value>42%</output>
+                  </span>
+                </div>
+              </section>
+
+              <section class="os-settings-card">
+                <h3>Sound effects</h3>
+                <label class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Alert sound</b><small>Played for warnings and notifications.</small></span>
+                  <select class="osx-select" data-os-setting="alertSound" aria-label="Alert sound">
+                    <option value="droplet" selected>Droplet</option>
+                    <option value="harbour">Harbour bell</option>
+                    <option value="tide">Tide wash</option>
+                  </select>
+                </label>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Play user interface sound effects</b><small>Small clicks and transitions.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="uiSounds" checked aria-label="Play user interface sound effects"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <div class="os-settings-card__foot">
+                  <button class="ds-btn ds-btn--small ds-btn--ghost" type="button" data-settings-action="test-sound">Play test sound</button>
+                </div>
+              </section>
+            </section>
+
+            <!-- battery -->
+            <section class="os-settings-pane" id="settings-pane-battery" role="tabpanel" aria-labelledby="settings-tab-battery" data-settings-pane="battery" hidden>
+              <header class="os-settings-pane__head">
+                <span class="os-settings-pane__mark" style="--pane:var(--ds-green)"><svg class="icon"><use href="#i-battery"/></svg></span>
+                <div><h2 data-settings-pane-title>Battery</h2><p>Charge, health, and energy mode.</p></div>
+              </header>
+
+              <section class="os-settings-card">
+                <div class="os-settings-battery">
+                  <span class="os-settings-battery__value" data-battery-level>78%</span>
+                  <span class="os-settings-battery__text"><b data-battery-source>Battery</b><small data-battery-time>About 4h 12m remaining</small></span>
+                  <span class="os-battery-gauge__shell" aria-hidden="true"><i data-battery-fill style="width:78%"></i></span>
+                </div>
+              </section>
+
+              <section class="os-settings-card">
+                <h3>Energy</h3>
+                <div class="ds-segmented os-energy-segments os-energy-segments--full" role="group" aria-label="Energy mode">
+                  <button class="ds-segment" type="button" data-battery-mode="low" aria-selected="false">Low power</button>
+                  <button class="ds-segment is-active" type="button" data-battery-mode="balanced" aria-selected="true">Balanced</button>
+                  <button class="ds-segment" type="button" data-battery-mode="high" aria-selected="false">High performance</button>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Low power mode</b><small>Reduce background activity when unplugged.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-battery-lowpower aria-label="Low power mode"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Optimised charging</b><small>Finish charging closer to when you unplug.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-battery-optimized checked aria-label="Optimised charging"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+              </section>
+
+              <section class="os-settings-card">
+                <h3>Battery health</h3>
+                <dl class="os-detail-grid">
+                  <dt>Condition</dt><dd>Normal</dd>
+                  <dt>Maximum capacity</dt><dd data-battery-health-label>96%</dd>
+                  <dt>Cycle count</dt><dd>214</dd>
+                  <dt>Temperature</dt><dd>31 °C</dd>
+                  <dt>Charging</dt><dd data-battery-charging>Not charging</dd>
+                </dl>
+              </section>
+            </section>
+
+            <!-- notifications -->
+            <section class="os-settings-pane" id="settings-pane-notifications" role="tabpanel" aria-labelledby="settings-tab-notifications" data-settings-pane="notifications" hidden>
+              <header class="os-settings-pane__head">
+                <span class="os-settings-pane__mark" style="--pane:var(--ds-amber)"><svg class="icon"><use href="#i-bell"/></svg></span>
+                <div><h2 data-settings-pane-title>Notifications</h2><p>Alerts, previews, and focus.</p></div>
+              </header>
+
+              <section class="os-settings-card">
+                <h3>Notifications</h3>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Allow notifications</b><small>Show banners and alerts from apps.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="notifications" checked aria-label="Allow notifications"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <label class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Show previews</b><small>What appears before you unlock the screen.</small></span>
+                  <select class="osx-select" data-os-setting="notificationPreviews" aria-label="Show previews">
+                    <option value="always" selected>Always</option>
+                    <option value="unlocked">When unlocked</option>
+                    <option value="never">Never</option>
+                  </select>
+                </label>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Do Not Disturb</b><small>Silence all notifications until turned off.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="doNotDisturb" aria-label="Do Not Disturb"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+              </section>
+
+              <section class="os-settings-card">
+                <h3>Application notifications</h3>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Explorer</b><small>Verification and transfer alerts.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="appExplorer" checked aria-label="Explorer notifications"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Tide Radio</b><small>Track changes and playback.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="appRadio" checked aria-label="Tide Radio notifications"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Calendar</b><small>Upcoming events and invites.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="appCalendar" checked aria-label="Calendar notifications"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+              </section>
+            </section>
+
+            <!-- privacy & security -->
+            <section class="os-settings-pane" id="settings-pane-security" role="tabpanel" aria-labelledby="settings-tab-security" data-settings-pane="security" hidden>
+              <header class="os-settings-pane__head">
+                <span class="os-settings-pane__mark" style="--pane:var(--ds-red)"><svg class="icon"><use href="#i-shield"/></svg></span>
+                <div><h2 data-settings-pane-title>Privacy &amp; Security</h2><p>Encryption, firewall, location, and app access.</p></div>
+              </header>
+
+              <section class="os-settings-card">
+                <h3>Security</h3>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>FileVault</b><small>Encrypt the startup disk. Recovery key is stored in Aether ID.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="fileVault" checked aria-label="FileVault"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Firewall</b><small>Block incoming connections that are not expected.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="firewall" checked aria-label="Firewall"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <label class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Allow applications from</b><small>Gatekeeper source policy.</small></span>
+                  <select class="osx-select" data-os-setting="allowApps" aria-label="Allow applications from">
+                    <option value="appstore" selected>App Store</option>
+                    <option value="identified">App Store and identified developers</option>
+                    <option value="anywhere">Anywhere</option>
+                  </select>
+                </label>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Lock screen</b><small>Require a password after the screen sleeps.</small></span>
+                  <select class="osx-select" data-os-setting="lockDelay" aria-label="Lock screen delay">
+                    <option value="immediately">Immediately</option>
+                    <option value="1">After 1 minute</option>
+                    <option value="5" selected>After 5 minutes</option>
+                    <option value="15">After 15 minutes</option>
+                  </select>
+                </div>
+              </section>
+
+              <section class="os-settings-card">
+                <h3>Privacy</h3>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Location Services</b><small>Allow apps to use your approximate location.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="locationServices" checked aria-label="Location Services"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Share analytics</b><small>Send anonymous diagnostics to Aether.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="analytics" aria-label="Share analytics"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Camera</b><small>No application has requested access.</small></span>
+                  <span class="os-settings-value">0 apps</span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Microphone</b><small>Tide Radio is allowed to record audio.</small></span>
+                  <span class="os-settings-value">1 app</span>
+                </div>
+              </section>
+
+              <section class="os-settings-card">
+                <h3>Lock Screen</h3>
+                <div class="os-settings-lock">
+                  <span class="os-settings-lock__art" aria-hidden="true"><i></i></span>
+                  <span><b>Screen locked</b><small>Aether ID · Oliver Molnar</small></span>
+                  <button class="ds-btn ds-btn--small ds-btn--ghost" type="button" data-cmd="open-about">Lock options</button>
+                </div>
+              </section>
+            </section>
+
+            <!-- storage -->
+            <section class="os-settings-pane" id="settings-pane-storage" role="tabpanel" aria-labelledby="settings-tab-storage" data-settings-pane="storage" hidden>
+              <header class="os-settings-pane__head">
+                <span class="os-settings-pane__mark" style="--pane:var(--ds-orange)"><svg class="icon"><use href="#i-database"/></svg></span>
+                <div><h2 data-settings-pane-title>Storage</h2><p>What fills the archive volume and how to reclaim space.</p></div>
+              </header>
+
+              <section class="os-settings-card">
+                <div class="os-settings-storage-head">
+                  <span><b>Macintosh HD</b><small>812 GB available of 1 TB</small></span>
+                  <span class="os-settings-value">19% free</span>
+                </div>
+                <div class="os-settings-storage-bar" aria-label="Storage used by category" role="img">
+                  <i style="--segment:42%;--tone:var(--ds-accent)"></i>
+                  <i style="--segment:18%;--tone:var(--ds-violet)"></i>
+                  <i style="--segment:12%;--tone:var(--ds-pink)"></i>
+                  <i style="--segment:9%;--tone:var(--ds-amber)"></i>
+                  <i style="--segment:19%;--tone:var(--ds-gray-bg)"></i>
+                </div>
+                <ul class="os-settings-legend">
+                  <li><i style="--tone:var(--ds-accent)"></i><span>Archive snapshots</span><b>420 GB</b></li>
+                  <li><i style="--tone:var(--ds-violet)"></i><span>Applications</span><b>180 GB</b></li>
+                  <li><i style="--tone:var(--ds-pink)"></i><span>Media</span><b>120 GB</b></li>
+                  <li><i style="--tone:var(--ds-amber)"></i><span>File index</span><b>92 GB</b></li>
+                  <li><i style="--tone:var(--ds-gray-bg)"></i><span>Free space</span><b>188 GB</b></li>
+                </ul>
+              </section>
+
+              <section class="os-settings-card">
+                <h3>Recommendations</h3>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Optimise storage</b><small>Remove stale snapshot versions from the local cache.</small></span>
+                  <button class="ds-btn ds-btn--small ds-btn--primary" type="button" data-settings-action="optimise-storage">Review</button>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Trash</b><small>Nothing is written during a verification run.</small></span>
+                  <button class="ds-btn ds-btn--small ds-btn--ghost" type="button" data-cmd="trash">Empty Trash</button>
+                </div>
+              </section>
+            </section>
+
+            <!-- accessibility -->
+            <section class="os-settings-pane" id="settings-pane-accessibility" role="tabpanel" aria-labelledby="settings-tab-accessibility" data-settings-pane="accessibility" hidden>
+              <header class="os-settings-pane__head">
+                <span class="os-settings-pane__mark" style="--pane:var(--ds-green)"><svg class="icon"><use href="#i-accessibility"/></svg></span>
+                <div><h2 data-settings-pane-title>Accessibility</h2><p>Vision, motion, hearing, and keyboard comfort.</p></div>
+              </header>
+
+              <section class="os-settings-card">
+                <h3>Vision</h3>
+                <label class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Text size</b><small>Scale the desktop and every app.</small></span>
+                  <select class="osx-select" data-water-setting="fontSize" aria-label="Text size">
+                    <option value="compact">Compact</option>
+                    <option value="comfortable" selected>Comfortable</option>
+                    <option value="large">Large</option>
+                  </select>
+                </label>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Increase contrast</b><small>Strengthen borders and secondary text.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="increaseContrast" aria-label="Increase contrast"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Reduce transparency</b><small>Replace frosted panes with solid surfaces.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="reduceTransparency" aria-label="Reduce transparency"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Reduce motion</b><small>Turn off window waves and animated transitions.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="reduceMotion" aria-label="Reduce motion"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+              </section>
+
+              <section class="os-settings-card">
+                <h3>Hearing</h3>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Play stereo audio as mono</b><small>Send both channels to each earbud.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="stereoAsMono" aria-label="Play stereo audio as mono"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Flash the screen for alerts</b><small>Visual cue for system sounds.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="flashAlerts" aria-label="Flash the screen for alerts"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+              </section>
+
+              <section class="os-settings-card">
+                <h3>Keyboard</h3>
+                <label class="os-settings-row os-settings-row--stack">
+                  <span class="os-settings-row__text"><b>Key repeat rate</b><small>How quickly a held key repeats.</small></span>
+                  <span class="os-settings-slider">
+                    <svg class="icon"><use href="#i-keyboard"/></svg>
+                    <input type="range" min="1" max="12" step="1" value="6" data-os-setting="keyRepeat" data-settings-suffix="/s" aria-label="Key repeat rate">
+                    <output data-settings-value="keyRepeat">6/s</output>
+                  </span>
+                </label>
+                <label class="os-settings-row os-settings-row--stack">
+                  <span class="os-settings-row__text"><b>Delay until repeat</b><small>Pause before the key starts repeating.</small></span>
+                  <span class="os-settings-slider">
+                    <svg class="icon"><use href="#i-clock"/></svg>
+                    <input type="range" min="1" max="10" step="1" value="3" data-os-setting="keyDelay" data-settings-suffix="" aria-label="Delay until repeat">
+                    <output data-settings-value="keyDelay">3</output>
+                  </span>
+                </label>
+                <div class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Sticky keys</b><small>Press modifier keys one at a time.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="stickyKeys" aria-label="Sticky keys"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </div>
+                <div class="os-settings-card__foot">
+                  <button class="ds-btn ds-btn--small ds-btn--ghost" type="button" data-cmd="open-shortcuts">Open keyboard shortcuts</button>
+                </div>
+              </section>
+            </section>
           </div>
-
-          <section class="osx-theme-group">
-            <h3>Layout</h3>
-            <label class="osx-theme-row osx-theme-row--select">
-              <span class="osx-theme-text"><b>Window layout</b><small>Split shares the desktop between open apps. Overlap keeps their own positions and sizes.</small></span>
-              <select class="osx-select" data-layout-setting aria-label="Window layout">
-                <option value="split" selected>Split</option>
-                <option value="overlap">Overlap</option>
-              </select>
-            </label>
-          </section>
-
-          <section class="osx-theme-group">
-            <h3>Effects</h3>
-            <label class="osx-theme-row">
-              <span class="osx-theme-text"><b>Water effects</b><small>Master switch for ripples, shimmer, and window waves.</small></span>
-              <span class="ds-switch"><input type="checkbox" data-water-setting="effects" checked><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
-            </label>
-            <label class="osx-theme-row">
-              <span class="osx-theme-text"><b>Drips follow the cursor</b><small>Small, soft rings trail your pointer.</small></span>
-              <span class="ds-switch"><input type="checkbox" data-water-setting="drips" checked><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
-            </label>
-            <label class="osx-theme-row">
-              <span class="osx-theme-text"><b>Ripples on click</b><small>Clicking sends one larger ring outward.</small></span>
-              <span class="ds-switch"><input type="checkbox" data-water-setting="clickRipples" checked><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
-            </label>
-            <label class="osx-theme-row">
-              <span class="osx-theme-text"><b>Caustic shimmer</b><small>Slow light patterns drift behind the app.</small></span>
-              <span class="ds-switch"><input type="checkbox" data-water-setting="caustics" checked><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
-            </label>
-            <label class="osx-theme-row">
-              <span class="osx-theme-text"><b>Animated row highlights</b><small>Hover and selection colours flow between states.</small></span>
-              <span class="ds-switch"><input type="checkbox" data-water-setting="rowMotion" checked><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
-            </label>
-            <label class="osx-theme-row osx-theme-row--select">
-              <span class="osx-theme-text"><b>Window waves</b><small>A liquid rim around active windows and the command bar.</small></span>
-              <select class="osx-select" data-water-setting="windowWave" aria-label="Window waves">
-                <option value="off">Off</option>
-                <option value="calm">Calm</option>
-                <option value="tide" selected>Tide</option>
-                <option value="surge">Surge</option>
-              </select>
-            </label>
-          </section>
-
-          <section class="osx-theme-group">
-            <h3>Current</h3>
-            <label class="osx-theme-row osx-theme-row--select">
-              <span class="osx-theme-text"><b>Flow speed</b><small>How quickly the water moves.</small></span>
-              <select class="osx-select" data-water-setting="speed" aria-label="Flow speed">
-                <option value="calm">Calm</option>
-                <option value="flowing" selected>Flowing</option>
-                <option value="rapid">Rapid</option>
-              </select>
-            </label>
-            <label class="osx-theme-row osx-theme-row--select">
-              <span class="osx-theme-text"><b>Drip energy</b><small>How lively cursor drips feel.</small></span>
-              <select class="osx-select" data-water-setting="intensity" aria-label="Drip energy">
-                <option value="subtle" selected>Subtle</option>
-                <option value="balanced">Balanced</option>
-                <option value="lively">Lively</option>
-              </select>
-            </label>
-          </section>
-
-          <section class="osx-theme-group">
-            <h3>Look</h3>
-            <label class="osx-theme-row osx-theme-row--select">
-              <span class="osx-theme-text"><b>Font size</b><small>Comfortable matches the live explorer demo.</small></span>
-              <select class="osx-select" data-water-setting="fontSize" aria-label="Font size">
-                <option value="compact">Compact</option>
-                <option value="comfortable" selected>Comfortable</option>
-                <option value="large">Large</option>
-              </select>
-            </label>
-            <label class="osx-theme-row osx-theme-row--select">
-              <span class="osx-theme-text"><b>Background</b><small>A still gradient or a living sea.</small></span>
-              <select class="osx-select" data-water-setting="background" aria-label="Background">
-                <option value="still" selected>Still gradient</option>
-                <option value="sea">Sea and waves</option>
-              </select>
-            </label>
-            <label class="osx-theme-row osx-theme-row--select">
-              <span class="osx-theme-text"><b>Water tone</b><small>Choose the palette of the sea.</small></span>
-              <select class="osx-select" data-water-setting="tone" aria-label="Water tone">
-                <option value="lagoon">Lagoon</option>
-                <option value="ocean" selected>Ocean</option>
-                <option value="deep">Deep</option>
-              </select>
-            </label>
-            <label class="osx-theme-row">
-              <span class="osx-theme-text"><b>Glass surfaces</b><small>Frosted panes over the moving water.</small></span>
-              <span class="ds-switch"><input type="checkbox" data-water-setting="glass" checked><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
-            </label>
-          </section>
-
-          </div>
-          <footer class="osx-theme-foot">
-            <div class="osx-theme-foot-actions">
-              <button class="osx-btn osx-btn--ghost" type="button" data-cmd="reset-command-settings">Reset command palette</button>
-              <button class="osx-btn osx-btn--ghost" type="button" data-cmd="reset-water-settings">Reset water settings</button>
-            </div>
-            <p>Saved on this device · Water is available from the theme menu.</p>
-          </footer>
         </div>
       </section>
-
       <!-- -------------------------------------------------------------- network -->
       <section class="os-window os-window--network" id="win-network" data-window="network" data-title="Network" role="dialog" aria-label="Network" tabindex="-1" hidden>
         <header class="os-titlebar" data-drag-handle>

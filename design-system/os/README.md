@@ -26,7 +26,6 @@ os/
     windows.css          window chrome, tide ring, resize handles, titlebar, tabs
     explorer.css         explorer shell, panes, rows, status bar
     inspector.css        details, source, and analytics sidebars
-    settings.css         Water settings window
     terminal.css         terminal window
     music.css            Tide Radio window
     about.css            About window
@@ -36,7 +35,7 @@ os/
     app-shell.css        in-window application chrome
     app-panes.css        app pane tables and status bar
     side-panel.css       app side panels
-    settings-app.css     settings application
+    settings-app.css     tabbed Settings window, sidebar, panes, and controls
     shortcuts.css        shortcuts window
     command-bar.css      command bar results
     appearance.css       non-water background overrides
@@ -85,6 +84,7 @@ os/
       battery.js         charge and energy mode
       music.js           Tide Radio playback
       sound.js           volume, mute, now playing
+      settings.js        Settings tabs, search, saved preferences, panes
       terminal.js        simulated shell
       task-processes.js  process catalog fixtures
       task-manager.js    process tree, charts, sampler
@@ -97,19 +97,38 @@ os/
 
 The command bar (`⌘K`) merges fuzzy file matches with commands grouped as
 Navigation, Search, View, Columns, Sort, Filters, Appearance, System, and
-Provider. Settings owns the palette controls under **Command palette**: commands
-on or off, local and remote file sources, how many characters trigger file
-search, whether inactive navigation commands are hidden, and which command
+Provider. Settings owns the palette controls under **Search & Commands**:
+commands on or off, local and remote file sources, how many characters trigger
+file search, whether inactive navigation commands are hidden, and which command
 groups appear. Preferences persist under `explorer-command-palette`; the gear in
 the command bar footer, **Open command palette settings** in the palette, and
-`⌘,` in the palette all jump to the section.
+`⌘,` in the palette all jump to the tab.
+
+## Settings
+
+`Settings` is a two-column window: a searchable sidebar of topics and a scrolling
+pane for the selected topic. The tabs are General, Appearance, Displays,
+Desktop & Dock, Search & Commands, Accessibility, Network, Bluetooth, Sound,
+Battery, Notifications, Privacy & Security, and Storage.
+
+- Appearance wraps the Water controls, so theme, tone, speed, drips, glass, font
+  size, and window layout keep using the same saved preferences as the rest of
+  the desktop.
+- Network, Bluetooth, Sound, and Battery reuse the live state owned by their
+  feature modules. Changes made in Settings are reflected in the tray, the
+  standalone apps, and the command bar.
+- The remaining controls persist in `explorer-os-settings-v1`; the selected tab
+  persists in `explorer-os-settings-tab`.
+- `⌘,`, the dock, desktop, and menu bar items open Settings. Tray shortcuts jump
+  directly to Network, Bluetooth, or Battery, and the command palette's gear
+  opens Search & Commands.
 
 ## App Studio
 
 `App Studio` is the desktop's GUI builder. It opens with one editable project
-for every application on the system — Explorer, Water settings, Network,
-Devices, Battery, Calendar, Task Manager, Terminal, Tide Radio, Keyboard
-shortcuts, and About — and deliberately has no project for itself. Projects
+for every application on the system — Explorer, Settings, Network, Devices,
+Battery, Calendar, Task Manager, Terminal, Tide Radio, Keyboard shortcuts, and
+About — and deliberately has no project for itself. Projects
 store percentage-based component boxes on a 16:10 artboard, so the same
 project renders at any window size.
 

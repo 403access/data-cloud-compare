@@ -17,8 +17,8 @@ export const soundState = {
   output: "Harbour speakers",
 };
 
-const soundSlider = document.querySelector("[data-sound-slider]");
-const soundMuteButton = document.querySelector("[data-sound-mute]");
+const soundSliders = document.querySelectorAll("[data-sound-slider]");
+const soundMuteButtons = document.querySelectorAll("[data-sound-mute]");
 const soundPlayButton = document.querySelector("[data-sound-play]");
 
 function syncSoundUi() {
@@ -30,12 +30,19 @@ function syncSoundUi() {
   toggle?.setAttribute("aria-label", `Sound, ${level}`);
   toggle?.querySelector("use")?.setAttribute("href", soundState.muted ? "#i-volume-off" : "#i-volume");
 
-  if (soundSlider) soundSlider.value = String(soundState.muted ? 0 : soundState.volume);
+  soundSliders.forEach((slider) => {
+    slider.value = String(soundState.muted ? 0 : soundState.volume);
+  });
   document.querySelectorAll("[data-sound-value]").forEach((node) => (node.textContent = level));
   document.querySelectorAll("[data-sound-state]").forEach((node) => (node.textContent = soundState.output));
-  soundMuteButton?.setAttribute("aria-pressed", String(soundState.muted));
-  soundMuteButton?.setAttribute("aria-label", soundState.muted ? "Unmute" : "Mute");
-  soundMuteButton?.querySelector("use")?.setAttribute("href", soundState.muted ? "#i-volume-off" : "#i-volume");
+  document.querySelectorAll("[data-sound-output-label]").forEach((node) => {
+    node.textContent = soundState.output;
+  });
+  soundMuteButtons.forEach((button) => {
+    button.setAttribute("aria-pressed", String(soundState.muted));
+    button.setAttribute("aria-label", soundState.muted ? "Unmute" : "Mute");
+    button.querySelector("use")?.setAttribute("href", soundState.muted ? "#i-volume-off" : "#i-volume");
+  });
   document.querySelectorAll("[data-sound-track]").forEach((node) => {
     node.textContent = trackTitle?.textContent || "Deep Current";
   });
@@ -44,21 +51,28 @@ function syncSoundUi() {
   });
 }
 
-function setSoundVolume(value) {
+export function setSoundVolume(value) {
   soundState.volume = Math.max(0, Math.min(100, Number(value)));
   soundState.muted = soundState.volume === 0;
   syncSoundUi();
 }
 
-function toggleMute() {
+export function toggleMute() {
   soundState.muted = !soundState.muted;
   if (!soundState.muted && soundState.volume === 0) soundState.volume = 42;
   syncSoundUi();
   toast(soundState.muted ? "Sound muted" : `Sound · ${soundState.volume}%`);
 }
 
-soundSlider?.addEventListener("input", () => setSoundVolume(soundSlider.value));
-soundMuteButton?.addEventListener("click", toggleMute);
+export function setSoundOutput(output) {
+  soundState.output = output || soundState.output;
+  syncSoundUi();
+}
+
+soundSliders.forEach((slider) => {
+  slider.addEventListener("input", () => setSoundVolume(slider.value));
+});
+soundMuteButtons.forEach((button) => button.addEventListener("click", toggleMute));
 soundPlayButton?.addEventListener("click", () => togglePlay());
 
 registerTray("sound", { open: syncSoundUi });

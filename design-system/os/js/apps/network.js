@@ -91,8 +91,9 @@ function syncNetworkUi() {
       : '<p class="os-tray__empty">No other known networks.</p>';
   }
 
-  const appList = document.querySelector("[data-network-app-list]");
-  if (appList) appList.innerHTML = wifiOn ? NETWORKS.map(networkRowHtml).join("") : "";
+  document.querySelectorAll("[data-network-app-list]").forEach((appList) => {
+    appList.innerHTML = wifiOn ? NETWORKS.map(networkRowHtml).join("") : "";
+  });
 
   document.querySelectorAll("[data-network-app-title]").forEach((node) => {
     node.textContent = wifiOn && current ? current.name : "Wi-Fi off";

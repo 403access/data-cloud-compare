@@ -19,6 +19,7 @@ import "./apps/network.js";
 import "./apps/devices.js";
 import "./apps/battery.js";
 import "./apps/sound.js";
+import "./apps/settings.js";
 import "./apps/terminal.js";
 import "./shell/commands.js";
 import "./shell/command-settings.js";

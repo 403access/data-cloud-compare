@@ -6,7 +6,7 @@ import {
   COMMAND_DEFAULTS, saveCommandSettings, state,
 } from "../core/state.js";
 import { toast } from "../core/toast.js";
-import { openWindow } from "./windows.js";
+import { openSettings } from "../apps/settings.js";
 
 function cloneDefaults() {
   return {
@@ -62,32 +62,13 @@ export function resetCommandSettings() {
   toast("Command palette settings reset.");
 }
 
-function activateCommandsTab() {
-  const tab = document.querySelector('[data-settings-tab="commands"]');
-  if (!tab) return;
-  if (tab.getAttribute("aria-selected") !== "true") tab.click();
-  const pane = document.querySelector('[data-settings-pane="commands"]');
-  if (!pane || !pane.hidden) return;
-  document.querySelectorAll("[data-settings-pane]").forEach((item) => {
-    const active = item === pane;
-    item.classList.toggle("is-active", active);
-    item.hidden = !active;
-  });
-  document.querySelectorAll("[data-settings-tab]").forEach((button) => {
-    const active = button === tab;
-    button.classList.toggle("is-active", active);
-    button.setAttribute("aria-selected", String(active));
-    button.tabIndex = active ? 0 : -1;
-  });
-}
-
 export function openCommandSettings() {
-  openWindow("settings");
+  openSettings("commands");
+  const content = document.querySelector("[data-settings-content]");
+  const section = document.querySelector('[data-settings-section="command"]');
+  if (!section) return;
   requestAnimationFrame(() => {
-    activateCommandsTab();
-    const section = document.querySelector('[data-settings-section="command"]');
-    if (!section) return;
-    section.scrollIntoView({ block: "start", behavior: "smooth" });
+    if (content) content.scrollTop = 0;
     section.classList.add("is-highlighted");
     window.setTimeout(() => section.classList.remove("is-highlighted"), 1200);
   });

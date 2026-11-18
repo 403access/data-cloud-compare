@@ -67,7 +67,6 @@
 
 @media (max-width: 820px) {
   .os-window--explorer.has-side { width: 100% !important; }
-  .osx-theme-panel { padding-bottom: 80px; }
 }
 
 /* Phone-width table: keep Name, Status, and Size legible. */

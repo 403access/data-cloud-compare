@@ -154,10 +154,14 @@ faithful reproduction of the real explorer application.
   toolbar and breadcrumbs, search with scope and status filters, sortable
   columns, pane footers, selection status bar, and the columns, details, source,
   and analytics side panels.
-- The Water settings window mirrors the app's theme sidebar: effects, drips,
-  click ripples, caustics, row motion, window waves, flow speed, drip energy,
+- Settings is a searchable two-column window with tabs for General, Appearance,
+  Displays, Desktop & Dock, Search & Commands, Accessibility, Network,
+  Bluetooth, Sound, Battery, Notifications, Privacy & Security, and Storage.
+  The Appearance tab mirrors the app's theme sidebar: effects, drips, click
+  ripples, caustics, row motion, window waves, flow speed, drip energy,
   background, tone, glass surfaces, reset, and the paused/active status
-  callout.
+  callout. Connection, device, sound, and battery tabs share live state with
+  the tray and the standalone apps.
 - Active and hovered windows, plus the command bar, carry a liquid tide line:
   a masked conic-gradient ring displaced by an animated SVG turbulence filter.
   The **Window waves** setting offers Off, Calm, Tide, and Surge, and the ring
@@ -232,7 +236,7 @@ faithful reproduction of the real explorer application.
   a rounded `--ds-text-3` thumb, and an accent-tinted hover. Firefox gets the
   native thin scrollbar via an `@supports` fallback so it does not lose the
   token colours.
-- Water settings includes a **Font size** choice. **Comfortable** is the
+- Settings includes a **Font size** choice under Appearance and Accessibility. **Comfortable** is the
   default and matches the live explorer demo; **Compact** restores the tighter
   original concept type, and **Large** adds a step beyond it. The choice is
   saved as `explorer-os-font-size` (mirrored in `explorer-water-settings`),

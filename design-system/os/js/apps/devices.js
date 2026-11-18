@@ -52,6 +52,17 @@ function deviceCardHtml(device) {
   </div>`;
 }
 
+function settingsDeviceRowHtml(device) {
+  const active = devicesState.bluetooth && device.connected;
+  const status = !devicesState.bluetooth ? "Bluetooth off" : device.connected ? "Connected" : "Paired";
+  return `<div class="os-settings-device${active ? "" : " is-off"}">
+    <span class="os-settings-device__icon"><svg class="icon"><use href="#${device.icon}"/></svg></span>
+    <span class="os-settings-device__text"><b>${esc(device.name)}</b><small>${status} · ${device.battery}%</small></span>
+    ${deviceBatteryHtml(device.battery)}
+    <button class="ds-btn ds-btn--small ${active ? "ds-btn--ghost" : "ds-btn--primary"}" type="button" data-device-toggle="${esc(device.id)}"${devicesState.bluetooth ? "" : " disabled"}>${device.connected ? "Disconnect" : "Connect"}</button>
+  </div>`;
+}
+
 function renderDeviceLists() {
   const connected = devicesState.devices.filter((device) => device.connected);
   const menuList = document.querySelector("[data-devices-connected-list]");
@@ -60,8 +71,12 @@ function renderDeviceLists() {
       ? connected.map(deviceRowHtml).join("")
       : '<p class="os-tray__empty">No accessories connected.</p>';
   }
-  const appList = document.querySelector("[data-devices-list]");
-  if (appList) appList.innerHTML = devicesState.devices.map(deviceCardHtml).join("");
+  document.querySelectorAll("[data-devices-list]").forEach((appList) => {
+    appList.innerHTML = devicesState.devices.map(deviceCardHtml).join("");
+  });
+  document.querySelectorAll("[data-settings-devices-list]").forEach((list) => {
+    list.innerHTML = devicesState.devices.map(settingsDeviceRowHtml).join("");
+  });
 }
 
 function syncDevicesUi() {

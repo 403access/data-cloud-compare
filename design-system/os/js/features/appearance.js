@@ -44,6 +44,12 @@ function syncThemeControls() {
     const use = button.querySelector("use");
     if (use) use.setAttribute("href", light ? "#i-sun" : "#i-moon");
   });
+  document.querySelectorAll("[data-settings-theme]").forEach((button) => {
+    button.setAttribute(
+      "aria-pressed",
+      String(button.dataset.settingsTheme === state.themeMode),
+    );
+  });
 }
 
 function syncWaterControls() {
@@ -55,7 +61,7 @@ function syncWaterControls() {
 }
 
 function syncThemeStatus() {
-  const panel = document.querySelector(".osx-theme-panel");
+  const panel = document.querySelector('[data-settings-pane="appearance"]');
   const text = document.querySelector("[data-theme-status-text]");
   const action = document.querySelector('[data-cmd="use-water-theme"]');
   if (!panel || !text) return;
