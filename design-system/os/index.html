@@ -651,7 +651,16 @@
               </section>
             </div>
 
-            <aside class="osx-side" data-side-panel hidden aria-label="Side panel">
+            <aside class="osx-side" data-side-panel hidden aria-label="Side panel"
+              data-resize-sidebar
+              data-resize-key="explorer-side"
+              data-resize-var="--osx-side-width"
+              data-resize-host="parent"
+              data-resize-edge="end"
+              data-resize-min="240"
+              data-resize-max="560"
+              data-resize-min-main="420"
+              data-resize-label="Explorer side panel">
               <header class="osx-side-head">
                 <div>
                   <h2 data-side-title>Columns</h2>
@@ -1016,7 +1025,16 @@
             <div class="os-calendar-app__weekdays" data-calendar-app-weekdays aria-hidden="true"></div>
             <div class="os-calendar-app__grid" data-calendar-app-grid role="group" aria-label="Days"></div>
           </section>
-          <aside class="os-calendar-app__agenda" aria-label="Agenda">
+          <aside class="os-calendar-app__agenda" aria-label="Agenda"
+            data-resize-sidebar
+            data-resize-key="calendar-agenda"
+            data-resize-var="--os-calendar-agenda-width"
+            data-resize-host="parent"
+            data-resize-edge="end"
+            data-resize-min="220"
+            data-resize-max="560"
+            data-resize-min-main="260"
+            data-resize-label="Calendar agenda">
             <header class="os-agenda__head">
               <span class="os-agenda__date" data-calendar-app-selected>Tuesday, 17 November</span>
               <b class="os-agenda__clock" data-calendar-app-time>09:41</b>
@@ -1126,7 +1144,16 @@
             </footer>
           </div>
 
-          <aside class="os-tm-display os-tm-sidebar" id="os-tm-display" data-task-display aria-label="Menu bar usage display settings" hidden>
+          <aside class="os-tm-display os-tm-sidebar" id="os-tm-display" data-task-display aria-label="Menu bar usage display settings" hidden
+            data-resize-sidebar
+            data-resize-key="taskmanager-display"
+            data-resize-var="--os-tm-sidebar-width"
+            data-resize-host="self"
+            data-resize-edge="end"
+            data-resize-min="180"
+            data-resize-max="400"
+            data-resize-min-main="260"
+            data-resize-label="Task Manager display sidebar">
             <header class="os-tm-sidebar-head">
               <span class="os-tm-sidebar-title"><b>Display</b><small>Menu bar usage</small></span>
               <button class="os-tm-sidebar-close" type="button" data-task-display-close aria-label="Close display settings" title="Close display settings"><svg class="icon"><use href="#i-x"/></svg></button>
@@ -1163,7 +1190,16 @@
             </footer>
           </aside>
 
-          <aside class="os-tm-detail os-tm-sidebar" id="os-tm-detail" data-task-detail aria-label="Process details" hidden>
+          <aside class="os-tm-detail os-tm-sidebar" id="os-tm-detail" data-task-detail aria-label="Process details" hidden
+            data-resize-sidebar
+            data-resize-key="taskmanager-detail"
+            data-resize-var="--os-tm-sidebar-width"
+            data-resize-host="self"
+            data-resize-edge="end"
+            data-resize-min="180"
+            data-resize-max="440"
+            data-resize-min-main="260"
+            data-resize-label="Task Manager process details sidebar">
             <header class="os-tm-sidebar-head">
               <span class="os-tm-sidebar-title"><b>Process details</b><small>Live sample</small></span>
               <button class="os-tm-sidebar-close" type="button" data-task-detail-close aria-label="Close process details" title="Close process details"><svg class="icon"><use href="#i-x"/></svg></button>
@@ -1217,7 +1253,16 @@
           </header>
 
           <div class="osb-body">
-            <aside class="osb-projects">
+            <aside class="osb-projects"
+              data-resize-sidebar
+              data-resize-key="builder-projects"
+              data-resize-var="--osb-projects-width"
+              data-resize-host="parent"
+              data-resize-edge="start"
+              data-resize-min="150"
+              data-resize-max="380"
+              data-resize-min-main="300"
+              data-resize-label="App Studio projects sidebar">
               <header class="osb-projects__head">
                 <span>Projects</span><b data-builder-project-count>0</b>
               </header>
@@ -1266,7 +1311,16 @@
               <div class="osb-palette" data-builder-palette></div>
             </main>
 
-            <aside class="osb-side">
+            <aside class="osb-side"
+              data-resize-sidebar
+              data-resize-key="builder-side"
+              data-resize-var="--osb-side-width"
+              data-resize-host="parent"
+              data-resize-edge="end"
+              data-resize-min="220"
+              data-resize-max="520"
+              data-resize-min-main="300"
+              data-resize-label="App Studio inspector sidebar">
               <div class="osb-tabs" role="tablist" aria-label="Builder panels">
                 <button class="osb-tab" type="button" role="tab" data-builder-tab="inspect" aria-selected="false">
                   <svg class="icon"><use href="#i-gear"/></svg>Inspect

@@ -2,9 +2,11 @@
 
 .os-calendar-app {
   display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(220px, 1fr);
+  grid-template-columns: minmax(0, 1.55fr) minmax(220px, var(--os-calendar-agenda-width, 1fr));
   flex: 1;
   min-height: 0;
+  position: relative;
+  --os-calendar-agenda-width: 1fr;
 }
 
 .os-calendar-app__month {

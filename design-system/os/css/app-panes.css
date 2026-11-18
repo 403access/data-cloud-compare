@@ -6,6 +6,8 @@
   flex: 1;
   min-height: 0;
   padding: 10px;
+  position: relative;
+  --osx-side-width: 280px;
 }
 
 .osx-panes {

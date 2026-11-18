@@ -1,0 +1,71 @@
+/* ---------------------------------------------------------- sidebar resize
+   Every app sidebar is resizable from a shared pointer/keyboard handle. The
+   handle lives in the sidebar's layout parent so scrolling a sidebar never
+   moves it. Widths are applied through the custom property named on the
+   sidebar's `data-resize-var` attribute (see js/shell/sidebar-resize.js). */
+
+.os-side-resize {
+  position: absolute;
+  z-index: 8;
+  width: 13px;
+  transform: translateX(-50%);
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.os-side-resize[hidden] { display: none; }
+
+.os-side-resize::before {
+  content: "";
+  position: absolute;
+  inset: 0 4px;
+  border-radius: 999px;
+  background: transparent;
+  transition: background var(--ds-motion-fast) ease, box-shadow var(--ds-motion-fast) ease;
+}
+
+.os-side-resize::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 3px;
+  height: 26px;
+  border-radius: 999px;
+  background: var(--ds-line);
+  opacity: 0.7;
+  transform: translate(-50%, -50%);
+  transition: height var(--ds-motion-fast) ease, background var(--ds-motion-fast) ease, opacity var(--ds-motion-fast) ease;
+}
+
+.os-side-resize:hover::before,
+.os-side-resize:focus-visible::before,
+.os-side-resize.is-dragging::before {
+  background: color-mix(in srgb, var(--ds-accent) 24%, transparent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--ds-accent) 20%, transparent);
+}
+
+.os-side-resize:hover::after,
+.os-side-resize:focus-visible::after,
+.os-side-resize.is-dragging::after {
+  height: 36px;
+  background: var(--ds-accent);
+  opacity: 1;
+}
+
+.os-side-resize:focus-visible { outline: none; }
+
+body.is-resizing-sidebar,
+body.is-resizing-sidebar * {
+  cursor: col-resize !important;
+  user-select: none !important;
+}
+
+@media (max-width: 820px) {
+  .os-side-resize { display: none !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .os-side-resize::before,
+  .os-side-resize::after { transition: none; }
+}

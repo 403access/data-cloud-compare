@@ -91,9 +91,15 @@
 
 .osb-body {
   display: grid;
-  grid-template-columns: 196px minmax(0, 1fr) 296px;
+  grid-template-columns:
+    var(--osb-projects-width, 196px)
+    minmax(0, 1fr)
+    var(--osb-side-width, 296px);
   flex: 1;
   min-height: 0;
+  position: relative;
+  --osb-projects-width: 196px;
+  --osb-side-width: 296px;
 }
 
 /* -------------------------------------------------------------- projects */
@@ -987,7 +993,7 @@
    the viewport — decides when the rail and variable panel need to reflow. */
 
 @container (max-width: 980px) {
-  .osb-body { grid-template-columns: 168px minmax(0, 1fr) 236px; }
+  .osb-body { --osb-projects-width: 168px; --osb-side-width: 236px; }
   .osb-brand__text small { display: none; }
   .osb-project__text small { display: none; }
   .osb-topbar__stats .ds-chip:first-child { display: none; }
@@ -1077,12 +1083,12 @@
 /* ------------------------------------------------------------- responsive */
 
 @media (max-width: 1100px) {
-  .osb-body { grid-template-columns: 176px minmax(0, 1fr) 262px; }
+  .osb-body { --osb-projects-width: 176px; --osb-side-width: 262px; }
   .osb-topbar__stats .ds-chip { font-size: calc(8px * var(--os-font-scale, 1)); }
 }
 
 @media (max-width: 980px) {
-  .osb-body { grid-template-columns: 156px minmax(0, 1fr) 228px; }
+  .osb-body { --osb-projects-width: 156px; --osb-side-width: 228px; }
   .osb-brand__text small { display: none; }
   .osb-project__text small { display: none; }
   .osb-palette__title { display: none; }

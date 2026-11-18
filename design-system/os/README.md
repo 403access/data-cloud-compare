@@ -51,6 +51,7 @@ os/
     calendar-app.css     Calendar app
     menu-meters.css      menu bar resource meters
     builder.css          App Studio GUI builder
+    sidebar-resize.css   shared resizable app-sidebar handles
   js/
     main.js
     boot-theme.js
@@ -63,6 +64,7 @@ os/
       clock.js           time and date labels
       popovers.js        menu bar menus and tray panels
       windows.js         drag, resize, focus, dock state, split/overlap layout
+      sidebar-resize.js  pointer and keyboard resizing for every app sidebar
       menu-bar-usage.js  CPU/RAM/storage meter preferences
       command-catalog.js command inventory and fuzzy file matching
       command-bar.js     command overlay and keyboard selection

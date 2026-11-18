@@ -8,6 +8,7 @@ import { startClock } from "./shell/clock.js";
 import { applyResourceDisplay } from "./shell/menu-bar-usage.js";
 import { initTaskManager } from "./apps/task-manager.js";
 import { initBuilder } from "./apps/gui-builder.js";
+import { initSidebarResize } from "./shell/sidebar-resize.js";
 import { playerWindow } from "./apps/music.js";
 import {
   applyWindowLayout, closeWindow, focusWindow, syncDock, windowById,
@@ -28,6 +29,7 @@ renderAll();
 applyResourceDisplay();
 initTaskManager();
 initBuilder();
+initSidebarResize();
 
 if (playerWindow) closeWindow(playerWindow);
 

@@ -3,7 +3,7 @@
 .osx-side {
   display: flex;
   flex-direction: column;
-  width: 280px;
+  width: var(--osx-side-width, 280px);
   flex: none;
   min-height: 0;
   border: 1px solid var(--ds-line);
