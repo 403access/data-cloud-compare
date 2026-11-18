@@ -192,7 +192,11 @@ of the real explorer application.
   width.
 - **Task Manager** shows CPU, memory, and storage cards above a process table.
   It samples every six seconds (or on demand), updates rows in place, and lets
-  you select and end a process, which recalculates the totals and meters.
+  you select and end a process, which recalculates the totals and meters. Its
+  **Display** panel configures the menu bar usage widget: show in menu bar,
+  border (off by default), captions, bars, values, and dividers. Choices are
+  saved as `explorer-os-resource-display`, apply before paint, and reset to the
+  defaults from the same panel.
 - **Devices** shows the paired Tide Mouse, Harbour Keyboard, and Drift Earbuds
   with colour-coded battery meters. Disconnecting an accessory removes it from
   the tray menu, and turning Bluetooth off disables the accessory controls

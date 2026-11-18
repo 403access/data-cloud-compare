@@ -36,6 +36,18 @@
         var windowWave = localStorage.getItem("explorer-os-window-wave") || water.windowWave;
         if (["off", "calm", "tide", "surge"].indexOf(windowWave) === -1) windowWave = "tide";
         root.dataset.waterWindowWave = windowWave;
+        var resourceDisplay = {};
+        try {
+          resourceDisplay = JSON.parse(localStorage.getItem("explorer-os-resource-display") || "null") || {};
+        } catch (e) {
+          resourceDisplay = {};
+        }
+        root.dataset.resourceVisible = resourceDisplay.visible === false ? "off" : "on";
+        root.dataset.resourceBorder = resourceDisplay.border === true ? "on" : "off";
+        root.dataset.resourceCaptions = resourceDisplay.captions === false ? "off" : "on";
+        root.dataset.resourceBars = resourceDisplay.bars === false ? "off" : "on";
+        root.dataset.resourceValues = resourceDisplay.values === false ? "off" : "on";
+        root.dataset.resourceDividers = resourceDisplay.dividers === false ? "off" : "on";
       } catch (e) {}
     })();
   </script>
@@ -1077,6 +1089,40 @@
             <h3>Processes</h3>
             <span class="os-tm-updated">Live · updates every 6s</span>
             <button class="os-tm-sample" type="button" data-task-sample><svg class="icon"><use href="#i-sync"/></svg>Sample</button>
+            <button class="os-tm-sample" type="button" data-task-display-toggle aria-controls="os-tm-display" aria-expanded="false"><svg class="icon"><use href="#i-gear"/></svg>Display</button>
+          </div>
+
+          <div class="os-tm-display" id="os-tm-display" data-task-display hidden>
+            <header>
+              <span><b>Menu bar usage</b><small>CPU, RAM, and storage</small></span>
+              <button class="os-tm-display-reset" type="button" data-task-display-reset>Reset</button>
+            </header>
+            <div class="os-tm-display-grid">
+              <label class="os-tm-display-row" title="Show the usage meters in the menu bar">
+                <span>Show in menu bar</span>
+                <span class="ds-switch"><input type="checkbox" data-resource-display-setting="visible" checked aria-label="Show usage in menu bar"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+              </label>
+              <label class="os-tm-display-row" title="Show a border around the menu bar usage group">
+                <span>Border</span>
+                <span class="ds-switch"><input type="checkbox" data-resource-display-setting="border" aria-label="Show usage border"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+              </label>
+              <label class="os-tm-display-row" title="Show CPU, RAM, and storage captions">
+                <span>Captions</span>
+                <span class="ds-switch"><input type="checkbox" data-resource-display-setting="captions" checked aria-label="Show usage captions"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+              </label>
+              <label class="os-tm-display-row" title="Show the mini usage bars">
+                <span>Bars</span>
+                <span class="ds-switch"><input type="checkbox" data-resource-display-setting="bars" checked aria-label="Show usage bars"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+              </label>
+              <label class="os-tm-display-row" title="Show percentages and free storage">
+                <span>Values</span>
+                <span class="ds-switch"><input type="checkbox" data-resource-display-setting="values" checked aria-label="Show usage values"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+              </label>
+              <label class="os-tm-display-row" title="Show separators between the three meters">
+                <span>Dividers</span>
+                <span class="ds-switch"><input type="checkbox" data-resource-display-setting="dividers" checked aria-label="Show usage dividers"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+              </label>
+            </div>
           </div>
 
           <div class="os-tm-list">
