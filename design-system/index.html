@@ -269,20 +269,89 @@
         <header class="section-head">
           <span class="show-kicker">03 · Components</span>
           <h2>The working set.</h2>
-          <p>Everything the product needs to communicate state: actions, verdicts, navigation, surfaces, and feedback.</p>
+          <p>Every <code>ds-</code> primitive in <code>components.css</code> — actions, verdicts, navigation, surfaces, product patterns, utilities, and feedback — plus the Water OS chrome composed from them.</p>
         </header>
+
+        <div class="component-index" aria-label="Component index">
+          <article class="index-card">
+            <h4>Actions</h4>
+            <p>
+              <code>.ds-btn</code><code>--primary</code><code>--ghost</code><code>--quiet</code>
+              <code>--danger</code><code>--small</code><code>--block</code><code>.ds-icon-btn</code>
+            </p>
+          </article>
+          <article class="index-card">
+            <h4>Status</h4>
+            <p>
+              <code>.ds-badge</code><code>--same</code><code>--in</code><code>--moved</code>
+              <code>--possible</code><code>--partial</code><code>--missing</code><code>--local</code>
+              <code>--type</code><code>--muted</code><code>--solid</code><code>.ds-dot</code>
+            </p>
+          </article>
+          <article class="index-card">
+            <h4>Chips &amp; keys</h4>
+            <p><code>.ds-chip</code><code>--accent</code><code>.ds-kbd</code></p>
+          </article>
+          <article class="index-card">
+            <h4>Surfaces</h4>
+            <p>
+              <code>.ds-card</code><code>--quiet</code><code>--glass</code><code>--accent</code>
+              <code>.ds-callout</code><code>--warning</code><code>--danger</code>
+            </p>
+          </article>
+          <article class="index-card">
+            <h4>Forms</h4>
+            <p>
+              <code>.ds-field</code><code>.ds-label</code><code>.ds-hint</code><code>.ds-input</code>
+              <code>.ds-select</code><code>.ds-check</code><code>.ds-switch</code>
+            </p>
+          </article>
+          <article class="index-card">
+            <h4>Navigation</h4>
+            <p>
+              <code>.ds-segmented</code><code>.ds-segment</code><code>.ds-breadcrumbs</code>
+              <code>.ds-crumb</code><code>.ds-crumb-sep</code><code>.ds-search</code>
+            </p>
+          </article>
+          <article class="index-card">
+            <h4>Product patterns</h4>
+            <p>
+              <code>.ds-pane</code><code>.ds-command</code><code>.ds-toast</code><code>.ds-stat</code>
+            </p>
+          </article>
+          <article class="index-card">
+            <h4>Utilities</h4>
+            <p>
+              <code>.ds-scroll</code><code>.ds-code</code><code>.ds-rule</code><code>.ds-row</code>
+              <code>.ds-stack</code><code>.ds-grid</code><code>.ds-muted</code><code>.ds-faint</code>
+              <code>.ds-sr-only</code><code>.ds-scope</code>
+            </p>
+          </article>
+          <article class="index-card">
+            <h4>Water</h4>
+            <p>
+              <code>.ds-sea</code><code>.ds-wave</code><code>--far</code><code>--mid</code>
+              <code>--near</code><code>.ds-ripple-pond</code><code>.ds-glass-demo</code>
+            </p>
+          </article>
+        </div>
 
         <div class="demo-grid">
           <article class="demo">
             <header class="demo-head"><h3>Buttons</h3><span class="demo-tag">.ds-btn</span></header>
-            <div class="demo-body ds-row">
-              <button class="ds-btn ds-btn--primary" type="button">Reveal counterpart</button>
-              <button class="ds-btn" type="button">Same path</button>
-              <button class="ds-btn ds-btn--ghost" type="button">Legend</button>
-              <button class="ds-btn ds-btn--quiet" type="button">Reset</button>
-              <button class="ds-btn ds-btn--danger" type="button">Remove</button>
-              <button class="ds-btn" type="button" disabled>Disabled</button>
-              <button class="ds-btn ds-icon-btn" type="button" aria-label="Search"><svg class="icon"><use href="#i-search"/></svg></button>
+            <div class="demo-body">
+              <div class="ds-row">
+                <button class="ds-btn ds-btn--primary" type="button">Reveal counterpart</button>
+                <button class="ds-btn" type="button">Same path</button>
+                <button class="ds-btn ds-btn--ghost" type="button">Legend</button>
+                <button class="ds-btn ds-btn--quiet" type="button">Reset</button>
+                <button class="ds-btn ds-btn--danger" type="button">Remove</button>
+                <button class="ds-btn" type="button" disabled>Disabled</button>
+                <button class="ds-btn ds-icon-btn" type="button" aria-label="Search"><svg class="icon"><use href="#i-search"/></svg></button>
+              </div>
+              <div class="block-demo">
+                <button class="ds-btn ds-btn--block" type="button">Block action</button>
+              </div>
             </div>
           </article>
 
@@ -290,6 +359,7 @@
             <header class="demo-head"><h3>Verdicts</h3><span class="demo-tag">.ds-badge</span></header>
             <div class="demo-body ds-row">
               <span class="ds-badge ds-badge--same"><span class="ds-dot"></span>Same</span>
+              <span class="ds-badge ds-badge--in"><span class="ds-dot"></span>In Jottacloud</span>
               <span class="ds-badge ds-badge--moved"><span class="ds-dot"></span>Moved</span>
               <span class="ds-badge ds-badge--possible"><span class="ds-dot"></span>Maybe</span>
               <span class="ds-badge ds-badge--partial"><span class="ds-dot"></span>Partial</span>
@@ -297,6 +367,7 @@
               <span class="ds-badge ds-badge--local"><span class="ds-dot"></span>Local only</span>
               <span class="ds-badge ds-badge--type"><span class="ds-dot"></span>Type differs</span>
               <span class="ds-badge ds-badge--muted"><span class="ds-dot"></span>Not in cloud</span>
+              <span class="ds-badge ds-badge--solid">Solid</span>
             </div>
           </article>
 
@@ -306,6 +377,7 @@
               <label class="ds-field">
                 <span class="ds-label">Search scope</span>
                 <input class="ds-input" type="search" placeholder="Search local index…">
+                <span class="ds-hint">Matches names and paths without touching either source.</span>
               </label>
               <label class="ds-field">
                 <span class="ds-label">Water tone</span>
@@ -342,6 +414,51 @@
                 <input type="search" placeholder="Search everywhere" aria-label="Search everywhere">
                 <span class="ds-kbd">⌘K</span>
               </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="demo-grid">
+          <article class="demo">
+            <header class="demo-head"><h3>Chips &amp; keys</h3><span class="demo-tag">.ds-chip · .ds-kbd</span></header>
+            <div class="demo-body ds-stack">
+              <div class="ds-row">
+                <span class="ds-chip"><span class="ds-dot" style="color:var(--ds-green)"></span>In cloud <b>4</b></span>
+                <span class="ds-chip"><span class="ds-dot"></span>Live index</span>
+                <span class="ds-chip ds-chip--accent">2.4M files</span>
+                <span class="ds-chip">87.7%</span>
+              </div>
+              <div class="ds-row">
+                <span class="ds-chip"><span class="ds-dot" style="color:var(--ds-blue)"></span>Moved <b>1</b></span>
+                <span class="ds-chip"><span class="ds-dot" style="color:var(--ds-amber)"></span>Maybe <b>3</b></span>
+                <span class="ds-chip"><span class="ds-dot" style="color:var(--ds-red)"></span>Missing <b>2</b></span>
+                <span class="ds-chip"><span class="ds-dot" style="color:var(--ds-violet)"></span>Local <b>2</b></span>
+              </div>
+              <div class="ds-row">
+                <span class="ds-kbd">⌘K</span>
+                <span class="ds-kbd">⌘F</span>
+                <span class="ds-kbd">Esc</span>
+                <span class="ds-kbd">↵</span>
+              </div>
+              <p class="ds-hint">Chips carry counts and scope; keys stay monospace and compact. The accent chip is reserved for the active scale.</p>
+            </div>
+          </article>
+
+          <article class="demo">
+            <header class="demo-head"><h3>Scroll area</h3><span class="demo-tag">.ds-scroll</span></header>
+            <div class="demo-body">
+              <div class="scroll-demo ds-scroll" tabindex="0" aria-label="Scrollable snapshot list">
+                <div class="scroll-demo__row"><b>Aurora</b><span>Same</span><span>2.4 GB</span></div>
+                <div class="scroll-demo__row"><b>Bathymetry</b><span>Same</span><span>884 MB</span></div>
+                <div class="scroll-demo__row"><b>Currents</b><span>Moved</span><span>1.1 GB</span></div>
+                <div class="scroll-demo__row"><b>Driftwood</b><span>Local only</span><span>318 MB</span></div>
+                <div class="scroll-demo__row"><b>Estuary</b><span>Same</span><span>1.7 GB</span></div>
+                <div class="scroll-demo__row"><b>Fathom</b><span>Partial</span><span>642 MB</span></div>
+                <div class="scroll-demo__row"><b>Gulf stream</b><span>Missing</span><span>—</span></div>
+                <div class="scroll-demo__row"><b>Harbour</b><span>Same</span><span>96 MB</span></div>
+                <div class="scroll-demo__row"><b>Isotherm</b><span>Moved</span><span>2.9 GB</span></div>
+              </div>
+              <p class="ds-hint">10px transparent track, rounded thumb, accent-tinted hover. Firefox falls back to a native thin scrollbar.</p>
             </div>
           </article>
         </div>
@@ -454,10 +571,14 @@
                 <svg class="ds-callout__icon icon"><use href="#i-search"/></svg>
                 <div><strong>Missing ≠ deleted.</strong> Check the index caveat before acting on a red row.</div>
               </div>
+              <div class="ds-callout ds-callout--danger">
+                <svg class="ds-callout__icon icon"><use href="#i-shield"/></svg>
+                <div><strong>Don't treat the index as truth.</strong> Exclusions and permission errors can hide files that still exist.</div>
+              </div>
             </div>
           </article>
 
-          <article class="demo">
+          <article class="demo demo--wide">
             <header class="demo-head"><h3>Stats</h3><span class="demo-tag">.ds-stat</span></header>
             <div class="demo-body stats-demo">
               <div class="ds-stat"><span class="ds-stat__value">1.43M</span><span class="ds-stat__label">cloud files compared</span></div>
@@ -467,17 +588,78 @@
             </div>
           </article>
 
-          <article class="demo">
-            <header class="demo-head"><h3>Cards</h3><span class="demo-tag">.ds-card</span></header>
+          <article class="demo demo--wide">
+            <header class="demo-head"><h3>Card finishes</h3><span class="demo-tag">.ds-card · --accent · --quiet · --glass</span></header>
             <div class="demo-body">
-              <article class="ds-card ds-card--accent" style="padding:20px">
-                <span class="ds-card__eyebrow">Provider</span>
-                <h3>Jottacloud Archive</h3>
-                <p>Snapshot the Archive mountpoint with rclone and compare it against the local index.</p>
-                <div class="ds-row" style="margin-top:14px">
-                  <a class="ds-btn ds-btn--small" href="../docs/guides/jottacloud/">Jottacloud guide <svg class="icon"><use href="#i-arrow"/></svg></a>
+              <div class="card-finishes">
+                <article class="ds-card ds-card--accent">
+                  <span class="ds-card__eyebrow">Accent</span>
+                  <h3>Jottacloud Archive</h3>
+                  <p>Snapshot the Archive mountpoint with rclone and compare it against the local index.</p>
+                  <div class="ds-row" style="margin-top:12px">
+                    <a class="ds-btn ds-btn--small" href="../docs/guides/jottacloud/">Jottacloud guide <svg class="icon"><use href="#i-arrow"/></svg></a>
+                  </div>
+                </article>
+                <article class="ds-card ds-card--quiet">
+                  <span class="ds-card__eyebrow">Quiet</span>
+                  <h3>Read-only by default</h3>
+                  <p>Secondary notes and inline explanations that should not compete with the working surface.</p>
+                </article>
+                <article class="ds-card ds-card--glass">
+                  <span class="ds-card__eyebrow">Glass</span>
+                  <h3>Working surface</h3>
+                  <p>Translucent over water with an 18px backdrop blur, so ambient light stays visible.</p>
+                </article>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="demo-grid demo-grid--wide">
+          <article class="demo">
+            <header class="demo-head"><h3>Code, text &amp; layout</h3><span class="demo-tag">.ds-code · .ds-rule · .ds-row · .ds-stack · .ds-grid</span></header>
+            <div class="demo-body util-grid">
+              <div class="ds-stack">
+                <p class="util-copy">Body copy on <span class="ds-muted">muted secondary text</span> and <span class="ds-faint">faint metadata</span>, with a screen-reader-only label carrying the same meaning.<span class="ds-sr-only"> This sentence is exposed to assistive technology only.</span></p>
+                <hr class="ds-rule">
+                <div class="ds-row">
+                  <span class="ds-chip">row</span>
+                  <span class="ds-chip ds-chip--accent">12px gap</span>
+                  <span class="ds-chip">wraps</span>
                 </div>
-              </article>
+                <div class="ds-grid util-tiles">
+                  <span class="util-tile">.ds-grid</span>
+                  <span class="util-tile">3 columns</span>
+                  <span class="util-tile">8px gap</span>
+                </div>
+              </div>
+              <pre class="ds-code"><code><span class="tok-comment">/* Tokens decide; components inherit. */</span>
+<span class="tok-tag">&lt;article</span> <span class="tok-attr">class</span>=<span class="tok-str">"ds-card ds-card--glass"</span><span class="tok-tag">&gt;</span>
+  <span class="tok-tag">&lt;span</span> <span class="tok-attr">class</span>=<span class="tok-str">"ds-card__eyebrow"</span><span class="tok-tag">&gt;</span>Provider<span class="tok-tag">&lt;/span&gt;</span>
+  <span class="tok-tag">&lt;h3&gt;</span>Jottacloud Archive<span class="tok-tag">&lt;/h3&gt;</span>
+  <span class="tok-tag">&lt;p&gt;</span>Read-only comparison.<span class="tok-tag">&lt;/p&gt;</span>
+<span class="tok-tag">&lt;/article&gt;</span></code></pre>
+            </div>
+          </article>
+
+          <article class="demo">
+            <div class="demo-body os-cover">
+              <div class="os-cover__copy">
+                <span class="show-kicker">Water OS · desktop components</span>
+                <h3>Window chrome, menus, trays, and system apps</h3>
+                <p>The OS concept composes the same tokens and primitives into a glass menu bar, window chrome with a liquid tide line, tabs, sidebar, toolbar, status bar, dock, tray popovers, and resource meters. Its system apps cover Network, Devices, Battery, Calendar, Task Manager, Sound, Terminal, Settings, and Keyboard Shortcuts.</p>
+                <div class="ds-row">
+                  <span class="ds-chip">Menu bar</span>
+                  <span class="ds-chip">Window chrome</span>
+                  <span class="ds-chip">Tabs</span>
+                  <span class="ds-chip">Sidebar</span>
+                  <span class="ds-chip">Status bar</span>
+                  <span class="ds-chip">Dock</span>
+                  <span class="ds-chip">Tray popovers</span>
+                  <span class="ds-chip">Resource meters</span>
+                </div>
+              </div>
+              <a class="ds-btn ds-btn--primary" href="os/">Open the OS components <svg class="icon"><use href="#i-arrow"/></svg></a>
             </div>
           </article>
         </div>

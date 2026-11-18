@@ -1003,6 +1003,7 @@
 
 .ds-stat {
   display: grid;
+  align-content: start;
   gap: 2px;
 }
 
@@ -1167,6 +1168,7 @@
 
 .ds-stack {
   display: grid;
+  align-content: start;
   gap: var(--ds-space-5);
 }
 
