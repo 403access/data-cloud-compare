@@ -181,6 +181,12 @@ of the real explorer application.
   a rounded `--ds-text-3` thumb, and an accent-tinted hover. Firefox gets the
   native thin scrollbar via an `@supports` fallback so it does not lose the
   token colours.
+- Water settings includes a **Font size** choice. **Comfortable** is the
+  default and matches the live explorer demo; **Compact** restores the tighter
+  original concept type, and **Large** adds a step beyond it. The choice is
+  saved as `explorer-os-font-size` (mirrored in `explorer-water-settings`),
+  applies before paint, and scales both fixed OS text and the shared
+  `--ds-text-*` tokens.
 - One viewport-wide water canvas sits above the windows, menu bar, and dock
   (below the command bar and toasts) and listens on `window`, so caustics, cursor
   drips, and click ripples play across every surface, not just the desktop.

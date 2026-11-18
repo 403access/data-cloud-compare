@@ -16,10 +16,12 @@ const THEME_KEY = "explorer-theme";
 const COLUMNS_KEY = "explorer-columns";
 const SIZE_KEY = "explorer-size-mode";
 const PROVIDER_KEY = "explorer-provider";
+const FONT_SIZE_KEY = "explorer-os-font-size";
 
 const TONES = { lagoon: "Lagoon", ocean: "Ocean", deep: "Deep" };
 const SPEEDS = ["calm", "flowing", "rapid"];
 const INTENSITIES = ["subtle", "balanced", "lively"];
+const FONT_SIZES = ["compact", "comfortable", "large"];
 const THEME_MODES = ["system", "light", "dark", "water"];
 const THEME_LABELS = { system: "System", light: "Light", dark: "Dark", water: "Water" };
 
@@ -39,12 +41,13 @@ const WATER_DEFAULTS = {
   tone: "ocean",
   speed: "flowing",
   intensity: "subtle",
+  fontSize: "comfortable",
 };
 
 const COLUMN_DEFS = [
   { id: "name", label: "Name", hint: "File or folder name", width: "minmax(0, 1fr)", required: true },
   { id: "type", label: "Type", hint: "Folder or file extension", width: "52px" },
-  { id: "status", label: "Status", hint: "Comparison result", width: "96px" },
+  { id: "status", label: "Status", hint: "Comparison result", width: "calc(96px * var(--os-font-scale, 1))" },
   { id: "size", label: "Size", hint: "Nested bytes or direct item count", width: "76px" },
   { id: "modified", label: "Modified", hint: "Last modified date", width: "86px" },
 ];
@@ -169,9 +172,19 @@ function writeJSON(key, value) {
   }
 }
 
+function readFontSize() {
+  try {
+    const saved = localStorage.getItem(FONT_SIZE_KEY);
+    return FONT_SIZES.includes(saved) ? saved : null;
+  } catch {
+    return null;
+  }
+}
+
 function readWater() {
   const saved = readJSON(WATER_KEY);
   const design = readJSON(DESIGN_KEY) || {};
+  const storedFontSize = readFontSize();
   if (!saved || typeof saved !== "object") {
     return {
       ...WATER_DEFAULTS,
@@ -179,6 +192,9 @@ function readWater() {
       speed: SPEEDS.includes(design.speed) ? design.speed : WATER_DEFAULTS.speed,
       background: design.background === "sea" ? "sea" : WATER_DEFAULTS.background,
       effects: design.effects !== false,
+      fontSize:
+        storedFontSize ||
+        (FONT_SIZES.includes(design.fontSize) ? design.fontSize : WATER_DEFAULTS.fontSize),
     };
   }
   const pick = (value, allowed, fallback) =>
@@ -194,6 +210,7 @@ function readWater() {
     tone: pick(saved.tone, Object.keys(TONES), WATER_DEFAULTS.tone),
     speed: pick(saved.speed, SPEEDS, WATER_DEFAULTS.speed),
     intensity: pick(saved.intensity, INTENSITIES, WATER_DEFAULTS.intensity),
+    fontSize: storedFontSize || pick(saved.fontSize, FONT_SIZES, WATER_DEFAULTS.fontSize),
   };
 }
 
@@ -273,12 +290,21 @@ function saveWater() {
   writeJSON(WATER_KEY, state.water);
 }
 
+function saveFontSize() {
+  try {
+    localStorage.setItem(FONT_SIZE_KEY, state.water.fontSize);
+  } catch {
+    /* ignore */
+  }
+}
+
 function saveDesignPrefs() {
   writeJSON(DESIGN_KEY, {
     tone: state.water.tone,
     background: state.water.background,
     effects: state.water.effects,
     speed: state.water.speed,
+    fontSize: state.water.fontSize,
     theme: resolvedTheme(),
   });
 }
@@ -353,6 +379,7 @@ function applyAppearance({ save = true } = {}) {
   root.dataset.waterRowMotion = water.rowMotion ? "on" : "off";
   root.dataset.waterMode = state.themeMode;
   root.dataset.waterEffects = activeWater() ? "on" : "off";
+  root.dataset.fontSize = FONT_SIZES.includes(water.fontSize) ? water.fontSize : WATER_DEFAULTS.fontSize;
 
   surface?.setTone(water.tone);
   surface?.setSpeed(water.speed);
@@ -373,6 +400,7 @@ function applyAppearance({ save = true } = {}) {
   });
   if (save) {
     saveWater();
+    saveFontSize();
     saveTheme();
     saveDesignPrefs();
   }
@@ -681,7 +709,7 @@ function renderCalendarApp() {
     return `<button type="button" class="${classes.join(" ")}" data-calendar-app-day="${key}" aria-label="${calendarDayFormat.format(date)}"${key === todayKey ? ' aria-current="date"' : ""}${key === selectedKey ? ' aria-pressed="true"' : ""}>${date.getDate()}</button>`;
   }).join("");
 
-  if (calendarAppSelectedLabel) calendarAppSelectedLabel.textContent = calendarDayFormat.format(calendarAppSelected);
+  if (calendarAppSelectedLabel) calendarAppSelectedLabel.textContent = longDate.format(calendarAppSelected);
 
   const events = CALENDAR_EVENTS.get(selectedKey) || [];
   if (calendarAppEvents) {
