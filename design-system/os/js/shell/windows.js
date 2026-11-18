@@ -1,7 +1,9 @@
 /* Aether OS — window manager
-   Dragging, resizing, focus order, dock state, and the window bounds clamp. */
+   Dragging, resizing, focus order, dock state, the window bounds clamp, and
+   the split or overlap layout used when apps open. */
 
-import { root } from "../core/state.js";
+import { WINDOW_LAYOUTS, root, saveWindowLayout, state } from "../core/state.js";
+import { toast } from "../core/toast.js";
 import { prefersReducedMotion } from "../core/utils.js";
 
 const desktop = document.querySelector("#os-desktop");
@@ -34,6 +36,171 @@ const dockMap = {
   "open-about": "about",
   "open-shortcuts": "shortcuts",
 };
+
+/* --------------------------------------------------------------- layout
+   Split is the default: every open app shares the workspace in a master and
+   stack arrangement. Overlap keeps each app at its designed size and
+   position, so windows may cover one another. */
+
+const TILE_GAP = 10;
+const TILE_MARGIN = 16;
+const TILE_RAIL_GAP = 12;
+const TILE_DOCK_GAP = 12;
+const BOX_PROPS = ["left", "top", "right", "bottom", "width", "height"];
+
+/* Inline geometry saved the moment the desktop enters split mode, so moving
+   back to overlap restores each window exactly where the user left it. */
+const freeformGeometry = new Map();
+let tileOrder = windows.filter(isOpen).map((win) => win.dataset.window);
+
+function isTiling() {
+  return state.windowLayout === "split" && window.innerWidth > 820;
+}
+
+function rememberFreeform(win, refresh = false) {
+  if (!refresh && freeformGeometry.has(win)) return;
+  const saved = {};
+  for (const prop of BOX_PROPS) saved[prop] = win.style.getPropertyValue(prop);
+  freeformGeometry.set(win, saved);
+}
+
+function restoreFreeform() {
+  windows.forEach((win) => {
+    const saved = freeformGeometry.get(win);
+    if (!saved) return;
+    for (const prop of BOX_PROPS) {
+      if (saved[prop]) win.style.setProperty(prop, saved[prop]);
+      else win.style.removeProperty(prop);
+    }
+    freeformGeometry.delete(win);
+  });
+}
+
+function workspaceRect() {
+  const rect = desktop.getBoundingClientRect();
+  const rail = document.querySelector(".os-rail");
+  const dock = document.querySelector(".os-dock-wrap");
+  const railRect = rail && window.getComputedStyle(rail).display !== "none"
+    ? rail.getBoundingClientRect()
+    : null;
+  const dockRect = dock ? dock.getBoundingClientRect() : null;
+  const rightInset = railRect && railRect.width
+    ? rect.right - railRect.left + TILE_RAIL_GAP
+    : TILE_MARGIN;
+  const bottomInset = dockRect && dockRect.height
+    ? rect.bottom - dockRect.top + TILE_DOCK_GAP
+    : TILE_MARGIN;
+  return {
+    left: TILE_MARGIN,
+    top: TILE_MARGIN,
+    width: Math.max(0, Math.round(rect.width - TILE_MARGIN - rightInset)),
+    height: Math.max(0, Math.round(rect.height - TILE_MARGIN - bottomInset)),
+  };
+}
+
+function tileRects(count, area) {
+  if (count === 1) {
+    return [{ left: area.left, top: area.top, width: area.width, height: area.height }];
+  }
+
+  /* Two apps sit side by side; three follow the classic master and stack
+     arrangement. Beyond that a balanced grid keeps every app readable. */
+  if (count <= 3) {
+    const masterWidth = Math.round((area.width - TILE_GAP) / 2);
+    const stackWidth = area.width - masterWidth - TILE_GAP;
+    const stackCount = count - 1;
+    const stackHeight = Math.floor(
+      (area.height - TILE_GAP * (stackCount - 1)) / stackCount,
+    );
+    const rects = [{ left: area.left, top: area.top, width: masterWidth, height: area.height }];
+    for (let index = 0; index < stackCount; index += 1) {
+      rects.push({
+        left: area.left + masterWidth + TILE_GAP,
+        top: area.top + index * (stackHeight + TILE_GAP),
+        width: stackWidth,
+        height: stackHeight,
+      });
+    }
+    return rects;
+  }
+
+  const aspect = area.width / Math.max(1, area.height);
+  const columns = Math.max(
+    2,
+    Math.min(count, Math.round(Math.sqrt(count * aspect))),
+  );
+  const rows = Math.ceil(count / columns);
+  const rowHeight = Math.floor((area.height - TILE_GAP * (rows - 1)) / rows);
+  const rects = [];
+  let placed = 0;
+  for (let row = 0; row < rows; row += 1) {
+    /* Distribute the remaining windows evenly so the last row never holds a
+       single stretched app. */
+    const inRow = Math.ceil((count - placed) / (rows - row));
+    const cellWidth = Math.floor((area.width - TILE_GAP * (inRow - 1)) / inRow);
+    for (let column = 0; column < inRow; column += 1) {
+      rects.push({
+        left: area.left + column * (cellWidth + TILE_GAP),
+        top: area.top + row * (rowHeight + TILE_GAP),
+        width: cellWidth,
+        height: rowHeight,
+      });
+      placed += 1;
+    }
+  }
+  return rects;
+}
+
+function tileWindows() {
+  const open = windows
+    .filter(isOpen)
+    .sort((a, b) => {
+      const left = tileOrder.indexOf(a.dataset.window);
+      const right = tileOrder.indexOf(b.dataset.window);
+      return (left === -1 ? Infinity : left) - (right === -1 ? Infinity : right);
+    });
+  if (!open.length) return;
+
+  const rects = tileRects(open.length, workspaceRect());
+  open.forEach((win, index) => {
+    const rect = rects[index];
+    win.style.left = `${rect.left}px`;
+    win.style.top = `${rect.top}px`;
+    win.style.right = "auto";
+    win.style.bottom = "auto";
+    win.style.width = `${rect.width}px`;
+    win.style.height = `${rect.height}px`;
+  });
+}
+
+export function applyWindowLayout() {
+  root.dataset.windowLayout = state.windowLayout;
+  const tiled = isTiling();
+  windows.forEach((win) => win.classList.toggle("is-tiled", tiled && isOpen(win)));
+  if (!tiled) return;
+  windows.forEach((win) => rememberFreeform(win));
+  tileWindows();
+}
+
+function syncLayoutControls() {
+  document.querySelectorAll("[data-layout-setting]").forEach((select) => {
+    select.value = state.windowLayout;
+  });
+}
+
+export function setWindowLayout(layout) {
+  if (!WINDOW_LAYOUTS.includes(layout)) return;
+  if (layout === state.windowLayout) {
+    syncLayoutControls();
+    return;
+  }
+  if (state.windowLayout === "split") restoreFreeform();
+  state.windowLayout = layout;
+  saveWindowLayout();
+  syncLayoutControls();
+  applyWindowLayout();
+  toast(layout === "split" ? "Split layout" : "Overlap layout");
+}
 
 export function windowById(id) {
   return windows.find((win) => win.dataset.window === id) || null;
@@ -75,11 +242,14 @@ function topmostWindow() {
 export function openWindow(id) {
   const win = windowById(id);
   if (!win) return;
+  if (!tileOrder.includes(id)) tileOrder.push(id);
   win.hidden = false;
   win.classList.remove("is-minimized");
   win.classList.add("is-open");
+  if (isTiling()) rememberFreeform(win);
   focusWindow(win);
   win.focus({ preventScroll: true });
+  applyWindowLayout();
   if (window.innerWidth <= 820) {
     win.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
   }
@@ -89,9 +259,12 @@ export function openWindow(id) {
 export function closeWindow(win) {
   if (!win) return;
   const wasFocused = win.classList.contains("is-focused");
+  const wasMaximized = win.classList.contains("is-maximized");
   restoreMaximized(win);
+  if (wasMaximized && isTiling()) rememberFreeform(win, true);
   win.hidden = true;
   win.classList.remove("is-open", "is-focused", "is-minimized", "is-dragging", "is-resizing");
+  tileOrder = tileOrder.filter((id) => id !== win.dataset.window);
   document.body.classList.remove("is-resizing-window");
   root.style.removeProperty("--os-resize-cursor");
   if (wasFocused) {
@@ -102,6 +275,7 @@ export function closeWindow(win) {
       windows.forEach((other) => other.classList.remove("is-focused"));
     }
   }
+  applyWindowLayout();
   syncDock();
 }
 
@@ -115,6 +289,7 @@ function minimizeWindow(win) {
     if (next) focusWindow(next);
     else if (activeApp) activeApp.textContent = "Desktop";
   }
+  applyWindowLayout();
   syncDock();
 }
 
@@ -138,6 +313,7 @@ function restoreMaximized(win) {
 
 function maximizeWindow(win) {
   if (!win) return;
+  if (isTiling()) return;
   if (win.classList.contains("is-maximized")) {
     restoreMaximized(win);
     focusWindow(win);
@@ -159,7 +335,7 @@ function maximizeWindow(win) {
 }
 
 function startDrag(event, win) {
-  if (window.innerWidth <= 820) return;
+  if (window.innerWidth <= 820 || isTiling()) return;
   if (event.button !== 0 || win.classList.contains("is-maximized")) return;
   if (event.target.closest("button, a, input, select, .os-eq")) return;
   focusWindow(win);
@@ -218,7 +394,7 @@ function addResizeHandles(win) {
 }
 
 function startResize(event, win, direction) {
-  if (window.innerWidth <= 820) return;
+  if (window.innerWidth <= 820 || isTiling()) return;
   if (event.button !== 0 || win.classList.contains("is-maximized")) return;
 
   focusWindow(win);
@@ -314,6 +490,10 @@ windows.forEach((win) => {
 });
 
 window.addEventListener("resize", () => {
+  if (state.windowLayout === "split") {
+    applyWindowLayout();
+    return;
+  }
   if (window.innerWidth <= 820) return;
   const rect = desktop.getBoundingClientRect();
   windows.forEach((win) => {
@@ -325,4 +505,11 @@ window.addEventListener("resize", () => {
     if (left > rect.width - 140) win.style.left = `${Math.max(0, rect.width - 140)}px`;
     if (top > rect.height - 42) win.style.top = `${Math.max(0, rect.height - 42)}px`;
   });
+});
+
+/* ---------------------------------------------------------- layout controls */
+
+syncLayoutControls();
+document.querySelectorAll("[data-layout-setting]").forEach((select) => {
+  select.addEventListener("change", () => setWindowLayout(select.value));
 });

@@ -61,7 +61,7 @@ os/
     shell/
       clock.js           time and date labels
       popovers.js        menu bar menus and tray panels
-      windows.js         drag, resize, focus, dock state
+      windows.js         drag, resize, focus, dock state, split/overlap layout
       menu-bar-usage.js  CPU/RAM/storage meter preferences
       command-catalog.js command inventory and fuzzy file matching
       command-bar.js     command overlay and keyboard selection

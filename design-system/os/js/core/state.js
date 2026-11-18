@@ -13,11 +13,13 @@ export const SIZE_KEY = "explorer-size-mode";
 const PROVIDER_KEY = "explorer-provider";
 const FONT_SIZE_KEY = "explorer-os-font-size";
 const WINDOW_WAVE_KEY = "explorer-os-window-wave";
+const WINDOW_LAYOUT_KEY = "explorer-os-window-layout";
 
 export const TONES = { lagoon: "Lagoon", ocean: "Ocean", deep: "Deep" };
 const SPEEDS = ["calm", "flowing", "rapid"];
 const INTENSITIES = ["subtle", "balanced", "lively"];
 export const WINDOW_WAVES = ["off", "calm", "tide", "surge"];
+export const WINDOW_LAYOUTS = ["split", "overlap"];
 export const FONT_SIZES = ["compact", "comfortable", "large"];
 export const THEME_MODES = ["system", "light", "dark", "water"];
 export const THEME_LABELS = { system: "System", light: "Light", dark: "Dark", water: "Water" };
@@ -113,6 +115,15 @@ function readWindowWave() {
   }
 }
 
+function readWindowLayout() {
+  try {
+    const saved = localStorage.getItem(WINDOW_LAYOUT_KEY);
+    return WINDOW_LAYOUTS.includes(saved) ? saved : "split";
+  } catch {
+    return "split";
+  }
+}
+
 function readWater() {
   const saved = readJSON(WATER_KEY);
   const design = readJSON(DESIGN_KEY) || {};
@@ -179,6 +190,7 @@ export const state = {
   water: readWater(),
   themeMode: readThemeMode(),
   provider: readProvider(),
+  windowLayout: readWindowLayout(),
   hidden: false,
   legendOpen: false,
   activeSide: "local",
@@ -217,6 +229,14 @@ export function saveFontSize() {
 export function saveWindowWave() {
   try {
     localStorage.setItem(WINDOW_WAVE_KEY, state.water.windowWave);
+  } catch {
+    /* ignore */
+  }
+}
+
+export function saveWindowLayout() {
+  try {
+    localStorage.setItem(WINDOW_LAYOUT_KEY, state.windowLayout);
   } catch {
     /* ignore */
   }

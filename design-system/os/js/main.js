@@ -8,7 +8,9 @@ import { startClock } from "./shell/clock.js";
 import { applyResourceDisplay } from "./shell/menu-bar-usage.js";
 import { initTaskManager } from "./apps/task-manager.js";
 import { playerWindow } from "./apps/music.js";
-import { closeWindow, focusWindow, syncDock, windowById } from "./shell/windows.js";
+import {
+  applyWindowLayout, closeWindow, focusWindow, syncDock, windowById,
+} from "./shell/windows.js";
 import "./explorer/interactions.js";
 import "./apps/calendar.js";
 import "./apps/network.js";
@@ -33,4 +35,5 @@ if (explorerStart) {
   focusWindow(explorerStart);
 }
 
+applyWindowLayout();
 syncDock();

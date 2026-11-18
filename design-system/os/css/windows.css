@@ -255,6 +255,27 @@
   display: none;
 }
 
+/* Split layout owns the geometry. Windows keep their chrome, but manual drag,
+   resize, and maximize give way to the shared workspace arrangement. */
+.os-window.is-tiled {
+  min-width: 0;
+  min-height: 0;
+  transition:
+    left 200ms var(--ds-ease-out),
+    top 200ms var(--ds-ease-out),
+    width 200ms var(--ds-ease-out),
+    height 200ms var(--ds-ease-out),
+    border-color var(--ds-motion-fast) ease,
+    box-shadow var(--ds-motion-fast) ease;
+}
+
+.os-window.is-tiled .os-resize-handle { display: none; }
+
+.os-window.is-tiled .os-light--max {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
 body.is-resizing-window,
 body.is-resizing-window * {
   user-select: none;
