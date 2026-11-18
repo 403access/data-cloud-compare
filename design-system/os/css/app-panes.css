@@ -170,10 +170,16 @@
 .osx-searchbar select {
   height: 21px;
   max-width: 96px;
-  padding: 0 17px 0 6px;
+  padding: 0 21px 0 7px;
   border: 1px solid var(--ds-line);
   border-radius: 6px;
-  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: transparent;
+  background-image: var(--ds-select-chevron);
+  background-repeat: no-repeat;
+  background-position: right 7px center;
+  background-size: 8px;
   color: var(--ds-text-2);
   font: inherit;
   font-size: calc(9.5px * var(--os-font-scale, 1));

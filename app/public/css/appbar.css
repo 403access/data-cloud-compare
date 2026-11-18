@@ -203,7 +203,7 @@
   -webkit-appearance: none;
   max-width: 84px;
   height: 100%;
-  padding: 0 16px 0 6px;
+  padding: 0 18px 0 6px;
   border: 0;
   outline: none;
   background: transparent;
@@ -215,7 +215,7 @@
 #theme-select option { background: var(--pane-bg); color: var(--text); }
 .theme-picker-chevron {
   position: absolute;
-  right: 7px;
+  right: 9px;
   top: 50%;
   width: 10px;
   height: 10px;

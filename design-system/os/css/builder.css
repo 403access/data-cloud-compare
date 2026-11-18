@@ -897,6 +897,15 @@
   font: inherit;
   font-size: calc(9px * var(--os-font-scale, 1));
 }
+.osb-field select {
+  padding-right: 24px;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: var(--ds-select-chevron);
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 9px;
+}
 .osb-field input,
 .osb-field textarea { border: 0; }
 .osb-field textarea { resize: vertical; min-height: 38px; line-height: 1.4; }
