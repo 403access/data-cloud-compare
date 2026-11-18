@@ -1,6 +1,6 @@
 /* Aether OS — App Studio system variables
    A live catalog of everything the desktop knows about: system identity,
-   appearance tokens, resources, connected hardware, the explorer model, media,
+   appearance tokens, resources, connected hardware, the comparison model, media,
    the terminal, and the studio itself. Values are recomputed on demand, so a
    project bound to a variable stays in sync with the rest of the OS. */
 
@@ -91,7 +91,7 @@ function windowSummary() {
   };
 }
 
-function explorerStats() {
+function comparisonStats() {
   const count = (side, status) => DATA[side].filter((entry) => entry.status === status).length;
   const dirs = (side) => DATA[side].filter((entry) => entry.isDir).length;
   const files = (side) => DATA[side].filter((entry) => !entry.isDir).length;
@@ -123,7 +123,7 @@ export function systemVariables(studio = null) {
   const now = new Date();
   const totals = taskTotals();
   const bestTask = topProcess();
-  const explorer = explorerStats();
+  const compare = comparisonStats();
   const currentNetwork = networkState.wifi
     ? NETWORKS.find((network) => network.name === networkState.connected) || null
     : null;
@@ -265,37 +265,37 @@ export function systemVariables(studio = null) {
   time("calendar.event_titles", "Selected day agenda", "string", selectedEvents.map((event) => `${event.time} ${event.title}`).join(" · ") || "Nothing scheduled");
   time("calendar.today_events", "Events today", "number", todayEvents.length);
 
-  /* ----------------------------------------------------------- explorer */
-  const exp = group("Explorer model");
-  exp("explorer.provider", "Provider key", "string", state.provider);
-  exp("explorer.provider_label", "Provider", "string", PROVIDERS[state.provider]?.label || state.provider);
-  exp("explorer.remote_root", "Remote root", "string", PROVIDERS[state.provider]?.root || "Archive");
-  exp("explorer.local_root", "Local root", "string", "/mnt/tank");
-  exp("explorer.side", "Active pane", "string", state.activeSide === "local" ? "Local index" : PROVIDERS[state.provider]?.label || "Remote");
-  exp("explorer.local_items", "Local items", "number", DATA.local.length);
-  exp("explorer.remote_items", "Remote items", "number", DATA.remote.length);
-  exp("explorer.local_dirs", "Local folders", "number", explorer.localDirs);
-  exp("explorer.remote_dirs", "Remote folders", "number", explorer.remoteDirs);
-  exp("explorer.local_files", "Local files", "number", explorer.localFiles);
-  exp("explorer.remote_files", "Remote files", "number", explorer.remoteFiles);
-  exp("explorer.local_size", "Local size", "string", "6.41 TB");
-  exp("explorer.remote_size", "Remote size", "string", "6.50 TB");
-  exp("explorer.exact", "Same paths", "number", explorer.exact);
-  exp("explorer.moved", "Moved items", "number", explorer.moved);
-  exp("explorer.possible", "Possible matches", "number", explorer.possible);
-  exp("explorer.partial", "Partial folders", "number", explorer.partial);
-  exp("explorer.missing", "Missing items", "number", explorer.missing);
-  exp("explorer.local_only", "Local only", "number", explorer.localOnly);
-  exp("explorer.type_mismatch", "Type differs", "number", explorer.typeMismatch);
-  exp("explorer.selected", "Selected item", "string", state.selected ? `${state.selected.side === "local" ? "Local" : "Remote"} · ${state.selected.name}` : "None");
-  exp("explorer.columns", "Visible columns", "number", state.columns.size);
-  exp("explorer.columns_list", "Column list", "string", [...state.columns].join(", "));
-  exp("explorer.sort", "Sort", "string", `${state.sort[state.activeSide]?.id || "name"} ${state.sort[state.activeSide]?.dir || "asc"}`);
-  exp("explorer.filters", "Active filters", "number", state.filters.local.size + state.filters.remote.size);
-  exp("explorer.hidden", "Show dotfiles", "boolean", state.hidden);
-  exp("explorer.search", "Search query", "string", state.search[state.activeSide] || "—");
-  exp("explorer.size_mode", "Size mode", "string", state.sizeMode);
-  exp("explorer.side_panel", "Side panel", "string", state.sidePanel ? state.sidePanel[0].toUpperCase() + state.sidePanel.slice(1) : "Closed");
+  /* --------------------------------------------------------- comparison */
+  const exp = group("Data Cloud Compare");
+  exp("compare.provider", "Provider key", "string", state.provider);
+  exp("compare.provider_label", "Provider", "string", PROVIDERS[state.provider]?.label || state.provider);
+  exp("compare.remote_root", "Remote root", "string", PROVIDERS[state.provider]?.root || "Archive");
+  exp("compare.local_root", "Local root", "string", "/mnt/tank");
+  exp("compare.side", "Active pane", "string", state.activeSide === "local" ? "Local index" : PROVIDERS[state.provider]?.label || "Remote");
+  exp("compare.local_items", "Local items", "number", DATA.local.length);
+  exp("compare.remote_items", "Remote items", "number", DATA.remote.length);
+  exp("compare.local_dirs", "Local folders", "number", compare.localDirs);
+  exp("compare.remote_dirs", "Remote folders", "number", compare.remoteDirs);
+  exp("compare.local_files", "Local files", "number", compare.localFiles);
+  exp("compare.remote_files", "Remote files", "number", compare.remoteFiles);
+  exp("compare.local_size", "Local size", "string", "6.41 TB");
+  exp("compare.remote_size", "Remote size", "string", "6.50 TB");
+  exp("compare.exact", "Same paths", "number", compare.exact);
+  exp("compare.moved", "Moved items", "number", compare.moved);
+  exp("compare.possible", "Possible matches", "number", compare.possible);
+  exp("compare.partial", "Partial folders", "number", compare.partial);
+  exp("compare.missing", "Missing items", "number", compare.missing);
+  exp("compare.local_only", "Local only", "number", compare.localOnly);
+  exp("compare.type_mismatch", "Type differs", "number", compare.typeMismatch);
+  exp("compare.selected", "Selected item", "string", state.selected ? `${state.selected.side === "local" ? "Local" : "Remote"} · ${state.selected.name}` : "None");
+  exp("compare.columns", "Visible columns", "number", state.columns.size);
+  exp("compare.columns_list", "Column list", "string", [...state.columns].join(", "));
+  exp("compare.sort", "Sort", "string", `${state.sort[state.activeSide]?.id || "name"} ${state.sort[state.activeSide]?.dir || "asc"}`);
+  exp("compare.filters", "Active filters", "number", state.filters.local.size + state.filters.remote.size);
+  exp("compare.hidden", "Show dotfiles", "boolean", state.hidden);
+  exp("compare.search", "Search query", "string", state.search[state.activeSide] || "—");
+  exp("compare.size_mode", "Size mode", "string", state.sizeMode);
+  exp("compare.side_panel", "Side panel", "string", state.sidePanel ? state.sidePanel[0].toUpperCase() + state.sidePanel.slice(1) : "Closed");
 
   /* -------------------------------------------------------------- media */
   const media = group("Tide Radio & sound");

@@ -4,12 +4,12 @@
 
 import { resolvedTheme, state } from "../core/state.js";
 import { toast } from "../core/toast.js";
-import { providerLabel, providerRoot } from "../explorer/model.js";
+import { providerLabel, providerRoot } from "../compare/model.js";
 import {
   mirrorPanes, openSelected, renderAll, revealSelected, toggleLegend,
   toggleSidePanel,
-} from "../explorer/view.js";
-import { verifySnapshot } from "../explorer/verify.js";
+} from "../compare/view.js";
+import { verifySnapshot } from "../compare/verify.js";
 import {
   resetWaterSettings, setThemeMode, setWaterSetting,
 } from "../features/appearance.js";
@@ -31,6 +31,9 @@ export function runCommand(command) {
   switch (command) {
     case "open-explorer":
       openWindow("explorer");
+      break;
+    case "open-compare":
+      openWindow("compare");
       break;
     case "open-settings":
       openSettings();
@@ -96,45 +99,45 @@ export function runCommand(command) {
       break;
     }
     case "analytics":
-      openWindow("explorer");
+      openWindow("compare");
       toggleSidePanel("analytics");
       break;
     case "columns":
-      openWindow("explorer");
+      openWindow("compare");
       toggleSidePanel("columns");
       break;
     case "shortcuts":
       openWindow("shortcuts");
       break;
     case "mirror":
-      openWindow("explorer");
+      openWindow("compare");
       mirrorPanes();
       break;
     case "up":
-      openWindow("explorer");
+      openWindow("compare");
       toast("Already at the snapshot root", "warn");
       break;
     case "local-root":
-      openWindow("explorer");
+      openWindow("compare");
       toast("Local root · /mnt/tank");
       break;
     case "remote-root":
-      openWindow("explorer");
+      openWindow("compare");
       toast(`${providerLabel()} root · ${providerRoot()}`);
       break;
     case "verify":
       verifySnapshot();
       break;
     case "reveal-selected":
-      openWindow("explorer");
+      openWindow("compare");
       revealSelected();
       break;
     case "open-selected":
-      openWindow("explorer");
+      openWindow("compare");
       openSelected();
       break;
     case "toggle-hidden": {
-      openWindow("explorer");
+      openWindow("compare");
       state.hidden = !state.hidden;
       const input = document.querySelector("[data-hidden-toggle]");
       if (input) input.checked = state.hidden;
@@ -148,7 +151,7 @@ export function runCommand(command) {
       setWaterSetting("effects", !state.water.effects);
       break;
     case "toggle-legend":
-      openWindow("explorer");
+      openWindow("compare");
       toggleLegend();
       break;
     case "reset-water-settings":

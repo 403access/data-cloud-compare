@@ -3,7 +3,7 @@
    to its initial state. Import order is the app boot order. */
 
 import { applyAppearance } from "./features/appearance.js";
-import { renderAll } from "./explorer/view.js";
+import { renderAll } from "./compare/view.js";
 import { startClock } from "./shell/clock.js";
 import { applyResourceDisplay } from "./shell/menu-bar-usage.js";
 import { initTaskManager } from "./apps/task-manager.js";
@@ -13,7 +13,7 @@ import { playerWindow } from "./apps/music.js";
 import {
   applyWindowLayout, closeWindow, focusWindow, syncDock, windowById,
 } from "./shell/windows.js";
-import "./explorer/interactions.js";
+import "./compare/interactions.js";
 import "./apps/calendar.js";
 import "./apps/network.js";
 import "./apps/devices.js";
@@ -21,6 +21,7 @@ import "./apps/battery.js";
 import "./apps/sound.js";
 import "./apps/settings.js";
 import "./apps/terminal.js";
+import "./apps/explorer.js";
 import "./shell/commands.js";
 import "./shell/command-settings.js";
 import "./shell/shortcuts.js";
@@ -35,10 +36,10 @@ initSidebarResize();
 
 if (playerWindow) closeWindow(playerWindow);
 
-const explorerStart = windowById("explorer");
-if (explorerStart) {
-  explorerStart.classList.add("is-open");
-  focusWindow(explorerStart);
+const compareStart = windowById("compare");
+if (compareStart) {
+  compareStart.classList.add("is-open");
+  focusWindow(compareStart);
 }
 
 applyWindowLayout();

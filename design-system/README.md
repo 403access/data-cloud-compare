@@ -148,12 +148,16 @@ when the tab is hidden.
 
 [`os/`](os/index.html) is a desktop-environment concept: a glass menu bar, a
 dock, draggable and resizable windows, and a command bar built around a
-faithful reproduction of the real explorer application.
+faithful reproduction of the real Data Cloud Compare application, plus a
+single-pane Explorer.
 
-- The Explorer window follows `app/src/web`: app bar, two five-column panes,
-  toolbar and breadcrumbs, search with scope and status filters, sortable
-  columns, pane footers, selection status bar, and the columns, details, source,
-  and analytics side panels.
+- The Data Cloud Compare window follows `app/src/web`: app bar, two
+  five-column panes, toolbar and breadcrumbs, search with scope and status
+  filters, sortable columns, pane footers, selection status bar, and the
+  columns, details, source, and analytics side panels.
+- The Explorer window is one plain explorer UI instance: places sidebar,
+  breadcrumbs, search, sortable columns, keyboard navigation, and a read-only
+  local index.
 - Settings is a searchable two-column window with tabs for General, Appearance,
   Displays, Desktop & Dock, Search & Commands, Accessibility, Network,
   Bluetooth, Sound, Battery, Notifications, Privacy & Security, and Storage.
@@ -271,9 +275,9 @@ design-system/
     js/main.js     module entry; imports features and starts the desktop
     js/core/       shared state, fixture data, helpers, toasts
     js/shell/      windows, popovers, clock, command bar, shortcuts
-    js/explorer/   comparison model, view, interactions, verify
+    js/compare/    comparison model, view, interactions, verify
     js/features/   appearance and water settings
-    js/apps/       calendar, network, devices, battery, music, sound, terminal, task manager
+    js/apps/       explorer, calendar, network, devices, battery, music, sound, terminal, task manager
 ```
 
 See [`os/README.md`](os/README.md) for the module map and naming conventions.

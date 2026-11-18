@@ -1,4 +1,4 @@
-/* Aether OS — explorer model
+/* Aether OS — comparison model
    Pure-ish selectors for comparison status, paths, filters, sorting, and the
    counterpart lookup. No rendering lives here. */
 

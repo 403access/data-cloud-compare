@@ -9,7 +9,7 @@ import {
   saveWindowWave, state,
 } from "../core/state.js";
 import { toast } from "../core/toast.js";
-import { renderAll } from "../explorer/view.js";
+import { renderAll } from "../compare/view.js";
 
 /* ------------------------------------------------------------- water */
 

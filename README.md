@@ -11,7 +11,8 @@ The repository also contains the product's public sites:
 - **Design system:** [`design-system/`](design-system/) — the water theme's tokens,
   components, effects, and an interactive component gallery at `/design-system/`.
 - **OS concept:** [`design-system/os/`](design-system/os/) — a desktop environment
-  built from those tokens and components, including a two-pane file explorer.
+  built from those tokens and components, including an Explorer and a two-pane
+  Data Cloud Compare.
 - **Live demo:** [`app/`](app/) — the explorer UI running on a generated synthetic dataset,
   assembled into `/demo/` with no server or SQLite.
 

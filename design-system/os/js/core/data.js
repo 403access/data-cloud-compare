@@ -1,4 +1,4 @@
-/* Aether OS — explorer fixture data
+/* Aether OS — comparison fixture data
    A small two-sided snapshot that stands in for file_indexer.db and archive.json. */
 
 import { gb, mb, kb } from "./utils.js";

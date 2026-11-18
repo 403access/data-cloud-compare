@@ -16,19 +16,24 @@ export const TASK_CATEGORIES = {
 
 export const PROCESS_SEED = [
   {
-    id: "explorer", name: "Explorer", icon: "i-folder-open", cpu: 4.8, memory: 1.2,
-    status: "App", category: "apps", parent: null, pid: 412, threads: 14, uptime: "3d 4h", user: "tide",
-    note: "Draws the file browser, panes, and column views. Its helpers render previews and Quick Look thumbnails.",
+    id: "compare", name: "Data Cloud Compare", icon: "i-sync", cpu: 4.2, memory: 1.1,
+    status: "App", category: "apps", parent: null, pid: 412, threads: 12, uptime: "3d 4h", user: "tide",
+    note: "Draws the two-pane comparison, status chips, and column views. Its helpers render counterparts and detail panels.",
   },
   {
-    id: "explorer-gpu", name: "Explorer GPU", icon: "i-grid", cpu: 1.1, memory: 0.35,
-    status: "App", category: "apps", parent: "explorer", pid: 418, threads: 3, uptime: "3d 4h", user: "tide",
-    note: "Hardware-accelerated drawing for the explorer panes and translucent glass surfaces.",
+    id: "compare-gpu", name: "Data Cloud Compare GPU", icon: "i-grid", cpu: 1.0, memory: 0.32,
+    status: "App", category: "apps", parent: "compare", pid: 418, threads: 3, uptime: "3d 4h", user: "tide",
+    note: "Hardware-accelerated drawing for the comparison panes and translucent glass surfaces.",
   },
   {
-    id: "explorer-helper", name: "Explorer Helper", icon: "i-layers", cpu: 0.8, memory: 0.25,
-    status: "App", category: "apps", parent: "explorer", pid: 421, threads: 5, uptime: "3d 4h", user: "tide",
+    id: "compare-helper", name: "Data Cloud Compare Helper", icon: "i-layers", cpu: 0.7, memory: 0.24,
+    status: "App", category: "apps", parent: "compare", pid: 421, threads: 5, uptime: "3d 4h", user: "tide",
     note: "Background helper that reads folder listings and keeps the two comparison panes in step.",
+  },
+  {
+    id: "explorer", name: "Explorer", icon: "i-folder-open", cpu: 0.6, memory: 0.22,
+    status: "App", category: "apps", parent: null, pid: 414, threads: 4, uptime: "1d 6h", user: "tide",
+    note: "Shows a single-pane file browser with places, breadcrumbs, and the local read-only index.",
   },
   {
     id: "quick-look", name: "Quick Look", icon: "i-file", cpu: 0.2, memory: 0.18,
@@ -113,7 +118,7 @@ export const PROCESS_SEED = [
   {
     id: "jottacloud-index", name: "jottacloud-index", icon: "i-database", cpu: 1.2, memory: 0.7,
     status: "Background", category: "indexing", parent: "jottacloud-sync", pid: 1911, threads: 5, uptime: "9h 22m", user: "tide",
-    note: "Builds the searchable side of the archive snapshot used by the explorer panes.",
+    note: "Builds the searchable side of the archive snapshot used by the comparison panes.",
   },
   {
     id: "kernel-task", name: "kernel_task", icon: "i-layers", cpu: 3.2, memory: 1.5,

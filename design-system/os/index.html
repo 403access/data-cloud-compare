@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Aether OS — a desktop concept · Data Cloud Compare</title>
-  <meta name="description" content="A concept desktop environment built entirely from the Water design system: glass windows, a two-pane file explorer, a dock, menus, and a command bar.">
+  <meta name="description" content="A concept desktop environment built entirely from the Water design system: glass windows, a single-pane Explorer, a two-pane Data Cloud Compare, a dock, menus, and a command bar.">
   <meta name="theme-color" content="#031922">
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
   <script src="js/boot-theme.js"></script>
@@ -116,13 +116,14 @@
             <path d="m15.5 19 2.2 2.2 4.4-4.8" class="logo-check"/>
           </svg>
         </button>
-        <span class="os-menubar__app" data-active-app>Explorer</span>
+        <span class="os-menubar__app" data-active-app>Data Cloud Compare</span>
 
         <nav class="os-menus" aria-label="Application menus">
           <div class="os-menu-wrap">
             <button class="os-menu" type="button" aria-haspopup="menu" aria-expanded="false">File</button>
             <div class="os-menu__pop" role="menu" hidden>
               <button type="button" role="menuitem" data-cmd="open-explorer"><svg class="icon"><use href="#i-folder"/></svg>New Explorer window</button>
+              <button type="button" role="menuitem" data-cmd="open-compare"><svg class="icon"><use href="#i-sync"/></svg>New Data Cloud Compare window</button>
               <button type="button" role="menuitem" data-cmd="verify"><svg class="icon"><use href="#i-shield"/></svg>Verify snapshot</button>
               <button type="button" role="menuitem" data-cmd="toggle-hidden"><svg class="icon"><use href="#i-file"/></svg>Toggle dotfiles</button>
               <hr>
@@ -159,6 +160,7 @@
             <button class="os-menu" type="button" aria-haspopup="menu" aria-expanded="false">Window</button>
             <div class="os-menu__pop" role="menu" hidden>
               <button type="button" role="menuitem" data-cmd="open-explorer"><svg class="icon"><use href="#i-folder"/></svg>Explorer</button>
+              <button type="button" role="menuitem" data-cmd="open-compare"><svg class="icon"><use href="#i-sync"/></svg>Data Cloud Compare</button>
               <button type="button" role="menuitem" data-cmd="open-settings"><svg class="icon"><use href="#i-gear"/></svg>Settings</button>
               <button type="button" role="menuitem" data-cmd="open-network"><svg class="icon"><use href="#i-globe"/></svg>Network</button>
               <button type="button" role="menuitem" data-cmd="open-devices"><svg class="icon"><use href="#i-bluetooth"/></svg>Devices</button>
@@ -384,14 +386,14 @@
       <div class="os-rail" aria-label="Desktop widgets">
         <div class="os-desk-icons">
           <button class="os-desk-icon" type="button" data-cmd="open-explorer">
-            <span class="os-desk-icon__tile" style="--tile:#38d6ff"><svg class="icon"><use href="#i-folder"/></svg></span>
-            <span>Tank ⇄ Archive</span>
-            <small>Two-pane explorer</small>
+            <span class="os-desk-icon__tile" style="--tile:#38d6ff"><svg class="icon"><use href="#i-folder-open"/></svg></span>
+            <span>Explorer</span>
+            <small>Files and folders</small>
           </button>
-          <button class="os-desk-icon" type="button" data-cmd="open-explorer">
-            <span class="os-desk-icon__tile" style="--tile:#c3a8ff"><svg class="icon"><use href="#i-cloud"/></svg></span>
-            <span>Jottacloud</span>
-            <small>Archive snapshot</small>
+          <button class="os-desk-icon" type="button" data-cmd="open-compare">
+            <span class="os-desk-icon__tile" style="--tile:#c3a8ff"><svg class="icon"><use href="#i-sync"/></svg></span>
+            <span>Data Cloud Compare</span>
+            <small>Local ⇄ cloud snapshot</small>
           </button>
           <button class="os-desk-icon" type="button" data-cmd="open-settings">
             <span class="os-desk-icon__tile" style="--tile:#5ef2b0"><svg class="icon"><use href="#i-gear"/></svg></span>
@@ -434,25 +436,25 @@
         </div>
       </div>
 
-      <!-- ------------------------------------------------------------ explorer -->
-      <section class="os-window os-window--explorer is-open is-focused" id="win-explorer" data-window="explorer" data-title="Tank ⇄ Jottacloud" role="dialog" aria-label="Tank ⇄ Jottacloud explorer" tabindex="-1">
+      <!-- --------------------------------------------------- data cloud compare -->
+      <section class="os-window os-window--compare is-open is-focused" id="win-compare" data-window="compare" data-title="Data Cloud Compare" role="dialog" aria-label="Data Cloud Compare" tabindex="-1">
         <header class="os-titlebar" data-drag-handle>
           <div class="os-lights">
-            <button class="os-light os-light--close" type="button" data-window-action="close" aria-label="Close explorer" title="Close"></button>
-            <button class="os-light os-light--min" type="button" data-window-action="minimize" aria-label="Minimise explorer" title="Minimise"></button>
-            <button class="os-light os-light--max" type="button" data-window-action="maximize" aria-label="Maximise explorer" title="Maximise"></button>
+            <button class="os-light os-light--close" type="button" data-window-action="close" aria-label="Close Data Cloud Compare" title="Close"></button>
+            <button class="os-light os-light--min" type="button" data-window-action="minimize" aria-label="Minimise Data Cloud Compare" title="Minimise"></button>
+            <button class="os-light os-light--max" type="button" data-window-action="maximize" aria-label="Maximise Data Cloud Compare" title="Maximise"></button>
           </div>
           <div class="os-titlebar__title">
-            <span class="os-app-mark os-app-mark--explorer"><svg class="icon"><use href="#i-folder-open"/></svg></span>
-            <b>Tank ⇄ Jottacloud</b>
-            <span class="os-titlebar__sub">Two-pane filesystem explorer</span>
+            <span class="os-app-mark os-app-mark--compare"><svg class="icon"><use href="#i-sync"/></svg></span>
+            <b>Data Cloud Compare</b>
+            <span class="os-titlebar__sub">Tank ⇄ Jottacloud · two-pane comparison</span>
           </div>
           <div class="os-titlebar__actions">
             <span class="ds-badge ds-badge--same"><span class="ds-dot"></span>Live</span>
           </div>
         </header>
 
-        <div class="osx-app" data-explorer>
+        <div class="osx-app" data-compare>
           <header class="osx-appbar">
             <div class="osx-brand">
               <span class="osx-brand-icon" aria-hidden="true">
@@ -465,7 +467,7 @@
               </span>
               <div class="osx-brand-text">
                 <h1>Tank <span>⇄</span> <span data-provider-label>Jottacloud</span></h1>
-                <p>Two-pane filesystem explorer</p>
+                <p>Local index vs remote snapshot</p>
               </div>
             </div>
 
@@ -663,7 +665,7 @@
               data-resize-min="240"
               data-resize-max="560"
               data-resize-min-main="420"
-              data-resize-label="Explorer side panel">
+              data-resize-label="Data Cloud Compare side panel">
               <header class="osx-side-head">
                 <div>
                   <h2 data-side-title>Columns</h2>
@@ -682,6 +684,85 @@
             <button class="osx-btn osx-btn--primary" type="button" data-cmd="reveal-selected" disabled>Reveal counterpart</button>
           </footer>
         </div>
+      </section>
+
+      <!-- ----------------------------------------------------------- explorer -->
+      <section class="os-window os-window--explorer" id="win-explorer" data-window="explorer" data-title="Explorer" role="dialog" aria-label="Explorer" tabindex="-1" hidden>
+        <header class="os-titlebar" data-drag-handle>
+          <div class="os-lights">
+            <button class="os-light os-light--close" type="button" data-window-action="close" aria-label="Close Explorer" title="Close"></button>
+            <button class="os-light os-light--min" type="button" data-window-action="minimize" aria-label="Minimise Explorer" title="Minimise"></button>
+            <button class="os-light os-light--max" type="button" data-window-action="maximize" aria-label="Maximise Explorer" title="Maximise"></button>
+          </div>
+          <div class="os-titlebar__title">
+            <span class="os-app-mark os-app-mark--explorer"><svg class="icon"><use href="#i-folder-open"/></svg></span>
+            <b>Explorer</b>
+            <span class="os-titlebar__sub" data-file-title>/mnt/tank</span>
+          </div>
+          <div class="os-titlebar__actions">
+            <span class="ds-badge ds-badge--muted"><span class="ds-dot" style="color:var(--ds-green)"></span>Local</span>
+          </div>
+        </header>
+
+        <div class="os-file" data-file-explorer>
+          <aside class="os-sidebar os-file-sidebar" aria-label="Places">
+            <div class="os-sidebar__group">
+              <h3>Favourites</h3>
+              <button class="os-side-item is-active" type="button" data-file-place="/mnt/tank">
+                <svg class="icon"><use href="#i-local"/></svg><span>Local index</span>
+              </button>
+              <button class="os-side-item" type="button" data-file-place="/mnt/tank/Projects">
+                <svg class="icon"><use href="#i-folder"/></svg><span>Projects</span>
+              </button>
+            </div>
+            <div class="os-sidebar__group">
+              <h3>Locations</h3>
+              <div class="os-file-places" data-file-places></div>
+            </div>
+            <div class="os-sidebar__foot">
+              <span class="ds-badge ds-badge--muted"><span class="ds-dot"></span>Read-only snapshot</span>
+              <p>Files come from the local index. Nothing is written.</p>
+            </div>
+          </aside>
+
+          <div class="os-file-main">
+            <div class="osx-pane-toolbar">
+              <div class="osx-nav">
+                <button class="osx-btn osx-btn--icon" type="button" data-file-nav="back" title="Back" aria-label="Back" disabled><svg class="icon"><use href="#i-chevron-left"/></svg></button>
+                <button class="osx-btn osx-btn--icon" type="button" data-file-nav="forward" title="Forward" aria-label="Forward" disabled><svg class="icon"><use href="#i-chevron-right"/></svg></button>
+                <button class="osx-btn osx-btn--icon" type="button" data-file-nav="up" title="Up one folder" aria-label="Up one folder"><svg class="icon"><use href="#i-chevron-up"/></svg></button>
+              </div>
+              <nav class="osx-breadcrumbs" data-file-crumbs aria-label="Path"></nav>
+              <label class="osx-toggle" title="Show dotfiles">
+                <input type="checkbox" data-file-hidden>
+                <span class="osx-toggle-track"><span class="osx-toggle-thumb"></span></span>
+                <span>Hidden</span>
+              </label>
+            </div>
+
+            <div class="osx-searchbar">
+              <svg class="icon osx-search-icon"><use href="#i-search"/></svg>
+              <input type="search" data-file-search placeholder="Search this folder…" aria-label="Search this folder" autocomplete="off" spellcheck="false">
+            </div>
+
+            <div class="osx-column-head os-file-head" data-file-head>
+              <button type="button" data-file-sort="name" class="is-sorted">Name</button>
+              <button type="button" data-file-sort="type">Type</button>
+              <button type="button" data-file-sort="size">Size</button>
+              <button type="button" data-file-sort="modified">Modified</button>
+            </div>
+            <div class="osx-rows os-file-rows ds-scroll" data-file-rows tabindex="0" role="listbox" aria-label="Files and folders"></div>
+            <footer class="osx-pane-foot">
+              <span data-file-summary>Loading…</span>
+              <span class="os-file-selected" data-file-selected></span>
+            </footer>
+          </div>
+        </div>
+
+        <footer class="osx-statusbar">
+          <div class="osx-selection" data-file-status><span class="muted">Select an item to see details.</span></div>
+          <button class="osx-btn osx-btn--primary" type="button" data-file-compare disabled>Open in Data Cloud Compare</button>
+        </footer>
       </section>
 
 <!-- ------------------------------------------------------------- settings -->
@@ -955,7 +1036,7 @@
               <section class="os-settings-card">
                 <h3>Look</h3>
                 <label class="os-settings-row">
-                  <span class="os-settings-row__text"><b>Font size</b><small>Comfortable matches the live explorer demo.</small></span>
+                  <span class="os-settings-row__text"><b>Font size</b><small>Comfortable matches the live Data Cloud Compare demo.</small></span>
                   <select class="osx-select" data-water-setting="fontSize" aria-label="Font size">
                     <option value="compact">Compact</option>
                     <option value="comfortable" selected>Comfortable</option>
@@ -1168,14 +1249,14 @@
 
               <section class="os-settings-card">
                 <h3>Desktop</h3>
-                <div class="os-settings-row">
+                <label class="os-settings-row">
                   <span class="os-settings-row__text"><b>Widgets</b><small>Show the clock, verification, and resource widgets.</small></span>
                   <span class="ds-switch"><input type="checkbox" data-os-setting="desktopWidgets" checked aria-label="Widgets"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
-                </div>
-                <div class="os-settings-row">
-                  <span class="os-settings-row__text"><b>Show items on desktop</b><small>Shortcuts for the explorer, cloud, and App Studio.</small></span>
+                </label>
+                <label class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Show items on desktop</b><small>Shortcuts for Explorer, Data Cloud Compare, and App Studio.</small></span>
                   <span class="ds-switch"><input type="checkbox" data-os-setting="desktopIcons" aria-label="Show items on desktop"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
-                </div>
+                </label>
               </section>
             </section>
 
@@ -1380,8 +1461,8 @@
               <section class="os-settings-card">
                 <h3>Application notifications</h3>
                 <div class="os-settings-row">
-                  <span class="os-settings-row__text"><b>Explorer</b><small>Verification and transfer alerts.</small></span>
-                  <span class="ds-switch"><input type="checkbox" data-os-setting="appExplorer" checked aria-label="Explorer notifications"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                  <span class="os-settings-row__text"><b>Data Cloud Compare</b><small>Verification and transfer alerts.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="appExplorer" checked aria-label="Data Cloud Compare notifications"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
                 </div>
                 <div class="os-settings-row">
                   <span class="os-settings-row__text"><b>Tide Radio</b><small>Track changes and playback.</small></span>
@@ -1698,7 +1779,7 @@
           <section class="os-app-section">
             <h3>Largest consumers</h3>
             <div class="os-consumer">
-              <div class="os-consumer__row"><span>Explorer</span><b>34%</b></div>
+              <div class="os-consumer__row"><span>Data Cloud Compare</span><b>34%</b></div>
               <span class="os-consumer__bar" aria-hidden="true"><i style="--value:34%"></i></span>
             </div>
             <div class="os-consumer">
@@ -2203,13 +2284,13 @@
           <div class="os-titlebar__title">
             <span class="os-app-mark os-app-mark--settings"><svg class="icon"><use href="#i-keyboard"/></svg></span>
             <b>Keyboard shortcuts</b>
-            <span class="os-titlebar__sub">Explorer key map</span>
+            <span class="os-titlebar__sub">Data Cloud Compare key map</span>
           </div>
           <div class="os-titlebar__actions"><span class="ds-chip">Simple (default)</span></div>
         </header>
         <div class="osx-shortcuts ds-scroll">
           <section>
-            <h3>Explorer</h3>
+            <h3>Data Cloud Compare</h3>
             <div class="osx-shortcut-row"><span>Focus local pane</span><span class="osx-keys"><kbd>⌘</kbd><kbd>1</kbd></span></div>
             <div class="osx-shortcut-row"><span>Focus remote pane</span><span class="osx-keys"><kbd>⌘</kbd><kbd>2</kbd></span></div>
             <div class="osx-shortcut-row"><span>Search the active pane</span><span class="osx-keys"><kbd>⌘</kbd><kbd>F</kbd></span></div>
@@ -2259,7 +2340,7 @@
           </div>
           <div class="os-about__actions">
             <a class="ds-btn ds-btn--primary ds-btn--small" href="../">Open the design system <svg class="icon"><use href="#i-arrow-right"/></svg></a>
-            <a class="ds-btn ds-btn--small ds-btn--ghost" href="../../demo/">Try the real explorer</a>
+            <a class="ds-btn ds-btn--small ds-btn--ghost" href="../../demo/">Try the real Data Cloud Compare</a>
           </div>
           <span class="os-about__fine">Built with plain CSS and JavaScript. No images, no frameworks.</span>
         </div>
@@ -2268,8 +2349,11 @@
 
     <div class="os-dock-wrap" aria-label="Dock">
       <div class="os-dock" role="toolbar" aria-label="Applications">
-        <button class="os-dock__item is-open is-running" type="button" data-cmd="open-explorer" data-label="Explorer" aria-label="Explorer">
+        <button class="os-dock__item" type="button" data-cmd="open-explorer" data-label="Explorer" aria-label="Explorer">
           <span class="os-dock__tile" style="--tile:#38d6ff"><svg class="icon"><use href="#i-folder-open"/></svg></span>
+        </button>
+        <button class="os-dock__item is-open is-running" type="button" data-cmd="open-compare" data-label="Data Cloud Compare" aria-label="Data Cloud Compare">
+          <span class="os-dock__tile" style="--tile:#c3a8ff"><svg class="icon"><use href="#i-sync"/></svg></span>
         </button>
         <button class="os-dock__item" type="button" data-cmd="open-command" data-label="Search" aria-label="Search">
           <span class="os-dock__tile" style="--tile:#9ec5ce"><svg class="icon"><use href="#i-search"/></svg></span>

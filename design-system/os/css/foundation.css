@@ -19,7 +19,7 @@ html {
 }
 
 /* Comfortable is the default so the OS reads at the same scale as the live
-   explorer demo. Compact restores the original, tighter concept type. */
+   Data Cloud Compare demo. Compact restores the original, tighter concept type. */
 html {
   --os-font-scale: 1.14;
 }

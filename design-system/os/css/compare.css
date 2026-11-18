@@ -1,4 +1,4 @@
-/* ------------------------------------------------------------- explorer */
+/* ---------------------------------------------------------- comparison */
 
 .os-explorer {
   display: flex;
@@ -151,7 +151,7 @@
 .os-sidebar__meter .os-meter { margin-top: 0; height: 4px; }
 .os-sidebar__foot .ds-btn { justify-content: center; }
 
-/* --------------------------------------------------------- explorer main */
+/* ---------------------------------------------------- comparison main */
 
 .os-main {
   display: flex;

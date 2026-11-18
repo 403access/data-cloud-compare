@@ -1,4 +1,4 @@
-/* Aether OS — explorer view
+/* Aether OS — comparison view
    Renders the two panes, the status bar, the side panels, and the small
    selection actions the rendered controls need to call back into. */
 
@@ -213,7 +213,7 @@ export function selectEntry(side, name, { scroll = false } = {}) {
 }
 
 export function revealSelected() {
-  openWindow("explorer");
+  openWindow("compare");
   const entry = selectedEntry();
   if (!entry || !state.selected) {
     toast("Select a file or folder first", "warn");
@@ -253,7 +253,7 @@ export function revealSelected() {
 }
 
 export function openSelected() {
-  openWindow("explorer");
+  openWindow("compare");
   const entry = selectedEntry();
   if (!entry) {
     toast("Select a file or folder first", "warn");
@@ -267,7 +267,7 @@ export function openSelected() {
 }
 
 export function mirrorPanes() {
-  openWindow("explorer");
+  openWindow("compare");
   document.querySelectorAll(".osx-pane").forEach((pane) => {
     pane.classList.remove("is-flash");
     void pane.offsetWidth;
@@ -281,9 +281,9 @@ export function mirrorPanes() {
 
 export function setSidePanel(mode, side = state.activeSide, entryName = state.selected?.name) {
   const panel = document.querySelector("[data-side-panel]");
-  const win = windowById("explorer");
+  const win = windowById("compare");
   if (!panel || !win) return;
-  if (mode) openWindow("explorer");
+  if (mode) openWindow("compare");
   if (!mode) {
     state.sidePanel = null;
     panel.hidden = true;

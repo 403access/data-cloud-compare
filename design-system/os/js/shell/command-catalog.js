@@ -1,5 +1,5 @@
 /* Aether OS — command catalog
-   Builds the command bar inventory from the explorer, system apps, appearance,
+   Builds the command bar inventory from the comparison, system apps, appearance,
    columns, sort, and filters, then merges fuzzy file matches. */
 
 import {
@@ -10,10 +10,10 @@ import { toast } from "../core/toast.js";
 import {
   baseEntries, counterpartTarget, entryParent, filterOptions, iconHtml,
   providerLabel, providerRoot, selectedEntry, statusFilters, statusMeta,
-} from "../explorer/model.js";
+} from "../compare/model.js";
 import {
   mirrorPanes, openSelected, renderAll, revealSelected,
-  setActiveSide, setSidePanel, toggleLegend, toggleSidePanel,} from "../explorer/view.js";
+  setActiveSide, setSidePanel, toggleLegend, toggleSidePanel,} from "../compare/view.js";
 import {
   closeWindow, isOpen, openWindow, windowById,
 } from "./windows.js";
@@ -92,6 +92,8 @@ export function commandIcon(name) {
     calendar: "i-calendar",
     taskmanager: "i-activity",
     builder: "i-studio",
+    explorer: "i-folder-open",
+    compare: "i-sync",
   };
   return ids[name] || "i-command";
 }
@@ -129,7 +131,7 @@ function commandCatalog() {
     subtitle: "Move keyboard focus to the local index",
     keywords: "left side",
     run: () => {
-      openWindow("explorer");
+      openWindow("compare");
       setActiveSide("local");
       document.querySelector('[data-rows="local"]')?.focus();
     },
@@ -140,7 +142,7 @@ function commandCatalog() {
     subtitle: "Move keyboard focus to the remote snapshot",
     keywords: "right side cloud",
     run: () => {
-      openWindow("explorer");
+      openWindow("compare");
       setActiveSide("remote");
       document.querySelector('[data-rows="remote"]')?.focus();
     },
@@ -208,7 +210,7 @@ function commandCatalog() {
     subtitle: "Focus the search field in the active pane",
     keywords: "find filter",
     run: () => {
-      openWindow("explorer");
+      openWindow("compare");
       const input = document.querySelector(`[data-search="${active}"]`);
       input?.focus();
       input?.select();
@@ -219,7 +221,7 @@ function commandCatalog() {
     subtitle: "Look for files and folders under /mnt/tank",
     keywords: "find local",
     run: () => {
-      openWindow("explorer");
+      openWindow("compare");
       setActiveSide("local");
       const input = document.querySelector('[data-search="local"]');
       input?.focus();
@@ -231,7 +233,7 @@ function commandCatalog() {
     subtitle: "Look for files and folders in the remote snapshot",
     keywords: "find remote cloud",
     run: () => {
-      openWindow("explorer");
+      openWindow("compare");
       setActiveSide("remote");
       const input = document.querySelector('[data-search="remote"]');
       input?.focus();
@@ -246,7 +248,7 @@ function commandCatalog() {
     keywords: "hidden files visibility",
     check: state.hidden,
     run: () => {
-      openWindow("explorer");
+      openWindow("compare");
       state.hidden = !state.hidden;
       const input = document.querySelector("[data-hidden-toggle]");
       if (input) input.checked = state.hidden;
@@ -266,7 +268,7 @@ function commandCatalog() {
     keywords: "help key colours colors",
     check: state.legendOpen,
     run: () => {
-      openWindow("explorer");
+      openWindow("compare");
       toggleLegend();
     },
   });
@@ -398,6 +400,20 @@ function commandCatalog() {
   });
   const settingsWindow = windowById("settings");
   const settingsOpen = isOpen(settingsWindow);
+  addCommand(items, groups, "System", "Open Explorer", {
+    key: "open-explorer",
+    icon: "explorer",
+    subtitle: "Browse files and folders in the local index",
+    keywords: "finder files folders browse local",
+    run: () => openWindow("explorer"),
+  });
+  addCommand(items, groups, "System", "Open Data Cloud Compare", {
+    key: "open-compare",
+    icon: "compare",
+    subtitle: "Compare the local index with the remote snapshot",
+    keywords: "compare diff jottacloud google drive cloud snapshot",
+    run: () => openWindow("compare"),
+  });
   addCommand(items, groups, "System", settingsOpen ? "Close settings" : "Open settings", {
     key: "toggle-water-panel",
     icon: "settings",

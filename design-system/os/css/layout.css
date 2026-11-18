@@ -9,7 +9,7 @@
 
 @media (max-width: 1179px) {
   .os-rail { display: none; }
-  .os-window--explorer {
+  .os-window--compare {
     width: calc(100vw - 32px);
     height: min(650px, calc(100dvh - 180px));
   }
@@ -18,7 +18,7 @@
 
 @media (max-width: 980px) {
   .os-menus { display: none; }
-  .os-window--explorer { height: calc(100dvh - 168px); }
+  .os-window--compare { height: calc(100dvh - 168px); }
   .os-sidebar { width: 162px; }
   .os-toolbar { flex-wrap: wrap; }
   .os-crumbs { order: 4; flex-basis: 100%; }
@@ -61,7 +61,7 @@
   .os-window--about { height: 300px !important; min-height: 300px; }
   .os-window--terminal { height: 360px !important; min-height: 360px; }
   .os-window--settings { height: 600px !important; min-height: 500px; }
-  .os-window--explorer { height: auto !important; min-height: 0; }
+  .os-window--compare { height: auto !important; min-height: 0; }
   .os-sidebar { display: none; }
   .os-inspector { display: none !important; }
   .os-panes { grid-template-columns: 1fr; overflow: visible; }

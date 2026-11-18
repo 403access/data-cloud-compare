@@ -164,7 +164,7 @@ function terminalHelp() {
     ["tank compare [--provider jottacloud|gdrive]", "diff the local index against a read-only snapshot"],
     ["ls", "list the top level of the snapshot"],
     ["cat README.md", "print a short file from the demo snapshot"],
-    ["open <app>", "focus a window, for example explorer or settings"],
+    ["open <app>", "focus a window, for example explorer, compare or settings"],
     ["clear", "clear the scrollback"],
     ["whoami · pwd · date", "the usual"],
     ["exit", "close the terminal"],

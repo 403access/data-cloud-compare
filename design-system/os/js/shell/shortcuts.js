@@ -5,7 +5,7 @@
 import { state } from "../core/state.js";
 import {
   setActiveSide, toggleLegend, toggleSidePanel,
-} from "../explorer/view.js";
+} from "../compare/view.js";
 import { closeCommand, isCommandOpen, openCommand } from "./command-bar.js";
 import { runCommand } from "./commands.js";
 import { closeMenus, closeTrays } from "./popovers.js";
@@ -25,7 +25,7 @@ document.addEventListener("keydown", (event) => {
 
   if (modifier && event.key.toLowerCase() === "f") {
     event.preventDefault();
-    openWindow("explorer");
+    openWindow("compare");
     const input = document.querySelector(`[data-search="${state.activeSide}"]`);
     input?.focus();
     input?.select();
@@ -40,7 +40,7 @@ document.addEventListener("keydown", (event) => {
 
   if (modifier && event.key === "1") {
     event.preventDefault();
-    openWindow("explorer");
+    openWindow("compare");
     setActiveSide("local");
     document.querySelector('[data-rows="local"]')?.focus();
     return;
@@ -48,7 +48,7 @@ document.addEventListener("keydown", (event) => {
 
   if (modifier && event.key === "2") {
     event.preventDefault();
-    openWindow("explorer");
+    openWindow("compare");
     setActiveSide("remote");
     document.querySelector('[data-rows="remote"]')?.focus();
     return;
@@ -56,14 +56,14 @@ document.addEventListener("keydown", (event) => {
 
   if (modifier && event.shiftKey && event.key.toLowerCase() === "c") {
     event.preventDefault();
-    openWindow("explorer");
+    openWindow("compare");
     toggleSidePanel("columns");
     return;
   }
 
   if (modifier && event.shiftKey && event.key.toLowerCase() === "a") {
     event.preventDefault();
-    openWindow("explorer");
+    openWindow("compare");
     toggleSidePanel("analytics");
     return;
   }

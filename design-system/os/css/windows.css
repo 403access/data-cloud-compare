@@ -282,7 +282,7 @@ body.is-resizing-window * {
   cursor: var(--os-resize-cursor, default) !important;
 }
 
-.os-window--explorer {
+.os-window--compare {
   top: 16px;
   left: 16px;
   width: min(1080px, calc(100vw - 336px));
@@ -455,6 +455,7 @@ body.is-resizing-window * {
 }
 
 .os-app-mark .icon { width: 13px; height: 13px; }
+.os-app-mark--compare { --app: var(--ds-violet); }
 .os-app-mark--explorer { --app: var(--ds-accent); }
 .os-app-mark--settings { --app: var(--ds-green); }
 .os-app-mark--terminal { --app: var(--ds-blue); }

@@ -14,7 +14,7 @@ let taskProcesses = PROCESS_SEED.map((task) => ({ ...task }));
 let selectedTask = null;
 let taskFilter = "all";
 let taskSidebarMode = null;
-let expandedTaskGroups = new Set(["explorer", "jottacloud-sync"]);
+let expandedTaskGroups = new Set(["compare", "jottacloud-sync"]);
 
 const TASK_SAMPLE_MS = 6000;
 const TASK_HISTORY_LIMIT = 601;

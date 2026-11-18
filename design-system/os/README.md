@@ -24,7 +24,8 @@ os/
     menubar.css          menu bar, menus, tray buttons
     desktop.css          desktop canvas and right-rail widgets
     windows.css          window chrome, tide ring, resize handles, titlebar, tabs
-    explorer.css         explorer shell, panes, rows, status bar
+    file-explorer.css     single-pane Explorer shell, places, and rows
+    compare.css          Data Cloud Compare shell, panes, rows, status bar
     inspector.css        details, source, and analytics sidebars
     terminal.css         terminal window
     music.css            Tide Radio window
@@ -56,7 +57,7 @@ os/
     boot-theme.js
     core/
       state.js           option catalogs, preferences, mutable state
-      data.js            explorer fixture data
+      data.js            comparison fixture data
       utils.js           escaping, formatting, motion queries
       toast.js           toast host
     shell/
@@ -70,14 +71,15 @@ os/
       command-settings.js command palette source and condition settings
       commands.js        data-cmd dispatcher
       shortcuts.js       global key map
-    explorer/
+    compare/
       model.js           status, path, filter, sort, and counterpart selectors
       view.js            panes, status bar, side panels, selection actions
-      interactions.js    explorer DOM event wiring
+      interactions.js    comparison DOM event wiring
       verify.js          snapshot verification animation
     features/
       appearance.js      theme, tone, water settings, WaterSurface
     apps/
+      explorer.js        single-pane file browser over the local index
       calendar.js        calendar tray and Calendar app
       network.js         Wi-Fi and VPN state
       devices.js         Bluetooth accessories
@@ -126,11 +128,11 @@ Battery, Notifications, Privacy & Security, and Storage.
 ## App Studio
 
 `App Studio` is the desktop's GUI builder. It opens with one editable project
-for every application on the system — Explorer, Settings, Network, Devices,
-Battery, Calendar, Task Manager, Terminal, Tide Radio, Keyboard shortcuts, and
-About — and deliberately has no project for itself. Projects
-store percentage-based component boxes on a 16:10 artboard, so the same
-project renders at any window size.
+for every application on the system — Explorer, Data Cloud Compare, Settings,
+Network, Devices, Battery, Calendar, Task Manager, Terminal, Tide Radio,
+Keyboard shortcuts, and About — and deliberately has no project for itself.
+Projects store percentage-based component boxes on a 16:10 artboard, so the
+same project renders at any window size.
 
 - The left rail lists system projects and custom apps. **New app** creates a
   custom project from a blank canvas or an existing app, and the project
@@ -145,7 +147,7 @@ project renders at any window size.
   nothing selected copies a `{{variable.id}}` template.
 - `builder-variables.js` covers system identity, viewport and appearance,
   design tokens, resources, battery, network, devices, clock and calendar,
-  the explorer model, Tide Radio and sound, the terminal, and the studio
+  the comparison model, Tide Radio and sound, the terminal, and the studio
   itself. Values refresh once per second while the builder is open.
 - Projects are saved as `explorer-os-builder-v1` in `localStorage`; the footer
   resets them to the shipped system set.
@@ -156,9 +158,9 @@ project renders at any window size.
   layers, not file types.
 - **Named exports only.** There are no default exports. Import exactly the
   symbols a module uses.
-- **`core/` imports no shell, explorer, or app modules.** It owns saved
+- **`core/` imports no shell, compare, or app modules.** It owns saved
   preferences and shared state. `shell/` provides window, popover, clock, and
-  command services. `explorer/` and `apps/` consume those services.
+  command services. `compare/` and `apps/` consume those services.
   `command-catalog.js` and `commands.js` are the composition layer that may
   import from anywhere.
 - **Mutate `state` properties; never replace the `state` object.** Modules hold

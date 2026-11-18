@@ -1,20 +1,20 @@
 /* ==========================================================================
-   Explorer application (faithful to app/src/web)
+   Data Cloud Compare application (faithful to app/src/web)
    --------------------------------------------------------------------------
-   The window contains the real explorer structure: app bar, two panes with
+   The window contains the real comparison structure: app bar, two panes with
    five columns, search and status filters, status bar, side panels, and the
    command bar. Classes are prefixed osx- so they do not collide with the
    design-system primitives used elsewhere on the desktop.
    ========================================================================== */
 
-.os-window--explorer {
+.os-window--compare {
   top: 16px;
   left: 16px;
   width: min(1080px, calc(100vw - 336px));
   height: min(680px, calc(100dvh - 190px));
 }
 
-.os-window--explorer.has-side { width: calc(100vw - 32px); }
+.os-window--compare.has-side { width: calc(100vw - 32px); }
 
 .osx-app {
   display: flex;

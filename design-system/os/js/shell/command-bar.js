@@ -6,7 +6,7 @@ import { state } from "../core/state.js";
 import { esc } from "../core/utils.js";
 import {
   clearPaneFilters, renderAll, selectEntry, setActiveSide,
-} from "../explorer/view.js";
+} from "../compare/view.js";
 import { buildCommandItems, commandIcon } from "./command-catalog.js";
 import { openCommandSettings } from "./command-settings.js";
 import { closeTrays } from "./popovers.js";

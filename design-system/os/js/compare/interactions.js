@@ -1,4 +1,4 @@
-/* Aether OS — explorer interactions
+/* Aether OS — comparison interactions
    DOM event wiring for the panes, search, filters, sorting, providers, the
    legend, and the side panel. All listeners are registered once at import. */
 
