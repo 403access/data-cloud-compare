@@ -3,11 +3,11 @@
    Network, Devices, Battery, Sound, Appearance, and the window manager; the
    remaining demo preferences are stored locally. */
 
-import { readJSON, state, writeJSON } from "../core/state.js";
+import { readJSON, root, state, writeJSON } from "../core/state.js";
 import { toast } from "../core/toast.js";
 import { setThemeMode } from "../features/appearance.js";
 import { setSoundOutput } from "./sound.js";
-import { openWindow } from "../shell/windows.js";
+import { applyWindowLayout, openWindow } from "../shell/windows.js";
 
 const SETTINGS_KEY = "explorer-os-settings-v1";
 const TAB_KEY = "explorer-os-settings-tab";
@@ -25,6 +25,7 @@ const SETTINGS_DEFAULTS = {
   displayResolution: "default",
   mirrorDisplays: false,
   brightness: 72,
+  dockEnabled: false,
   dockSize: 48,
   dockMagnify: false,
   dockPosition: "bottom",
@@ -63,10 +64,23 @@ const RANGE_SUFFIX = {
   keyDelay: "",
 };
 
+const DOCK_POSITIONS = ["bottom", "left", "right"];
+const DOCK_MIN_SIZE = 32;
+const DOCK_MAX_SIZE = 72;
+const DESKTOP_SETTING_KEYS = new Set([
+  "desktopIcons",
+  "desktopWidgets",
+  "dockEnabled",
+  "dockSize",
+  "dockMagnify",
+  "dockPosition",
+]);
+
 const settingsWindow = document.querySelector('[data-window="settings"]');
 const desktopRail = document.querySelector(".os-rail");
 const desktopIcons = document.querySelector(".os-desk-icons");
 const desktopWidget = document.querySelector(".os-widget");
+const dockWrap = document.querySelector(".os-dock-wrap");
 const tabButtons = Array.from(document.querySelectorAll("[data-settings-tab]"));
 const navGroups = Array.from(document.querySelectorAll("[data-settings-nav-group]"));
 const panes = Array.from(document.querySelectorAll("[data-settings-pane]"));
@@ -142,8 +156,29 @@ function syncPreferences() {
   });
 
   applyDesktopVisibility();
+  applyDockSettings();
   syncThemeCards();
   updateMotionPreference();
+}
+
+function applyDockSettings() {
+  const enabled = Boolean(settingValue("dockEnabled"));
+  const magnify = Boolean(settingValue("dockMagnify"));
+  const savedPosition = settingValue("dockPosition");
+  const position = DOCK_POSITIONS.includes(savedPosition)
+    ? savedPosition
+    : SETTINGS_DEFAULTS.dockPosition;
+  const savedSize = Number(settingValue("dockSize"));
+  const size = Math.min(
+    DOCK_MAX_SIZE,
+    Math.max(DOCK_MIN_SIZE, Number.isFinite(savedSize) ? savedSize : SETTINGS_DEFAULTS.dockSize),
+  );
+
+  root.dataset.dock = enabled ? "on" : "off";
+  root.dataset.dockMagnify = magnify ? "on" : "off";
+  root.dataset.dockPosition = position;
+  root.style.setProperty("--os-dock-size", `${size}px`);
+  if (dockWrap) dockWrap.hidden = !enabled;
 }
 
 function applyDesktopVisibility() {
@@ -182,6 +217,7 @@ function setPreference(key, value) {
   preferences[key] = value;
   savePreferences();
   syncPreferences();
+  if (DESKTOP_SETTING_KEYS.has(key)) applyWindowLayout();
 }
 
 function activeTab() {

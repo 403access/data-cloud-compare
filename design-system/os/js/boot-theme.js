@@ -38,6 +38,15 @@
     }
     root.dataset.desktopIcons = osSettings.desktopIcons === true ? "on" : "off";
     root.dataset.desktopWidgets = osSettings.desktopWidgets === true ? "on" : "off";
+    root.dataset.dock = osSettings.dockEnabled === true ? "on" : "off";
+    root.dataset.dockMagnify = osSettings.dockMagnify === true ? "on" : "off";
+    var dockPosition = osSettings.dockPosition;
+    if (["bottom", "left", "right"].indexOf(dockPosition) === -1) dockPosition = "bottom";
+    root.dataset.dockPosition = dockPosition;
+    var dockSize = Number(osSettings.dockSize);
+    if (!isFinite(dockSize)) dockSize = 48;
+    dockSize = Math.min(72, Math.max(32, dockSize));
+    root.style.setProperty("--os-dock-size", dockSize + "px");
     var resourceDisplay = {};
     try {
       resourceDisplay = JSON.parse(localStorage.getItem("explorer-os-resource-display") || "null") || {};

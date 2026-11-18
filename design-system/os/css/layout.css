@@ -67,11 +67,8 @@
   .os-panes { grid-template-columns: 1fr; overflow: visible; }
   .os-pane { min-height: 0; }
   .os-pane .ds-pane__rows { overflow: visible; }
-  .os-dock-wrap { position: fixed; bottom: 8px; }
+  .os-dock-wrap { position: fixed; }
   .os-dock { gap: 3px; padding: 6px; }
-  .os-dock__item { width: 40px; height: 40px; }
-  .os-dock__tile { width: 33px; height: 33px; }
-  .os-dock__tile .icon { width: 16px; height: 16px; }
   
   .os-toast-host { right: 12px; bottom: 78px; }
 }
@@ -88,8 +85,6 @@
   .os-panes { padding: 6px; gap: 6px; }
   .os-stat .ds-stat__value { font-size: var(--ds-text-lg); }
   .os-widget__time { font-size: calc(1.6rem * var(--os-font-scale, 1)); }
-  .os-dock__item { width: 36px; height: 36px; }
-  .os-dock__tile { width: 29px; height: 29px; border-radius: 8px; }
   
   .os-player { gap: 10px; padding: 10px; }
   .os-player__art { width: 82px; height: 82px; }

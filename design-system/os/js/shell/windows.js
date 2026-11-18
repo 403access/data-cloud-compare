@@ -85,17 +85,27 @@ function workspaceRect() {
   const railRect = rail && window.getComputedStyle(rail).display !== "none"
     ? rail.getBoundingClientRect()
     : null;
-  const dockRect = dock ? dock.getBoundingClientRect() : null;
+  const dockVisible = dock && window.getComputedStyle(dock).display !== "none";
+  const dockRect = dockVisible ? dock.getBoundingClientRect() : null;
   const rightInset = railRect && railRect.width
     ? rect.right - railRect.left + TILE_RAIL_GAP
     : TILE_MARGIN;
-  const bottomInset = dockRect && dockRect.height
-    ? rect.bottom - dockRect.top + TILE_DOCK_GAP
-    : TILE_MARGIN;
+  let leftDockInset = 0;
+  let rightDockInset = 0;
+  let bottomInset = TILE_MARGIN;
+  if (dockRect && dockRect.width && dockRect.height) {
+    const edge = root.dataset.dockPosition;
+    if (edge === "left") leftDockInset = dockRect.right - rect.left + TILE_DOCK_GAP;
+    else if (edge === "right") rightDockInset = rect.right - dockRect.left + TILE_DOCK_GAP;
+    else bottomInset = rect.bottom - dockRect.top + TILE_DOCK_GAP;
+  }
   return {
-    left: TILE_MARGIN,
+    left: TILE_MARGIN + leftDockInset,
     top: TILE_MARGIN,
-    width: Math.max(0, Math.round(rect.width - TILE_MARGIN - rightInset)),
+    width: Math.max(
+      0,
+      Math.round(rect.width - TILE_MARGIN - rightInset - leftDockInset - rightDockInset),
+    ),
     height: Math.max(0, Math.round(rect.height - TILE_MARGIN - bottomInset)),
   };
 }

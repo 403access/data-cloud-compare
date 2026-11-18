@@ -833,7 +833,7 @@
                   <span class="os-settings-tab__icon" style="--tab:var(--ds-violet)"><svg class="icon"><use href="#i-display"/></svg></span>
                   <span>Displays</span>
                 </button>
-                <button class="os-settings-tab" type="button" role="tab" id="settings-tab-desktop" aria-selected="false" aria-controls="settings-pane-desktop" tabindex="-1" data-settings-tab="desktop" data-settings-keywords="desktop dock window layout split overlap magnification minimize widgets stage manager">
+                <button class="os-settings-tab" type="button" role="tab" id="settings-tab-desktop" aria-selected="false" aria-controls="settings-pane-desktop" tabindex="-1" data-settings-tab="desktop" data-settings-keywords="desktop dock show hide enable disable window layout split overlap magnification size widgets stage manager">
                   <span class="os-settings-tab__icon" style="--tab:var(--ds-blue)"><svg class="icon"><use href="#i-grid"/></svg></span>
                   <span>Desktop &amp; Dock</span>
                 </button>
@@ -1238,6 +1238,10 @@
 
               <section class="os-settings-card">
                 <h3>Dock</h3>
+                <label class="os-settings-row">
+                  <span class="os-settings-row__text"><b>Show dock</b><small>Display the application dock on the desktop.</small></span>
+                  <span class="ds-switch"><input type="checkbox" data-os-setting="dockEnabled" aria-label="Show dock"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+                </label>
                 <label class="os-settings-row os-settings-row--stack">
                   <span class="os-settings-row__text"><b>Size</b><small>Scale the dock icons.</small></span>
                   <span class="os-settings-slider">
