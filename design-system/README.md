@@ -144,7 +144,7 @@ when the tab is hidden.
 - The water controls in the showcase expose `aria-pressed`.
 - Interactive text meets contrast on `--ds-surface` in both themes.
 
-## Water OS concept
+## Aether OS concept
 
 [`os/`](os/index.html) is a desktop-environment concept: a glass menu bar, a
 dock, draggable windows, and a command bar built around a faithful reproduction
@@ -241,7 +241,7 @@ design-system/
   index.html       component showcase
   showcase.css     showcase-only layout
   showcase.js      showcase controls
-  os/              Water OS desktop concept
+  os/              Aether OS desktop concept
     index.html     desktop shell, windows, dock, command bar
     os.css         window chrome and desktop layout
     os.js          window manager and explorer interactions

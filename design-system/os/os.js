@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Water OS — desktop interactions
+   Aether OS — desktop interactions
    --------------------------------------------------------------------------
    The explorer, water settings, and command bar mirror the real app in
    app/src/web: same panes, columns, statuses, controls, and command catalog.
@@ -611,7 +611,7 @@ function addCalendarEvent(offset, time, title, detail) {
 [
   [0, "09:30", "Snapshot verification", "Jottacloud Archive · 45 min"],
   [0, "14:00", "Tide Radio session", "Deep Current · 1 hr"],
-  [1, "11:00", "Design review", "Water OS tray menus · 30 min"],
+  [1, "11:00", "Design review", "Aether OS tray menus · 30 min"],
   [2, "16:30", "Archive sync", "Incremental · 2 hr"],
   [-1, "10:00", "Jottacloud audit", "Read-only check · 1 hr"],
   [4, "08:15", "Backup window", "Nightly · 3 hr"],
