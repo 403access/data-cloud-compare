@@ -17,10 +17,12 @@ const COLUMNS_KEY = "explorer-columns";
 const SIZE_KEY = "explorer-size-mode";
 const PROVIDER_KEY = "explorer-provider";
 const FONT_SIZE_KEY = "explorer-os-font-size";
+const WINDOW_WAVE_KEY = "explorer-os-window-wave";
 
 const TONES = { lagoon: "Lagoon", ocean: "Ocean", deep: "Deep" };
 const SPEEDS = ["calm", "flowing", "rapid"];
 const INTENSITIES = ["subtle", "balanced", "lively"];
+const WINDOW_WAVES = ["off", "calm", "tide", "surge"];
 const FONT_SIZES = ["compact", "comfortable", "large"];
 const THEME_MODES = ["system", "light", "dark", "water"];
 const THEME_LABELS = { system: "System", light: "Light", dark: "Dark", water: "Water" };
@@ -41,6 +43,7 @@ const WATER_DEFAULTS = {
   tone: "ocean",
   speed: "flowing",
   intensity: "subtle",
+  windowWave: "tide",
   fontSize: "comfortable",
 };
 
@@ -181,10 +184,20 @@ function readFontSize() {
   }
 }
 
+function readWindowWave() {
+  try {
+    const saved = localStorage.getItem(WINDOW_WAVE_KEY);
+    return WINDOW_WAVES.includes(saved) ? saved : null;
+  } catch {
+    return null;
+  }
+}
+
 function readWater() {
   const saved = readJSON(WATER_KEY);
   const design = readJSON(DESIGN_KEY) || {};
   const storedFontSize = readFontSize();
+  const storedWindowWave = readWindowWave();
   if (!saved || typeof saved !== "object") {
     return {
       ...WATER_DEFAULTS,
@@ -192,6 +205,7 @@ function readWater() {
       speed: SPEEDS.includes(design.speed) ? design.speed : WATER_DEFAULTS.speed,
       background: design.background === "sea" ? "sea" : WATER_DEFAULTS.background,
       effects: design.effects !== false,
+      windowWave: storedWindowWave || WATER_DEFAULTS.windowWave,
       fontSize:
         storedFontSize ||
         (FONT_SIZES.includes(design.fontSize) ? design.fontSize : WATER_DEFAULTS.fontSize),
@@ -210,6 +224,9 @@ function readWater() {
     tone: pick(saved.tone, Object.keys(TONES), WATER_DEFAULTS.tone),
     speed: pick(saved.speed, SPEEDS, WATER_DEFAULTS.speed),
     intensity: pick(saved.intensity, INTENSITIES, WATER_DEFAULTS.intensity),
+    windowWave:
+      storedWindowWave ||
+      pick(saved.windowWave, WINDOW_WAVES, WATER_DEFAULTS.windowWave),
     fontSize: storedFontSize || pick(saved.fontSize, FONT_SIZES, WATER_DEFAULTS.fontSize),
   };
 }
@@ -298,6 +315,14 @@ function saveFontSize() {
   }
 }
 
+function saveWindowWave() {
+  try {
+    localStorage.setItem(WINDOW_WAVE_KEY, state.water.windowWave);
+  } catch {
+    /* ignore */
+  }
+}
+
 function saveDesignPrefs() {
   writeJSON(DESIGN_KEY, {
     tone: state.water.tone,
@@ -377,6 +402,9 @@ function applyAppearance({ save = true } = {}) {
   root.dataset.waterBackground = water.background;
   root.dataset.waterGlass = water.glass ? "on" : "off";
   root.dataset.waterRowMotion = water.rowMotion ? "on" : "off";
+  root.dataset.waterWindowWave = WINDOW_WAVES.includes(water.windowWave)
+    ? water.windowWave
+    : WATER_DEFAULTS.windowWave;
   root.dataset.waterMode = state.themeMode;
   root.dataset.waterEffects = activeWater() ? "on" : "off";
   root.dataset.fontSize = FONT_SIZES.includes(water.fontSize) ? water.fontSize : WATER_DEFAULTS.fontSize;
@@ -401,6 +429,7 @@ function applyAppearance({ save = true } = {}) {
   if (save) {
     saveWater();
     saveFontSize();
+    saveWindowWave();
     saveTheme();
     saveDesignPrefs();
   }

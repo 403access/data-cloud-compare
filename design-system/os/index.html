@@ -33,6 +33,9 @@
         root.dataset.waterEffects = effects && mode === "water" ? "on" : "off";
         root.dataset.waterGlass = water.glass === false ? "off" : "on";
         root.dataset.waterRowMotion = water.rowMotion === false ? "off" : "on";
+        var windowWave = localStorage.getItem("explorer-os-window-wave") || water.windowWave;
+        if (["off", "calm", "tide", "surge"].indexOf(windowWave) === -1) windowWave = "tide";
+        root.dataset.waterWindowWave = windowWave;
       } catch (e) {}
     })();
   </script>
@@ -119,6 +122,12 @@
     <symbol id="i-bluetooth-off" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="m12 3 5 4-10 8"/><path d="m12 21 5-4-10-8"/><path d="m4 4 16 16"/></symbol>
     <symbol id="i-mouse" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="5"/><path d="M12 2.5v6"/></symbol>
     <symbol id="i-headphones" viewBox="0 0 24 24"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4.5" height="7" rx="1.5"/><rect x="16.5" y="14" width="4.5" height="7" rx="1.5"/></symbol>
+    <filter id="os-window-wave" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.008 0.022" numOctaves="2" seed="7" result="tide">
+        <animate attributeName="baseFrequency" dur="13s" values="0.008 0.022;0.014 0.012;0.008 0.022" repeatCount="indefinite"/>
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" in2="tide" scale="5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
   </svg>
 
   <div class="os-shell">
@@ -712,7 +721,7 @@
           <section class="osx-theme-group">
             <h3>Effects</h3>
             <label class="osx-theme-row">
-              <span class="osx-theme-text"><b>Water effects</b><small>Master switch for ripples and shimmer.</small></span>
+              <span class="osx-theme-text"><b>Water effects</b><small>Master switch for ripples, shimmer, and window waves.</small></span>
               <span class="ds-switch"><input type="checkbox" data-water-setting="effects" checked><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
             </label>
             <label class="osx-theme-row">
@@ -730,6 +739,15 @@
             <label class="osx-theme-row">
               <span class="osx-theme-text"><b>Animated row highlights</b><small>Hover and selection colours flow between states.</small></span>
               <span class="ds-switch"><input type="checkbox" data-water-setting="rowMotion" checked><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+            </label>
+            <label class="osx-theme-row osx-theme-row--select">
+              <span class="osx-theme-text"><b>Window waves</b><small>A liquid rim around the active or hovered window.</small></span>
+              <select class="osx-select" data-water-setting="windowWave" aria-label="Window waves">
+                <option value="off">Off</option>
+                <option value="calm">Calm</option>
+                <option value="tide" selected>Tide</option>
+                <option value="surge">Surge</option>
+              </select>
             </label>
           </section>
 

@@ -23,6 +23,7 @@ bun scripts/assemble-site.ts   # copies this folder to dist/design-system/
 | **Currents** | Ambient motion | Three SVG wave bands, different speeds and directions |
 | **Caustics** | Light under water | Five low-alpha radial gradients on a canvas |
 | **Glass** | Working surfaces | Translucent panels with `backdrop-filter: blur(18px)` |
+| **Tide** | Active edge | Wavy gradient rim on hovered or focused windows |
 | **Drops** | Feedback | Throttled pointer rings and a larger click ripple |
 
 Rules:
@@ -154,8 +155,17 @@ of the real explorer application.
   columns, pane footers, selection status bar, and the columns, details, source,
   and analytics side panels.
 - The Water settings window mirrors the app's theme sidebar: effects, drips,
-  click ripples, caustics, row motion, flow speed, drip energy, background,
-  tone, glass surfaces, reset, and the paused/active status callout.
+  click ripples, caustics, row motion, window waves, flow speed, drip energy,
+  background, tone, glass surfaces, reset, and the paused/active status
+  callout.
+- Active and hovered windows carry a liquid tide line: a masked conic-gradient
+  ring displaced by an animated SVG turbulence filter. The **Window waves**
+  setting offers Off, Calm, Tide, and Surge, and the ring follows Flow speed.
+  The border itself shifts from the neutral line to an accent tint on hover,
+  a stronger accent and glow on focus, and the brightest rim when a focused
+  window is also hovered. Ring animation stops under `prefers-reduced-motion`.
+  The choice is saved as `explorer-os-window-wave` (mirrored in
+  `explorer-water-settings`) and applies before paint.
 - The command bar mirrors the app's command catalog and file search: Navigation,
   Search, View, Columns, Sort, Filters, Appearance, and Provider groups, `>`
   commands-only mode, fuzzy matching, and local/remote file results.

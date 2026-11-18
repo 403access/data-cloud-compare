@@ -584,19 +584,68 @@ body.os code { font-family: var(--ds-font-mono); }
 
 /* --------------------------------------------------------------- windows */
 
+/* The tide line that runs around a hovered or focused window. The gradient
+   angle is a registered custom property, so it can be animated smoothly. */
+@property --os-wave-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes os-window-tide {
+  to { --os-wave-angle: 360deg; }
+}
+
+:root {
+  --os-wave-cycle: 8s;
+  --os-wave-rate: 1;
+  --os-wave-ring: 2.5px;
+  --os-wave-peak: 0.85;
+}
+
+:root[data-water-speed="calm"] { --os-wave-rate: 1.55; }
+:root[data-water-speed="rapid"] { --os-wave-rate: 0.6; }
+
+:root[data-water-window-wave="calm"] {
+  --os-wave-cycle: 12s;
+  --os-wave-ring: 2px;
+  --os-wave-peak: 0.55;
+}
+
+:root[data-water-window-wave="tide"] {
+  --os-wave-cycle: 8s;
+  --os-wave-ring: 2.5px;
+  --os-wave-peak: 0.85;
+}
+
+:root[data-water-window-wave="surge"] {
+  --os-wave-cycle: 4.5s;
+  --os-wave-ring: 3.5px;
+  --os-wave-peak: 1;
+}
+
+:root[data-water-window-wave="off"] .os-window::before,
+:root[data-water-effects="off"] .os-window::before {
+  display: none;
+}
+
 .os-window {
+  --os-rim: var(--ds-line-strong);
+  --os-rim-glow: transparent;
   position: absolute;
   z-index: 20;
   display: flex;
   flex-direction: column;
   min-width: 280px;
   min-height: 180px;
-  border: 1px solid var(--ds-line-strong);
+  border: 1px solid var(--os-rim);
   border-radius: var(--ds-radius-lg);
   background: color-mix(in srgb, var(--ds-surface-solid) 92%, transparent);
   box-shadow:
     0 30px 80px rgba(0, 8, 14, 0.55),
     0 3px 12px rgba(0, 8, 14, 0.4),
+    0 0 0 1px transparent,
+    0 0 0 0 transparent,
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
   overflow: hidden;
   backdrop-filter: blur(24px) saturate(145%);
@@ -604,14 +653,86 @@ body.os code { font-family: var(--ds-font-mono); }
   transition: border-color var(--ds-motion-fast) ease, box-shadow var(--ds-motion-fast) ease;
 }
 
+/* Only the ring is painted: the mask punches out the inside of the window. */
+.os-window::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  padding: var(--os-wave-ring);
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--os-wave-angle),
+    transparent 0deg,
+    color-mix(in srgb, var(--ds-accent) 45%, transparent) 34deg,
+    color-mix(in srgb, #ffffff 82%, var(--ds-accent)) 52deg,
+    color-mix(in srgb, var(--ds-accent) 45%, transparent) 70deg,
+    transparent 104deg,
+    transparent 208deg,
+    color-mix(in srgb, var(--ds-accent) 35%, transparent) 232deg,
+    color-mix(in srgb, #ffffff 72%, var(--ds-accent)) 248deg,
+    color-mix(in srgb, var(--ds-accent) 35%, transparent) 264deg,
+    transparent 292deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  pointer-events: none;
+  filter: none;
+  transition: opacity 220ms ease;
+}
+
+.os-window:hover::before,
+.os-window.is-focused::before {
+  filter: url(#os-window-wave);
+  animation: os-window-tide calc(var(--os-wave-cycle) * var(--os-wave-rate)) linear infinite;
+}
+
+.os-window:hover::before { opacity: calc(var(--os-wave-peak) * 0.6); }
+
+.os-window.is-focused::before { opacity: var(--os-wave-peak); }
+
+.os-window.is-focused:hover::before { opacity: 1; }
+
 .os-window:focus { outline: none; }
 
+.os-window:hover {
+  --os-rim: color-mix(in srgb, var(--ds-accent) 34%, var(--ds-line-strong));
+  --os-rim-glow: color-mix(in srgb, var(--ds-accent) 8%, transparent);
+  box-shadow:
+    0 32px 84px rgba(0, 8, 14, 0.58),
+    0 3px 12px rgba(0, 8, 14, 0.4),
+    0 0 0 1px color-mix(in srgb, var(--ds-accent) 10%, transparent),
+    0 0 30px var(--os-rim-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
 .os-window.is-focused {
-  border-color: color-mix(in srgb, var(--ds-accent) 38%, var(--ds-line));
+  --os-rim: color-mix(in srgb, var(--ds-accent) 64%, var(--ds-line));
+  --os-rim-glow: color-mix(in srgb, var(--ds-accent) 18%, transparent);
   box-shadow:
     0 34px 90px rgba(0, 8, 14, 0.62),
-    0 0 0 1px color-mix(in srgb, var(--ds-accent) 16%, transparent),
+    0 3px 12px rgba(0, 8, 14, 0.4),
+    0 0 0 1px color-mix(in srgb, var(--ds-accent) 20%, transparent),
+    0 0 44px var(--os-rim-glow),
     inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.os-window.is-focused:hover {
+  --os-rim: color-mix(in srgb, var(--ds-accent) 80%, #ffffff);
+  --os-rim-glow: color-mix(in srgb, var(--ds-accent) 28%, transparent);
+  box-shadow:
+    0 36px 96px rgba(0, 8, 14, 0.64),
+    0 3px 12px rgba(0, 8, 14, 0.4),
+    0 0 0 1px color-mix(in srgb, var(--ds-accent) 30%, transparent),
+    0 0 58px var(--os-rim-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .os-window.is-minimized {
@@ -2234,6 +2355,9 @@ body.os code { font-family: var(--ds-font-mono); }
   .os-window,
   .os-dock__item,
   .os-desk-icon { transition: none; }
+  .os-window::before,
+  .os-window:hover::before,
+  .os-window.is-focused::before { animation: none; filter: none; }
   .os-row.is-flash { animation: none; }
 }
 /* ==========================================================================
