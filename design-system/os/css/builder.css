@@ -146,12 +146,14 @@
   margin: 7px 8px 5px;
   padding: 0 7px;
   height: 26px;
-  border: 1px solid var(--ds-line);
+  border: 0;
   border-radius: 7px;
   background: color-mix(in srgb, var(--ds-surface-solid) 58%, transparent);
   color: var(--ds-text-3);
+  transition: background var(--ds-motion-fast) ease, box-shadow var(--ds-motion-fast) ease;
 }
-.osb-search:focus-within { border-color: color-mix(in srgb, var(--ds-accent) 54%, var(--ds-line)); box-shadow: var(--ds-focus-ring); }
+.osb-search:focus-within { background: color-mix(in srgb, var(--ds-surface-solid) 72%, transparent); }
+.osb-search:focus-within:has(input:not(:placeholder-shown)) { box-shadow: var(--ds-focus-ring); }
 .osb-search .icon { width: 12px; height: 12px; flex: none; }
 .osb-search input {
   width: 100%;
@@ -895,10 +897,21 @@
   font: inherit;
   font-size: calc(9px * var(--os-font-scale, 1));
 }
+.osb-field input,
+.osb-field textarea { border: 0; }
 .osb-field textarea { resize: vertical; min-height: 38px; line-height: 1.4; }
+.osb-field select:focus {
+  border-color: color-mix(in srgb, var(--ds-accent) 54%, var(--ds-line));
+  box-shadow: var(--ds-focus-ring);
+}
 .osb-field input:focus,
-.osb-field select:focus,
-.osb-field textarea:focus { border-color: color-mix(in srgb, var(--ds-accent) 54%, var(--ds-line)); box-shadow: var(--ds-focus-ring); }
+.osb-field textarea:focus {
+  background: color-mix(in srgb, var(--ds-surface-solid) 72%, transparent);
+}
+.osb-field input:focus:not(:placeholder-shown),
+.osb-field textarea:focus:not(:placeholder-shown) {
+  box-shadow: var(--ds-focus-ring);
+}
 .osb-field input[readonly] { color: var(--ds-text-3); }
 .osb-field select option { background: var(--ds-popover); color: var(--ds-text); }
 

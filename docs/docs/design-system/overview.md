@@ -45,6 +45,8 @@ The rules:
 3. Ambient motion is slow (14–58s cycles). Interface motion is fast (160–340ms).
 4. Every decorative effect can be disabled. `prefers-reduced-motion` does it automatically.
 5. Colour never carries meaning alone: verdicts pair colour with a label and a dot.
+6. Text fields are borderless and placeholder-led. Every text field has a
+   placeholder, and the placeholder itself signals focus with the water wave.
 
 ## Tones
 
@@ -107,6 +109,35 @@ the app's own stylesheet.
 - **Product patterns:** `.ds-pane`, `.ds-command`, `.ds-toast`, `.ds-stat`.
 - **Water:** `.ds-sea`, `.ds-wave`, `.ds-ripple-pond`.
 
+### Inputs
+
+Every text field must have a placeholder and no box border. The placeholder is
+the focus state: on `:focus` it shifts to the accent colour and takes the same
+turbulence displacement as the window tide. When a value replaces the
+placeholder, the standard focus ring returns through `:not(:placeholder-shown)`.
+
+```html
+<label class="ds-field">
+  <span class="ds-label">Search scope</span>
+  <input class="ds-input" type="search" placeholder="Search local index…">
+</label>
+```
+
+Browsers do not apply CSS filters to `::placeholder`, so `inputs.js` mirrors the
+placeholder into a sibling span and hides the native placeholder text. Call it
+once at startup; it also observes fields added later.
+
+```js
+import { initPlaceholderWaves } from "./inputs.js";
+initPlaceholderWaves();
+```
+
+Selects, checkboxes, switches, and sliders keep their normal chrome because they
+cannot carry a placeholder. Pages using `.ds-input`, `.ds-search`, or
+`.ds-command__input` must include the `#ds-input-wave` and
+`#ds-input-wave-static` SVG filters; the static version is used under
+`prefers-reduced-motion`.
+
 ```html
 <button class="ds-btn ds-btn--primary">Reveal counterpart</button>
 <span class="ds-badge ds-badge--moved"><span class="ds-dot"></span>Moved</span>
@@ -114,7 +145,8 @@ the app's own stylesheet.
 
 ## Motion and effects
 
-The interactive layer lives in [`design-system/water.js`](https://github.com/403access/data-cloud-compare/blob/main/design-system/water.js):
+The interactive layer lives in [`design-system/water.js`](https://github.com/403access/data-cloud-compare/blob/main/design-system/water.js)
+and [`design-system/inputs.js`](https://github.com/403access/data-cloud-compare/blob/main/design-system/inputs.js):
 
 ```js
 import { WaterSurface } from "./water.js";
@@ -140,7 +172,9 @@ tab is hidden, and does nothing under reduced motion.
 
 - Motion stops under `prefers-reduced-motion: reduce`.
 - Decorative layers are `aria-hidden` and ignore pointer events.
-- Focus uses a visible ring; it is never removed.
+- Focus uses a visible ring; it is never removed. Empty text fields express
+  focus through their wavy placeholder and restore the ring once they contain a
+  value.
 - Verdict pills pair colour with a label and a dot.
 - Water controls expose `aria-pressed`.
 - Interactive text meets contrast on surfaces in both themes.
@@ -152,6 +186,7 @@ design-system/
   tokens.css       canonical tokens and tones
   components.css   component primitives
   water.js         caustics, drips, ripples
+  inputs.js        mirrored placeholders for the tide displacement
   index.html       component showcase
   showcase.css     showcase-only layout
   showcase.js      showcase controls

@@ -456,8 +456,8 @@ function renderInspector() {
         <div><span>Project</span><b>${esc(project.name)}</b><small>${project.builtin ? "Built-in app project" : "Custom app project"}</small></div>
         <span class="osb-inspect__badge">${project.builtin ? "System" : "Custom"}</span>
       </header>
-      <label class="osb-field"><span>App name</span><input data-project-field="name" value="${esc(project.name)}"></label>
-      <label class="osb-field"><span>Description</span><textarea rows="3" data-project-field="description">${esc(project.description)}</textarea></label>
+      <label class="osb-field"><span>App name</span><input data-project-field="name" value="${esc(project.name)}" placeholder="Untitled app"></label>
+      <label class="osb-field"><span>Description</span><textarea rows="3" data-project-field="description" placeholder="What does it do?">${esc(project.description)}</textarea></label>
       <div class="osb-grid2">
         <label class="osb-field"><span>Icon</span><select data-project-field="icon">${iconOptions(project.icon)}</select></label>
         <label class="osb-field"><span>Accent</span><select data-project-field="accent">${accentOptions(project.accent)}</select></label>
@@ -479,11 +479,11 @@ function renderInspector() {
   const variable = node.bind ? variableMap.get(node.bind) : null;
   const arrayField =
     ["list", "tabs"].includes(node.type)
-      ? `<label class="osb-field"><span>Items <small>one per line</small></span><textarea rows="4" data-node-items="items">${esc((node.items || []).join("\n"))}</textarea></label>`
+      ? `<label class="osb-field"><span>Items <small>one per line</small></span><textarea rows="4" data-node-items="items" placeholder="One item per line">${esc((node.items || []).join("\n"))}</textarea></label>`
       : node.type === "console"
-        ? `<label class="osb-field"><span>Lines <small>one per line</small></span><textarea rows="4" data-node-lines="lines">${esc((node.lines || []).join("\n"))}</textarea></label>`
+        ? `<label class="osb-field"><span>Lines <small>one per line</small></span><textarea rows="4" data-node-lines="lines" placeholder="One line per row">${esc((node.lines || []).join("\n"))}</textarea></label>`
         : node.type === "details"
-          ? `<label class="osb-field"><span>Rows <small>label | value</small></span><textarea rows="4" data-node-pairs="pairs">${esc((node.pairs || []).map(([key, value]) => `${key} | ${value}`).join("\n"))}</textarea></label>`
+          ? `<label class="osb-field"><span>Rows <small>label | value</small></span><textarea rows="4" data-node-pairs="pairs" placeholder="Label | value">${esc((node.pairs || []).map(([key, value]) => `${key} | ${value}`).join("\n"))}</textarea></label>`
           : "";
 
   inspectorHost.innerHTML = `<div class="osb-inspector">
@@ -491,7 +491,7 @@ function renderInspector() {
       <div><span>Component</span><b>${esc(NODE_LABELS[node.type] || node.type)}</b><small>${esc(node.id)}</small></div>
       <span class="osb-inspect__badge">${esc(node.type)}</span>
     </header>
-    <label class="osb-field"><span>Label</span><input data-node-field="label" value="${esc(node.label)}"></label>
+    <label class="osb-field"><span>Label</span><input data-node-field="label" value="${esc(node.label)}" placeholder="Button label"></label>
     <label class="osb-field"><span>Bind to system variable</span><select data-node-field="bind">${bindOptions(node.bind)}</select></label>
     ${
       node.bind
@@ -499,10 +499,10 @@ function renderInspector() {
         : '<p class="osb-hint">A bound component follows the system while the builder is open.</p>'
     }
     <div class="osb-grid4">
-      <label class="osb-field"><span>X</span><input type="number" step="0.5" data-node-field="x" value="${node.x}"></label>
-      <label class="osb-field"><span>Y</span><input type="number" step="0.5" data-node-field="y" value="${node.y}"></label>
-      <label class="osb-field"><span>W</span><input type="number" step="0.5" min="3" data-node-field="w" value="${node.w}"></label>
-      <label class="osb-field"><span>H</span><input type="number" step="0.5" min="2" data-node-field="h" value="${node.h}"></label>
+      <label class="osb-field"><span>X</span><input type="number" step="0.5" data-node-field="x" value="${node.x}" placeholder="0"></label>
+      <label class="osb-field"><span>Y</span><input type="number" step="0.5" data-node-field="y" value="${node.y}" placeholder="0"></label>
+      <label class="osb-field"><span>W</span><input type="number" step="0.5" min="3" data-node-field="w" value="${node.w}" placeholder="24"></label>
+      <label class="osb-field"><span>H</span><input type="number" step="0.5" min="2" data-node-field="h" value="${node.h}" placeholder="12"></label>
     </div>
     <div class="osb-grid2">
       <label class="osb-field"><span>Tone</span><select data-node-field="tone">${toneOptions(node.tone)}</select></label>
@@ -512,8 +512,8 @@ function renderInspector() {
           : node.type === "appbar" || node.type === "icon"
             ? `<label class="osb-field"><span>Icon</span><select data-node-field="icon">${iconOptions(node.icon)}</select></label>`
             : ["meter", "gauge"].includes(node.type) && !node.bind
-              ? `<label class="osb-field"><span>Value</span><input type="number" min="0" max="100" data-node-field="value" value="${node.value}"></label>`
-              : `<label class="osb-field"><span>Position</span><input value="${node.x}%, ${node.y}%" readonly></label>`
+              ? `<label class="osb-field"><span>Value</span><input type="number" min="0" max="100" data-node-field="value" value="${node.value}" placeholder="50"></label>`
+              : `<label class="osb-field"><span>Position</span><input value="${node.x}%, ${node.y}%" placeholder="0%, 0%" readonly></label>`
       }
     </div>
     ${arrayField}

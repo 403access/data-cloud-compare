@@ -1,0 +1,24 @@
+/* ------------------------------------------------------ borderless fields */
+
+/* Design-system guideline: every text field carries a placeholder and has no
+   box border. While the field is empty, the placeholder is the focus state.
+   inputs.js mirrors each placeholder into a sibling `.ds-wave-placeholder`,
+   which takes the accent colour and the tide displacement (components.css).
+   These rules keep the empty field ring-free. */
+
+.osx-searchbar input:focus:placeholder-shown,
+.osb-field input:focus:placeholder-shown,
+.osb-field textarea:focus:placeholder-shown {
+  box-shadow: none;
+}
+
+.os-settings-search input:focus,
+.osb-search input:focus,
+.osx-command-input-row input:focus {
+  box-shadow: none;
+}
+
+/* Keep the terminal's dim placeholder tone until focus takes over. */
+.os-term-line--input .ds-wave-placeholder {
+  color: #4c7a78;
+}

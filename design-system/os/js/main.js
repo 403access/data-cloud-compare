@@ -3,6 +3,7 @@
    to its initial state. Import order is the app boot order. */
 
 import { applyAppearance } from "./features/appearance.js";
+import { initPlaceholderWaves } from "../../inputs.js";
 import { renderAll } from "./compare/view.js";
 import { startClock } from "./shell/clock.js";
 import { applyResourceDisplay } from "./shell/menu-bar-usage.js";
@@ -28,6 +29,7 @@ import "./shell/shortcuts.js";
 
 startClock();
 applyAppearance({ save: false });
+initPlaceholderWaves();
 renderAll();
 applyResourceDisplay();
 initTaskManager();

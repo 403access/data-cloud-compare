@@ -1,7 +1,7 @@
 # Water design system
 
 The design language of **Data Cloud Compare**, distilled from the explorer's water
-theme. It is plain CSS custom properties plus one dependency-free ES module — no
+theme. It is plain CSS custom properties plus two dependency-free ES modules — no
 framework, no build step, no image assets.
 
 - **Live showcase:** `/design-system/` in the assembled site.
@@ -10,6 +10,7 @@ framework, no build step, no image assets.
 - **Tokens:** [`tokens.css`](tokens.css)
 - **Components:** [`components.css`](components.css)
 - **Water effects:** [`water.js`](water.js)
+- **Wavy placeholders:** [`inputs.js`](inputs.js)
 
 ```bash
 bun scripts/assemble-site.ts   # copies this folder to dist/design-system/
@@ -35,6 +36,9 @@ Rules:
 4. Every effect can be switched off. `prefers-reduced-motion` disables it
    automatically.
 5. Colour never carries meaning alone. Status pills always have a label and dot.
+6. Text fields are borderless and placeholder-led. Every text field has a
+   placeholder, and focus is shown by the placeholder's tide wave rather than
+   the box.
 
 ## Tones
 
@@ -99,6 +103,33 @@ stylesheet.
 | Stat | `.ds-stat` + `__value`, `__label` |
 | Water | `.ds-sea`, `.ds-wave` + `--far`, `--mid`, `--near`; `.ds-ripple-pond` |
 
+### Inputs
+
+Every text field must have a placeholder and no border. The placeholder is the
+focus affordance: on `:focus` it takes the accent colour and runs the same
+turbulence displacement as the window tide. Once the field contains a value the
+placeholder is gone, so the standard `--ds-focus-ring` returns through
+`:not(:placeholder-shown)`.
+
+Browsers do not apply CSS filters to `::placeholder`, so [`inputs.js`](inputs.js)
+mirrors every placeholder into a sibling `.ds-wave-placeholder` span and hides
+the native placeholder text. Call `initPlaceholderWaves()` once; a mutation
+observer covers fields added later. Screen readers still receive the real
+placeholder.
+
+```js
+import { initPlaceholderWaves } from "./inputs.js";
+initPlaceholderWaves();
+```
+
+- `.ds-input` covers text fields; `.ds-search` and `.ds-command__input` apply
+  the same treatment to their inner inputs.
+- Pages that compose these primitives must include the `#ds-input-wave` and
+  `#ds-input-wave-static` filters. The static filter is used under
+  `prefers-reduced-motion`. Both live in the sprite in [`index.html`](index.html).
+- Selects, checkboxes, switches, and sliders keep their normal chrome because
+  they cannot carry a placeholder.
+
 Example:
 
 ```html
@@ -139,7 +170,9 @@ when the tab is hidden.
 
 - Motion stops under `prefers-reduced-motion: reduce`.
 - Decorative layers are `aria-hidden="true"` and `pointer-events: none`.
-- Focus uses `--ds-focus-ring`; it is never removed.
+- Focus uses `--ds-focus-ring`; it is never removed. Empty text fields show
+  focus through the wavy placeholder and restore the ring once they hold a
+  value.
 - Status pills pair colour with a text label and a dot.
 - The water controls in the showcase expose `aria-pressed`.
 - Interactive text meets contrast on `--ds-surface` in both themes.
@@ -265,6 +298,7 @@ design-system/
   tokens.css       canonical tokens and tones
   components.css   component primitives
   water.js         caustics, drips, and ripples
+  inputs.js        mirrored placeholders for the tide displacement
   index.html       component showcase
   showcase.css     showcase-only layout
   showcase.js      showcase controls

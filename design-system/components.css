@@ -477,11 +477,32 @@
     background var(--ds-motion-fast) ease;
 }
 
-.ds-input::placeholder {
-  color: var(--ds-text-3);
+/* Text fields are borderless by contract. Focus is carried by the placeholder
+   rather than the box: while the field is empty, the placeholder takes the
+   accent colour and the same tide displacement as the window rim. Once a value
+   replaces the placeholder, the standard focus ring takes over. */
+.ds-input {
+  border: 0;
 }
 
-.ds-input:focus,
+.ds-input::placeholder {
+  color: var(--ds-text-3);
+  transition: color var(--ds-motion-fast) ease;
+}
+
+.ds-input:focus {
+  background: color-mix(in srgb, var(--ds-bg) 72%, transparent);
+}
+
+.ds-input:focus:not(:placeholder-shown) {
+  box-shadow: var(--ds-focus-ring);
+}
+
+/* The empty field is focused visually by the wave, not by a ring. */
+.ds-input:focus:placeholder-shown {
+  box-shadow: none;
+}
+
 .ds-select:focus {
   border-color: color-mix(in srgb, var(--ds-accent) 58%, var(--ds-line));
   background: color-mix(in srgb, var(--ds-bg) 72%, transparent);
@@ -663,15 +684,20 @@
   gap: var(--ds-space-2);
   height: 34px;
   padding: 0 10px;
-  border: 1px solid var(--ds-line);
+  border: 0;
   border-radius: var(--ds-radius-sm);
   background: color-mix(in srgb, var(--ds-bg) 55%, transparent);
   color: var(--ds-text-3);
-  transition: border-color var(--ds-motion-fast) ease, box-shadow var(--ds-motion-fast) ease;
+  transition: background var(--ds-motion-fast) ease, box-shadow var(--ds-motion-fast) ease;
 }
 
 .ds-search:focus-within {
-  border-color: color-mix(in srgb, var(--ds-accent) 55%, var(--ds-line));
+  background: color-mix(in srgb, var(--ds-bg) 72%, transparent);
+}
+
+/* As with .ds-input, the empty field signals focus through its placeholder.
+   A search that already contains text falls back to the keyboard ring. */
+.ds-search:focus-within:has(input:not(:placeholder-shown)) {
   box-shadow: var(--ds-focus-ring);
 }
 
@@ -698,7 +724,14 @@
   font-size: var(--ds-text-sm);
 }
 
-.ds-search input::placeholder { color: var(--ds-text-3); }
+/* The row carries the focus ring; the inner input never draws one. */
+.ds-search input:focus {
+  box-shadow: none;
+}
+
+.ds-search input::placeholder {
+  color: var(--ds-text-3);
+}
 
 .ds-search .ds-kbd { margin-left: auto; }
 
@@ -923,7 +956,13 @@
   font-size: var(--ds-text-md);
 }
 
-.ds-command__input input::placeholder { color: var(--ds-text-3); }
+.ds-command__input input::placeholder {
+  color: var(--ds-text-3);
+}
+
+.ds-command__input input:focus {
+  box-shadow: none;
+}
 
 .ds-command__list {
   padding: 6px;
@@ -1189,5 +1228,60 @@
   .ds-card:hover,
   .ds-pane__row:hover {
     transform: none;
+  }
+}
+
+/* ------------------------------------------------------ wavy placeholders */
+
+/* CSS filters do not apply to ::placeholder, so inputs.js mirrors the
+   placeholder in a sibling span. The span can take the tide displacement. */
+.ds-wave-host { position: relative; }
+
+.ds-wave-input::placeholder,
+.ds-scope .ds-wave-input::placeholder {
+  color: transparent;
+}
+
+.ds-wave-placeholder {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  overflow: hidden;
+  color: var(--ds-text-3);
+  white-space: nowrap;
+  pointer-events: none;
+  transition:
+    color var(--ds-motion-fast) ease,
+    opacity var(--ds-motion-fast) ease;
+}
+
+.ds-wave-placeholder[data-multiline="true"] {
+  display: block;
+  white-space: pre-wrap;
+}
+
+.ds-wave-placeholder[hidden] { display: none; }
+
+.ds-wave-input[hidden] + .ds-wave-placeholder { display: none; }
+
+.ds-wave-input:focus + .ds-wave-placeholder {
+  color: color-mix(in srgb, var(--ds-accent) 78%, var(--ds-text-2));
+  filter: url(#ds-input-wave);
+}
+
+.ds-wave-input:not(:placeholder-shown) + .ds-wave-placeholder {
+  opacity: 0;
+}
+
+/* Safety net for fields without a component-specific empty-focus rule. */
+.ds-wave-input:focus:placeholder-shown {
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-wave-input:focus + .ds-wave-placeholder {
+    filter: url(#ds-input-wave-static);
   }
 }

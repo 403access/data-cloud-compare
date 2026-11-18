@@ -104,6 +104,16 @@
       </feTurbulence>
       <feDisplacementMap in="SourceGraphic" in2="tide" scale="5" xChannelSelector="R" yChannelSelector="G"/>
     </filter>
+    <filter id="ds-input-wave" x="-10%" y="-80%" width="120%" height="260%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035 0.09" numOctaves="2" seed="7" result="input-tide">
+        <animate attributeName="baseFrequency" dur="9s" values="0.035 0.09;0.05 0.06;0.035 0.09" repeatCount="indefinite"/>
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" in2="input-tide" scale="2.2" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="ds-input-wave-static" x="-10%" y="-80%" width="120%" height="260%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035 0.09" numOctaves="2" seed="7" result="input-tide"/>
+      <feDisplacementMap in="SourceGraphic" in2="input-tide" scale="2.2" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
   </svg>
 
   <div class="os-shell">

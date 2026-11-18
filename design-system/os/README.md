@@ -12,6 +12,7 @@ entry and one ES module entry.
 | `os.css` | Stylesheet entry; imports every file in `css/` in cascade order |
 | `js/boot-theme.js` | Classic pre-paint script that applies saved preferences |
 | `js/main.js` | ES module entry; imports features, then starts the desktop |
+| `../inputs.js` | Shared enhancer that mirrors placeholders into the tide wave |
 
 ## Structure
 
@@ -51,6 +52,7 @@ os/
     calendar-app.css     Calendar app
     menu-meters.css      menu bar resource meters
     builder.css          App Studio GUI builder
+    inputs.css           borderless fields and wavy placeholder focus
     sidebar-resize.css   shared resizable app-sidebar handles
   js/
     main.js
@@ -175,6 +177,14 @@ same project renders at any window size.
 - **CSS is split at the original section boundaries.** `os.css` imports the
   files in the order the cascade needs. When adding a component, insert its new
   file at the matching position in that import list rather than appending it.
+- **Inputs are borderless and placeholder-led.** Every text field has a
+  placeholder and no box border. While it is empty, focus is carried by the
+  placeholder's accent colour and the `#ds-input-wave` tide displacement,
+  defined in `index.html`; a filled field falls back to the standard focus ring.
+  `css/inputs.css` owns the OS overrides, `inputs.js` mirrors each placeholder
+  into the wave span, and `#ds-input-wave-static` replaces the animation under
+  `prefers-reduced-motion`. Selects, checkboxes, switches, and sliders keep
+  their normal chrome.
 
 ## Checking changes
 

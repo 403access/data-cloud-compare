@@ -1,5 +1,6 @@
 /* Water design system — showcase interactions. */
 
+import { initPlaceholderWaves } from "./inputs.js";
 import { WaterSurface } from "./water.js";
 
 const root = document.documentElement;
@@ -51,6 +52,7 @@ function apply() {
 
 readPrefs();
 apply();
+initPlaceholderWaves();
 
 const surfaces = [];
 

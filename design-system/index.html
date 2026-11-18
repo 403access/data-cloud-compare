@@ -56,6 +56,16 @@
     <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
     <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></symbol>
     <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.2A8.5 8.5 0 0 1 9.8 4a8.5 8.5 0 1 0 10.2 10.2z"/></symbol>
+    <filter id="ds-input-wave" x="-10%" y="-80%" width="120%" height="260%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035 0.09" numOctaves="2" seed="7" result="input-tide">
+        <animate attributeName="baseFrequency" dur="9s" values="0.035 0.09;0.05 0.06;0.035 0.09" repeatCount="indefinite"/>
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" in2="input-tide" scale="2.2" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="ds-input-wave-static" x="-10%" y="-80%" width="120%" height="260%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035 0.09" numOctaves="2" seed="7" result="input-tide"/>
+      <feDisplacementMap in="SourceGraphic" in2="input-tide" scale="2.2" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
   </svg>
 
   <header class="show-top">
@@ -372,7 +382,7 @@
           </article>
 
           <article class="demo">
-            <header class="demo-head"><h3>Form controls</h3><span class="demo-tag">.ds-input · .ds-switch</span></header>
+            <header class="demo-head"><h3>Form controls</h3><span class="demo-tag">.ds-input · borderless · wavy focus</span></header>
             <div class="demo-body demo-form">
               <label class="ds-field">
                 <span class="ds-label">Search scope</span>
@@ -713,8 +723,8 @@
       <div class="wrap">
         <header class="section-head">
           <span class="show-kicker">05 · Usage</span>
-          <h2>Three lines to join the current.</h2>
-          <p>Import the tokens, import the primitives, then set the tone on the root element.</p>
+          <h2>Four lines to join the current.</h2>
+          <p>Import the tokens and primitives, start the water surface, and let <code>inputs.js</code> carry the tide into every placeholder.</p>
         </header>
 
         <div class="usage-grid">
@@ -748,14 +758,22 @@ const water = new WaterSurface(
 
 water.setTone("lagoon");</code></pre>
           </div>
+
+          <div class="usage-block">
+            <div class="usage-head"><h3>Wavy inputs</h3><button class="ds-btn ds-btn--small ds-btn--quiet" type="button" data-copy-target="code-inputs"><svg class="icon"><use href="#i-copy"/></svg><span>Copy</span></button></div>
+            <pre class="ds-code" id="code-inputs"><code>import { initPlaceholderWaves } from "./inputs.js";
+
+initPlaceholderWaves();</code></pre>
+          </div>
         </div>
 
         <div class="usage-note ds-callout">
           <svg class="ds-callout__icon icon"><use href="#i-check"/></svg>
           <div>
             <strong>Accessibility contract.</strong> Motion stops under
-            <code>prefers-reduced-motion</code>, every control has a visible focus ring, status is
-            never carried by colour alone, and the water canvas is decorative
+            <code>prefers-reduced-motion</code>, every control has a visible focus state
+            (text fields use the wavy placeholder while empty and the focus ring once filled),
+            status is never carried by colour alone, and the water canvas is decorative
             (<code>aria-hidden</code>, pointer-events: none).
           </div>
         </div>
