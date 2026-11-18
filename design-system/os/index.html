@@ -123,7 +123,7 @@
               <button type="button" role="menuitem" data-cmd="verify"><svg class="icon"><use href="#i-shield"/></svg>Verify snapshot</button>
               <button type="button" role="menuitem" data-cmd="toggle-hidden"><svg class="icon"><use href="#i-file"/></svg>Toggle dotfiles</button>
               <hr>
-              <button type="button" role="menuitem" data-cmd="open-settings"><svg class="icon"><use href="#i-drop"/></svg>Water settings</button>
+              <button type="button" role="menuitem" data-cmd="open-settings"><svg class="icon"><use href="#i-gear"/></svg>Settings</button>
               <button type="button" role="menuitem" data-cmd="close-focused"><svg class="icon"><use href="#i-x"/></svg>Close window</button>
             </div>
           </div>
@@ -156,7 +156,7 @@
             <button class="os-menu" type="button" aria-haspopup="menu" aria-expanded="false">Window</button>
             <div class="os-menu__pop" role="menu" hidden>
               <button type="button" role="menuitem" data-cmd="open-explorer"><svg class="icon"><use href="#i-folder"/></svg>Explorer</button>
-              <button type="button" role="menuitem" data-cmd="open-settings"><svg class="icon"><use href="#i-drop"/></svg>Water settings</button>
+              <button type="button" role="menuitem" data-cmd="open-settings"><svg class="icon"><use href="#i-gear"/></svg>Settings</button>
               <button type="button" role="menuitem" data-cmd="open-network"><svg class="icon"><use href="#i-globe"/></svg>Network</button>
               <button type="button" role="menuitem" data-cmd="open-devices"><svg class="icon"><use href="#i-bluetooth"/></svg>Devices</button>
               <button type="button" role="menuitem" data-cmd="open-battery"><svg class="icon"><use href="#i-battery"/></svg>Battery</button>
@@ -682,23 +682,67 @@
       </section>
 
       <!-- ------------------------------------------------------------- settings -->
-      <section class="os-window os-window--settings" id="win-settings" data-window="settings" data-title="Water settings" role="dialog" aria-label="Water settings" tabindex="-1" hidden>
+      <section class="os-window os-window--settings" id="win-settings" data-window="settings" data-title="Settings" role="dialog" aria-label="Settings" tabindex="-1" hidden>
         <header class="os-titlebar" data-drag-handle>
           <div class="os-lights">
-            <button class="os-light os-light--close" type="button" data-window-action="close" aria-label="Close water settings" title="Close"></button>
-            <button class="os-light os-light--min" type="button" data-window-action="minimize" aria-label="Minimise water settings" title="Minimise"></button>
-            <button class="os-light os-light--max" type="button" data-window-action="maximize" aria-label="Maximise water settings" title="Maximise"></button>
+            <button class="os-light os-light--close" type="button" data-window-action="close" aria-label="Close settings" title="Close"></button>
+            <button class="os-light os-light--min" type="button" data-window-action="minimize" aria-label="Minimise settings" title="Minimise"></button>
+            <button class="os-light os-light--max" type="button" data-window-action="maximize" aria-label="Maximise settings" title="Maximise"></button>
           </div>
           <div class="os-titlebar__title">
-            <span class="os-app-mark os-app-mark--settings"><svg class="icon"><use href="#i-drop"/></svg></span>
-            <b>Water settings</b>
-            <span class="os-titlebar__sub">Shape the current and the calm.</span>
+            <span class="os-app-mark os-app-mark--settings"><svg class="icon"><use href="#i-gear"/></svg></span>
+            <b>Settings</b>
+            <span class="os-titlebar__sub">Command palette, water, and layout.</span>
           </div>
           <div class="os-titlebar__actions"></div>
         </header>
 
         <div class="osx-theme-panel">
           <div class="osx-theme-body ds-scroll">
+          <section class="osx-theme-group" data-settings-section="command">
+            <h3>Command palette</h3>
+            <label class="osx-theme-row">
+              <span class="osx-theme-text"><b>Show commands</b><small>Navigation, view, appearance, and system actions.</small></span>
+              <span class="ds-switch"><input type="checkbox" data-command-setting="showCommands" checked><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+            </label>
+            <label class="osx-theme-row">
+              <span class="osx-theme-text"><b>Search local files</b><small>Match paths from the local index.</small></span>
+              <span class="ds-switch"><input type="checkbox" data-command-setting="localFiles" checked><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+            </label>
+            <label class="osx-theme-row">
+              <span class="osx-theme-text"><b>Search remote files</b><small>Match paths from the current provider snapshot.</small></span>
+              <span class="ds-switch"><input type="checkbox" data-command-setting="remoteFiles" checked><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+            </label>
+            <label class="osx-theme-row osx-theme-row--select">
+              <span class="osx-theme-text"><b>Start file search after</b><small>How many characters before file matches appear.</small></span>
+              <select class="osx-select" data-command-setting="minFileChars" aria-label="File search threshold">
+                <option value="1">1 character</option>
+                <option value="2" selected>2 characters</option>
+                <option value="3">3 characters</option>
+                <option value="4">4 characters</option>
+              </select>
+            </label>
+            <label class="osx-theme-row">
+              <span class="osx-theme-text"><b>Only commands that apply now</b><small>Hide navigation actions that cannot run in this view.</small></span>
+              <span class="ds-switch"><input type="checkbox" data-command-setting="onlyRelevant"><span class="ds-switch__track"><span class="ds-switch__thumb"></span></span></span>
+            </label>
+            <div class="osx-command-groups">
+              <span class="osx-command-groups-label">Command groups</span>
+              <div class="osx-command-groups-grid">
+                <label class="osx-command-toggle"><input type="checkbox" data-command-group="Navigation" checked><span>Navigation</span></label>
+                <label class="osx-command-toggle"><input type="checkbox" data-command-group="Search" checked><span>Search</span></label>
+                <label class="osx-command-toggle"><input type="checkbox" data-command-group="View" checked><span>View</span></label>
+                <label class="osx-command-toggle"><input type="checkbox" data-command-group="Columns" checked><span>Columns</span></label>
+                <label class="osx-command-toggle"><input type="checkbox" data-command-group="Sort" checked><span>Sort</span></label>
+                <label class="osx-command-toggle"><input type="checkbox" data-command-group="Filters" checked><span>Filters</span></label>
+                <label class="osx-command-toggle"><input type="checkbox" data-command-group="Appearance" checked><span>Appearance</span></label>
+                <label class="osx-command-toggle"><input type="checkbox" data-command-group="System" checked><span>System</span></label>
+                <label class="osx-command-toggle"><input type="checkbox" data-command-group="Provider" checked><span>Provider</span></label>
+              </div>
+              <p class="osx-command-settings-note" data-command-settings-note></p>
+            </div>
+          </section>
+
           <div class="osx-theme-status" data-theme-status>
             <span class="osx-theme-status-dot" aria-hidden="true"></span>
             <p data-theme-status-text>Water effects are active. Drips follow your cursor.</p>
@@ -802,7 +846,10 @@
 
           </div>
           <footer class="osx-theme-foot">
-            <button class="osx-btn osx-btn--ghost" type="button" data-cmd="reset-water-settings">Reset water settings</button>
+            <div class="osx-theme-foot-actions">
+              <button class="osx-btn osx-btn--ghost" type="button" data-cmd="reset-command-settings">Reset command palette</button>
+              <button class="osx-btn osx-btn--ghost" type="button" data-cmd="reset-water-settings">Reset water settings</button>
+            </div>
             <p>Saved on this device · Water is available from the theme menu.</p>
           </footer>
         </div>
@@ -1458,7 +1505,7 @@
             <div class="osx-shortcut-row"><span>Toggle the legend</span><span class="osx-keys"><kbd>⌘</kbd><kbd>/</kbd></span></div>
             <div class="osx-shortcut-row"><span>Columns settings</span><span class="osx-keys"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>C</kbd></span></div>
             <div class="osx-shortcut-row"><span>Analytics</span><span class="osx-keys"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>A</kbd></span></div>
-            <div class="osx-shortcut-row"><span>Water settings</span><span class="osx-keys"><kbd>⌘</kbd><kbd>,</kbd></span></div>
+            <div class="osx-shortcut-row"><span>Settings</span><span class="osx-keys"><kbd>⌘</kbd><kbd>,</kbd></span></div>
             <div class="osx-shortcut-row"><span>Close overlay</span><span class="osx-keys"><kbd>esc</kbd></span></div>
           </section>
           <p class="osx-shortcuts-note">Ctrl works in place of ⌘ on other keyboards. The shortcut sheet is a read-only concept in this demo.</p>
@@ -1550,7 +1597,10 @@
       </div>
       <footer class="osx-command-foot">
         <span><kbd>↑</kbd><kbd>↓</kbd> to move · <kbd>↵</kbd> to open</span>
-        <span><kbd>esc</kbd> to close · <kbd>⌘K</kbd> to toggle</span>
+        <span class="osx-command-foot-actions">
+          <button type="button" class="osx-command-settings" data-command-settings title="Command palette settings" aria-label="Command palette settings"><svg class="icon"><use href="#i-gear"/></svg>Settings</button>
+          <span><kbd>esc</kbd> to close · <kbd>⌘K</kbd> to toggle</span>
+        </span>
       </footer>
     </div>
   </div>

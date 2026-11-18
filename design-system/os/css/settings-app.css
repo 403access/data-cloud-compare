@@ -86,6 +86,72 @@
 .osx-theme-row .ds-switch__thumb { width: 11px; height: 11px; }
 .osx-theme-row .ds-switch input:checked + .ds-switch__track .ds-switch__thumb { transform: translateX(12px); }
 .osx-theme-row--select { cursor: default; }
+.osx-command-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+.osx-command-groups-label {
+  color: var(--ds-text-3);
+  font-size: calc(9px * var(--os-font-scale, 1));
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.osx-command-groups-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+}
+.osx-command-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 5px 7px;
+  border: 1px solid var(--ds-line);
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--ds-sidebar) 52%, transparent);
+  color: var(--ds-text-2);
+  font-size: calc(9.5px * var(--os-font-scale, 1));
+  cursor: pointer;
+  transition: background var(--ds-motion-fast) ease, border-color var(--ds-motion-fast) ease, color var(--ds-motion-fast) ease;
+}
+.osx-command-toggle:hover { background: var(--ds-hover); color: var(--ds-text); }
+.osx-command-toggle input {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  margin: 0;
+  accent-color: var(--ds-accent);
+}
+.osx-command-toggle:has(input:checked) {
+  border-color: color-mix(in srgb, var(--ds-accent) 42%, var(--ds-line));
+  background: color-mix(in srgb, var(--ds-accent) 10%, transparent);
+  color: var(--ds-text);
+}
+.osx-command-toggle span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.osx-command-settings-note {
+  margin: 1px 0 0;
+  color: var(--ds-text-3);
+  font-size: calc(9px * var(--os-font-scale, 1));
+  line-height: 1.4;
+}
+.osx-theme-group.is-highlighted {
+  border-radius: 8px;
+  animation: osx-settings-flash 1.2s var(--ds-ease-out);
+}
+@keyframes osx-settings-flash {
+  0% { box-shadow: 0 0 0 2px color-mix(in srgb, var(--ds-accent) 42%, transparent); }
+  100% { box-shadow: 0 0 0 2px transparent; }
+}
+.osx-theme-foot-actions { display: flex; gap: 6px; }
+.osx-theme-foot-actions .osx-btn { flex: 1; }
 .osx-theme-foot {
   display: flex;
   flex-direction: column;

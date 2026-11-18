@@ -68,6 +68,7 @@ os/
       menu-bar-usage.js  CPU/RAM/storage meter preferences
       command-catalog.js command inventory and fuzzy file matching
       command-bar.js     command overlay and keyboard selection
+      command-settings.js command palette source and condition settings
       commands.js        data-cmd dispatcher
       shortcuts.js       global key map
     explorer/
@@ -91,6 +92,17 @@ os/
       builder-variables.js live system-variable catalog
       gui-builder.js     project rail, artboard, inspector, variable binding
 ```
+
+## Command palette
+
+The command bar (`⌘K`) merges fuzzy file matches with commands grouped as
+Navigation, Search, View, Columns, Sort, Filters, Appearance, System, and
+Provider. Settings owns the palette controls under **Command palette**: commands
+on or off, local and remote file sources, how many characters trigger file
+search, whether inactive navigation commands are hidden, and which command
+groups appear. Preferences persist under `explorer-command-palette`; the gear in
+the command bar footer, **Open command palette settings** in the palette, and
+`⌘,` in the palette all jump to the section.
 
 ## App Studio
 

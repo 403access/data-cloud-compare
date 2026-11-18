@@ -14,6 +14,7 @@ const PROVIDER_KEY = "explorer-provider";
 const FONT_SIZE_KEY = "explorer-os-font-size";
 const WINDOW_WAVE_KEY = "explorer-os-window-wave";
 const WINDOW_LAYOUT_KEY = "explorer-os-window-layout";
+const COMMAND_KEY = "explorer-command-palette";
 
 export const TONES = { lagoon: "Lagoon", ocean: "Ocean", deep: "Deep" };
 const SPEEDS = ["calm", "flowing", "rapid"];
@@ -23,6 +24,20 @@ export const WINDOW_LAYOUTS = ["split", "overlap"];
 export const FONT_SIZES = ["compact", "comfortable", "large"];
 export const THEME_MODES = ["system", "light", "dark", "water"];
 export const THEME_LABELS = { system: "System", light: "Light", dark: "Dark", water: "Water" };
+
+export const COMMAND_GROUPS = [
+  "Navigation", "Search", "View", "Columns", "Sort", "Filters", "Appearance",
+  "System", "Provider",
+];
+
+export const COMMAND_DEFAULTS = {
+  showCommands: true,
+  localFiles: true,
+  remoteFiles: true,
+  minFileChars: 2,
+  onlyRelevant: false,
+  groups: Object.fromEntries(COMMAND_GROUPS.map((group) => [group, true])),
+};
 
 export const PROVIDERS = {
   jottacloud: { key: "jottacloud", label: "Jottacloud", root: "Archive", dot: "jottacloud" },
@@ -186,11 +201,36 @@ function readProvider() {
   return PROVIDERS[saved] ? saved : "jottacloud";
 }
 
+function readCommandSettings() {
+  const defaults = {
+    ...COMMAND_DEFAULTS,
+    groups: { ...COMMAND_DEFAULTS.groups },
+  };
+  const saved = readJSON(COMMAND_KEY);
+  if (!saved || typeof saved !== "object") return defaults;
+  const bool = (value, fallback) => (typeof value === "boolean" ? value : fallback);
+  const threshold = Number(saved.minFileChars);
+  const savedGroups = saved.groups && typeof saved.groups === "object" ? saved.groups : {};
+  const groups = {};
+  COMMAND_GROUPS.forEach((group) => {
+    groups[group] = bool(savedGroups[group], true);
+  });
+  return {
+    showCommands: bool(saved.showCommands, defaults.showCommands),
+    localFiles: bool(saved.localFiles, defaults.localFiles),
+    remoteFiles: bool(saved.remoteFiles, defaults.remoteFiles),
+    minFileChars: [1, 2, 3, 4].includes(threshold) ? threshold : defaults.minFileChars,
+    onlyRelevant: bool(saved.onlyRelevant, defaults.onlyRelevant),
+    groups,
+  };
+}
+
 export const state = {
   water: readWater(),
   themeMode: readThemeMode(),
   provider: readProvider(),
   windowLayout: readWindowLayout(),
+  commandSettings: readCommandSettings(),
   hidden: false,
   legendOpen: false,
   activeSide: "local",
@@ -271,4 +311,8 @@ export function saveProvider() {
   } catch {
     /* ignore */
   }
+}
+
+export function saveCommandSettings() {
+  writeJSON(COMMAND_KEY, state.commandSettings);
 }

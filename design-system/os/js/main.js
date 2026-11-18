@@ -21,6 +21,7 @@ import "./apps/battery.js";
 import "./apps/sound.js";
 import "./apps/terminal.js";
 import "./shell/commands.js";
+import "./shell/command-settings.js";
 import "./shell/shortcuts.js";
 
 startClock();

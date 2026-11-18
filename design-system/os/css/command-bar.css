@@ -200,3 +200,20 @@
   font-weight: 600;
   line-height: 1.4;
 }
+.osx-command-foot-actions { display: inline-flex; align-items: center; gap: 10px; }
+.osx-command-settings {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 5px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ds-text-3);
+  font-family: var(--ds-font);
+  font-size: calc(9px * var(--os-font-scale, 1));
+  font-weight: 600;
+  cursor: pointer;
+}
+.osx-command-settings:hover { background: var(--ds-hover); color: var(--ds-text); }
+.osx-command-settings .icon { width: 10px; height: 10px; }

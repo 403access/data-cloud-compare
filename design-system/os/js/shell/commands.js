@@ -20,6 +20,7 @@ import { changeTrack, togglePlay } from "../apps/music.js";
 import { openTaskManager } from "../apps/task-manager.js";
 import { focusTerminalInput, rerunTerminal } from "../apps/terminal.js";
 import { openCommand } from "./command-bar.js";
+import { openCommandSettings, resetCommandSettings } from "./command-settings.js";
 import { closeMenus, closeTrays } from "./popovers.js";
 import { closeWindow, focusedWindow, openWindow } from "./windows.js";
 
@@ -32,6 +33,12 @@ export function runCommand(command) {
       break;
     case "open-settings":
       openWindow("settings");
+      break;
+    case "open-command-settings":
+      openCommandSettings();
+      break;
+    case "reset-command-settings":
+      resetCommandSettings();
       break;
     case "open-network":
       openWindow("network");

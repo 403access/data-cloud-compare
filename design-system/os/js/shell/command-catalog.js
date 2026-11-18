@@ -18,6 +18,7 @@ import {
   closeWindow, isOpen, openWindow, windowById,
 } from "./windows.js";
 import { setThemeMode, setWaterSetting } from "../features/appearance.js";
+import { openCommandSettings } from "./command-settings.js";
 import { batteryState, batteryTime } from "../apps/battery.js";
 import {
   calendarAppSelected, calendarDayFormat, openCalendarApp,
@@ -109,6 +110,7 @@ function addCommand(items, groups, group, title, opts = {}) {
     icon: opts.icon || "settings",
     check: Boolean(opts.check),
     aside: opts.aside || "",
+    inactive: Boolean(opts.inactive),
     run: opts.run || (() => {}),
   });
 }
@@ -159,18 +161,21 @@ function commandCatalog() {
     icon: "back",
     subtitle: `${active === "local" ? "Local index" : provider} · ${active === "local" ? "/mnt/tank" : providerRoot()}`,
     keywords: "history previous",
+    inactive: true,
     run: () => toast("No history in this snapshot view", "warn"),
   });
   addCommand(items, groups, "Navigation", "Go forward", {
     icon: "forward",
     subtitle: `${active === "local" ? "Local index" : provider} · ${active === "local" ? "/mnt/tank" : providerRoot()}`,
     keywords: "history next",
+    inactive: true,
     run: () => toast("No history in this snapshot view", "warn"),
   });
   addCommand(items, groups, "Navigation", "Go up one folder", {
     icon: "up",
     subtitle: "Already at the root",
     keywords: "parent directory",
+    inactive: true,
     run: () => toast("Already at the snapshot root", "warn"),
   });
   addCommand(items, groups, "Navigation", "Show this path in the other pane", {
@@ -393,11 +398,11 @@ function commandCatalog() {
   });
   const settingsWindow = windowById("settings");
   const settingsOpen = isOpen(settingsWindow);
-  addCommand(items, groups, "Appearance", settingsOpen ? "Close water settings" : "Open water settings", {
+  addCommand(items, groups, "Appearance", settingsOpen ? "Close settings" : "Open settings", {
     key: "toggle-water-panel",
     icon: "water",
-    subtitle: "Tune the ripple, caustic, and current effects",
-    keywords: "water settings theme",
+    subtitle: "Command palette, water, and layout",
+    keywords: "water settings theme command palette",
     check: settingsOpen,
     run: () => {
       if (isOpen(settingsWindow)) closeWindow(settingsWindow);
@@ -456,6 +461,13 @@ function commandCatalog() {
     subtitle: "GUI builder with a project for every system app",
     keywords: "builder gui design studio app project variables components",
     run: () => openBuilder(),
+  });
+  addCommand(items, groups, "System", "Open command palette settings", {
+    key: "open-command-settings",
+    icon: "settings",
+    subtitle: "Choose sources, groups, and when results appear",
+    keywords: "command palette settings configure sources files groups threshold",
+    run: () => openCommandSettings(),
   });
 
   Object.values(PROVIDERS).forEach((info) => {
@@ -523,10 +535,17 @@ function fileItems(side, raw) {
 }
 
 export function buildCommandItems() {
+  const settings = state.commandSettings;
   const query = state.command.query;
   const commandsOnly = query.startsWith(">");
   const raw = commandsOnly ? query.slice(1).trim() : query.trim();
-  const commands = commandCatalog();
+  const threshold = Number(settings.minFileChars);
+  const fileThreshold = [1, 2, 3, 4].includes(threshold) ? threshold : 2;
+  const commandsOn = settings.showCommands || commandsOnly;
+  const filesOn = settings.localFiles || settings.remoteFiles;
+  let commands = commandCatalog().filter((item) => settings.groups[item.group] !== false);
+  if (settings.onlyRelevant) commands = commands.filter((item) => !item.inactive);
+  if (!commandsOn) commands = [];
   let matches = commands;
   if (raw) {
     matches = commands
@@ -541,9 +560,11 @@ export function buildCommandItems() {
       .map((match) => match.item);
   }
   const items = matches.slice();
-  if (!commandsOnly && raw.length >= 2) {
-    items.push(...fileItems("local", raw));
-    items.push(...fileItems("remote", raw));
+  if (!commandsOnly && filesOn && raw.length >= fileThreshold) {
+    if (settings.localFiles) items.push(...fileItems("local", raw));
+    if (settings.remoteFiles) items.push(...fileItems("remote", raw));
   }
-  return { items, raw, commandsOnly };
+  return {
+    items, raw, commandsOnly, settings, fileThreshold, commandsOn, filesOn,
+  };
 }

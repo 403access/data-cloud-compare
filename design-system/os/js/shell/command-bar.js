@@ -8,6 +8,7 @@ import {
   clearPaneFilters, renderAll, selectEntry, setActiveSide,
 } from "../explorer/view.js";
 import { buildCommandItems, commandIcon } from "./command-catalog.js";
+import { openCommandSettings } from "./command-settings.js";
 import { closeTrays } from "./popovers.js";
 
 const overlay = document.querySelector("[data-command-overlay]");
@@ -25,7 +26,9 @@ function highlight(text, query) {
 
 function renderCommands() {
   if (!commandResults) return;
-  const { items, raw, commandsOnly } = buildCommandItems();
+  const {
+    items, raw, commandsOnly, settings, fileThreshold, commandsOn, filesOn,
+  } = buildCommandItems();
   state.command.items = items;
   if (state.command.index >= items.length) state.command.index = Math.max(0, items.length - 1);
   let lastGroup = null;
@@ -66,14 +69,26 @@ function renderCommands() {
     if (empty) {
       let title = "No matches";
       let hint = "Try a different word or command.";
-      if (commandsOnly) {
+      if (!commandsOn && !filesOn) {
+        title = "Command bar is empty";
+        hint = "Enable commands or files in Settings · Command palette.";
+      } else if (commandsOnly) {
         title = "No command matches";
         hint = "Remove the > to search files and folders too.";
-      } else if (state.command.query.trim() && raw.length < 2) {
-        title = `Type ${2 - raw.length} more character${2 - raw.length === 1 ? "" : "s"}`;
-        hint = "File and folder search starts after two characters.";
+      } else if (filesOn && raw.length > 0 && raw.length < fileThreshold) {
+        const remaining = fileThreshold - raw.length;
+        title = `Type ${remaining} more character${remaining === 1 ? "" : "s"}`;
+        hint = `File and folder search starts after ${fileThreshold} character${fileThreshold === 1 ? "" : "s"}.`;
+      } else if (!raw) {
+        title = settings.showCommands ? "No commands are shown" : "Search files and folders";
+        hint = settings.showCommands
+          ? "Enable command groups in Settings · Command palette."
+          : `File and folder search starts after ${fileThreshold} character${fileThreshold === 1 ? "" : "s"}.`;
       } else if (raw) {
-        title = `No matches for “${raw}”`;
+        title = filesOn ? `No matches for “${raw}”` : `No command matches “${raw}”`;
+        hint = filesOn
+          ? "Try a different word or check the enabled command groups."
+          : "File search is off. Enable it in Settings · Command palette.";
       }
       commandEmpty.querySelector("[data-command-empty-title]").textContent = title;
       commandEmpty.querySelector("[data-command-empty-hint]").textContent = hint;
@@ -119,6 +134,21 @@ function runCommandItem(item) {
   item.run?.();
 }
 
+function syncCommandPlaceholder() {
+  if (!commandInput) return;
+  const settings = state.commandSettings;
+  const hasFiles = settings.localFiles || settings.remoteFiles;
+  if (settings.showCommands && hasFiles) {
+    commandInput.placeholder = "Search files and folders, or run a command…";
+  } else if (settings.showCommands) {
+    commandInput.placeholder = "Run a command…";
+  } else if (hasFiles) {
+    commandInput.placeholder = "Search files and folders…";
+  } else {
+    commandInput.placeholder = "Open Settings · Command palette to enable sources";
+  }
+}
+
 export function openCommand() {
   if (!overlay) return;
   closeTrays();
@@ -127,6 +157,7 @@ export function openCommand() {
   state.command.query = "";
   state.command.index = 0;
   if (commandInput) commandInput.value = "";
+  syncCommandPlaceholder();
   renderCommands();
   requestAnimationFrame(() => {
     commandInput?.focus();
@@ -166,6 +197,11 @@ commandInput?.addEventListener("keydown", (event) => {
   } else if (event.key === "Enter") {
     event.preventDefault();
     runCommandItem(state.command.items[state.command.index]);
+  } else if ((event.metaKey || event.ctrlKey) && event.key === ",") {
+    event.preventDefault();
+    event.stopPropagation();
+    closeCommand();
+    openCommandSettings();
   } else if (event.key === "Escape") {
     event.preventDefault();
     event.stopPropagation();
@@ -190,15 +226,22 @@ commandResults?.addEventListener("click", (event) => {
 
 document.querySelector("[data-command-close]")?.addEventListener("click", closeCommand);
 
+document.querySelector("[data-command-settings]")?.addEventListener("click", () => {
+  closeCommand();
+  openCommandSettings();
+});
+
 overlay?.addEventListener("click", (event) => {
   if (event.target === overlay) closeCommand();
 });
 
 overlay?.addEventListener("keydown", (event) => {
   if (event.key !== "Tab") return;
-  const focusables = [commandInput, document.querySelector("[data-command-close]")].filter(
-    (node) => node && node.offsetParent !== null,
-  );
+  const focusables = [
+    commandInput,
+    document.querySelector("[data-command-settings]"),
+    document.querySelector("[data-command-close]"),
+  ].filter((node) => node && node.offsetParent !== null);
   if (!focusables.length) return;
   event.preventDefault();
   const current = focusables.indexOf(document.activeElement);
