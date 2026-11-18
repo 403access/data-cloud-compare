@@ -175,9 +175,11 @@ of the real explorer application.
   in both.
 - The menu bar also carries three resource meters: CPU usage, RAM usage, and
   free storage in GB. They are computed from the Task Manager's process table,
-  update with each sample, and open the Task Manager when clicked. The group
-  hides below 1260px so the remaining tray items, including Bluetooth, keep
-  their space.
+  update with each sample, and open the Task Manager when clicked. Space is
+  reclaimed progressively: the storage label drops below 1260px, the snapshot
+  chip below 1180px, and the theme/gallery icons and clock date between 821 and
+  1100px. The CPU and RAM labels and all three meters stay visible until phone
+  width.
 - **Task Manager** shows CPU, memory, and storage cards above a process table.
   It samples every six seconds (or on demand), updates rows in place, and lets
   you select and end a process, which recalculates the totals and meters.

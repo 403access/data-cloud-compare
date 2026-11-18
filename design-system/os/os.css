@@ -5031,7 +5031,28 @@ body.os code { font-family: var(--ds-font-mono); }
   }
 }
 
+/* Keep the resource meters on the tray at every desktop width. Below 1260
+   the labels give way first, then the snapshot chip, so the bars and values
+   stay visible. They only leave the phone-width tray. */
 @media (max-width: 1260px) {
+  /* Keep CPU and RAM labelled; the GB value makes storage self-explanatory. */
+  .os-resource[data-resource="storage"] .os-resource__label { display: none; }
+  .os-resources { gap: 4px; padding: 0 7px; }
+  .os-resource + .os-resource { padding-left: 6px; }
+  .os-resource__meter { width: 18px; }
+}
+
+@media (max-width: 1180px) {
+  .os-status--sync { display: none; }
+}
+
+@media (max-width: 1100px) and (min-width: 821px) {
+  .os-menubar__icon[data-theme-toggle],
+  .os-menubar__icon[href="../"] { display: none; }
+  .os-clock [data-clock-date] { display: none; }
+}
+
+@media (max-width: 820px) {
   .os-resources { display: none; }
 }
 
