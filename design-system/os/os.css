@@ -1784,6 +1784,19 @@ body.os code { font-family: var(--ds-font-mono); }
   background: color-mix(in srgb, #062b30 88%, var(--ds-bg));
 }
 
+/* The terminal keeps its dark palette in the light theme, so the token
+   colours meant for light surfaces have to be swapped for their dark
+   counterparts here. */
+[data-theme="light"] .os-terminal .os-term-prompt { color: #38d6ff; }
+[data-theme="light"] .os-terminal .os-term-path { color: #c3a8ff; }
+[data-theme="light"] .os-terminal .os-term-ok { color: #5ef2b0; }
+[data-theme="light"] .os-terminal .os-term-key { color: #ffd27a; }
+[data-theme="light"] .os-terminal .os-term-muted,
+[data-theme="light"] .os-terminal .os-term-hint { color: #7fb0ad; }
+[data-theme="light"] .os-terminal .os-term-cmd { color: #e9fbff; }
+[data-theme="light"] .os-terminal .os-term-input { color: #e9fbff; }
+[data-theme="light"] .os-terminal .os-term-error { color: #ff8a9b; }
+
 .os-term-line {
   display: flex;
   flex-wrap: wrap;
@@ -1812,18 +1825,48 @@ body.os code { font-family: var(--ds-font-mono); }
 .os-term-path { color: var(--ds-violet); }
 .os-term-cmd { color: #e9fbff; }
 .os-term-key { color: var(--ds-amber); }
+.os-term-error { color: #ff8a9b; }
+.os-term-hint { color: #6d9d9a; }
 
-.os-term-cursor {
-  display: inline-block;
-  width: 7px;
-  height: 12px;
-  background: var(--ds-accent);
-  animation: os-cursor 1.05s steps(1) infinite;
+.os-term-line--input {
+  margin: 0;
+  align-items: baseline;
+  flex-wrap: nowrap;
+  border-radius: 2px;
+  transition: background-color var(--ds-motion-fast) ease;
 }
 
-@keyframes os-cursor {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0; }
+.os-term-line--input:focus-within {
+  background: color-mix(in srgb, var(--ds-accent) 12%, transparent);
+}
+
+.os-terminal .os-term-input:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+.os-term-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #e9fbff;
+  font: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  caret-color: var(--ds-accent);
+  outline: none;
+}
+
+.os-term-input::placeholder {
+  color: #4c7a78;
+}
+
+.os-term-input::selection {
+  background: color-mix(in srgb, var(--ds-accent) 45%, transparent);
+  color: #effdff;
 }
 
 .os-terminal__foot {
@@ -2365,8 +2408,7 @@ body.os code { font-family: var(--ds-font-mono); }
   .os-tone-orb::after,
   .os-player__ring,
   .os-player.is-playing .os-player__progress i,
-  .os-eq i,
-  .os-term-cursor { animation: none; }
+  .os-eq i { animation: none; }
   .os-term-line { opacity: 1; animation: none; }
   .os-window,
   .os-dock__item,

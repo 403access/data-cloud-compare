@@ -202,6 +202,13 @@ of the real explorer application.
   with colour-coded battery meters. Disconnecting an accessory removes it from
   the tray menu, and turning Bluetooth off disables the accessory controls
   while preserving the paired state for the next time it is enabled.
+- **Terminal** is a working simulated shell, not a static transcript. Click the
+  window and type: `help` lists what it knows (`tank compare [--provider
+  jottacloud|gdrive]`, `ls`, `cat`, `open <app>`, `clear`, `whoami`, `pwd`,
+  `date`, `echo`, `exit`), Enter runs it, and **Run again** replays the
+  comparison. Output starts after the scripted opening transcript, and the
+  caret stays in the prompt while you select or copy earlier lines. Nothing is
+  executed: every command is answered locally in the page.
 - Every scrollable window surface uses `.ds-scroll`: a 10px transparent track,
   a rounded `--ds-text-3` thumb, and an accent-tinted hover. Firefox gets the
   native thin scrollbar via an `@supports` fallback so it does not lose the
