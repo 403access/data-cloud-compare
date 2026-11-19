@@ -476,8 +476,135 @@ function maximizeWindow(win) {
   focusWindow(win);
 }
 
+function swapTiles(source, target) {
+  const sourceKey = windowKey(source);
+  const targetKey = windowKey(target);
+  if (!tileOrder.includes(sourceKey)) tileOrder.push(sourceKey);
+  if (!tileOrder.includes(targetKey)) tileOrder.push(targetKey);
+  const sourceIndex = tileOrder.indexOf(sourceKey);
+  const targetIndex = tileOrder.indexOf(targetKey);
+  tileOrder[sourceIndex] = targetKey;
+  tileOrder[targetIndex] = sourceKey;
+}
+
+/* Split layout owns the geometry, so a tiled window cannot float freely. It
+   can still be picked up by its title bar: the window follows the pointer
+   while the tile underneath is marked as the drop target, and releasing over
+   another window exchanges the two entries in the tile order. */
+function tileTargetAt(x, y, exclude) {
+  const reach = TILE_GAP * 3;
+  let nearest = null;
+  let nearestDistance = Infinity;
+  windows.forEach((win) => {
+    if (win === exclude || !isOpen(win) || !win.classList.contains("is-tiled")) return;
+    const rect = win.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+      nearest = win;
+      nearestDistance = 0;
+      return;
+    }
+    if (nearestDistance === 0) return;
+    const dx = Math.max(rect.left - x, 0, x - rect.right);
+    const dy = Math.max(rect.top - y, 0, y - rect.bottom);
+    const distance = Math.hypot(dx, dy);
+    if (distance <= reach && distance < nearestDistance) {
+      nearest = win;
+      nearestDistance = distance;
+    }
+  });
+  return nearest;
+}
+
+let tileDrag = null;
+
+function startTileDrag(event, win) {
+  if (tileDrag || event.button !== 0) return;
+  if (event.target.closest("button, a, input, select, .os-eq")) return;
+  focusWindow(win);
+
+  const handle = event.currentTarget;
+  const desktopRect = desktop.getBoundingClientRect();
+  const rect = win.getBoundingClientRect();
+  const offsetX = event.clientX - rect.left;
+  const offsetY = event.clientY - rect.top;
+  const width = rect.width;
+  const height = rect.height;
+  let active = true;
+  let moved = false;
+  let target = null;
+  tileDrag = win;
+
+  try {
+    handle.setPointerCapture?.(event.pointerId);
+  } catch {
+    /* Pointer capture is best effort; document listeners still track the drag. */
+  }
+
+  function move(moveEvent) {
+    if (!active) return;
+    if (!moved) {
+      const dx = moveEvent.clientX - event.clientX;
+      const dy = moveEvent.clientY - event.clientY;
+      if (Math.hypot(dx, dy) < 4) return;
+      moved = true;
+      win.classList.add("is-tile-dragging");
+      win.style.right = "auto";
+      win.style.bottom = "auto";
+      win.style.width = `${width}px`;
+      win.style.height = `${height}px`;
+    }
+    win.style.left = `${moveEvent.clientX - desktopRect.left - offsetX}px`;
+    win.style.top = `${moveEvent.clientY - desktopRect.top - offsetY}px`;
+
+    const next = tileTargetAt(moveEvent.clientX, moveEvent.clientY, win);
+    if (next === target) return;
+    if (target) target.classList.remove("is-drop-target");
+    target = next;
+    if (target) target.classList.add("is-drop-target");
+  }
+
+  function end(endEvent) {
+    if (!active) return;
+    active = false;
+    document.removeEventListener("pointermove", move);
+    document.removeEventListener("pointerup", end);
+    document.removeEventListener("pointercancel", end);
+    document.removeEventListener("keydown", cancel);
+    try {
+      handle.releasePointerCapture?.(event.pointerId);
+    } catch {
+      /* The pointer may already be released. */
+    }
+    win.classList.remove("is-tile-dragging");
+    if (target) target.classList.remove("is-drop-target");
+    const droppedOn = endEvent && endEvent.type === "pointerup" ? target : null;
+    target = null;
+    tileDrag = null;
+    if (moved && droppedOn) swapTiles(win, droppedOn);
+    applyWindowLayout();
+    syncDock();
+  }
+
+  function cancel(keyEvent) {
+    if (keyEvent.key !== "Escape") return;
+    keyEvent.preventDefault();
+    end(null);
+  }
+
+  document.addEventListener("pointermove", move);
+  document.addEventListener("pointerup", end);
+  document.addEventListener("pointercancel", end);
+  document.addEventListener("keydown", cancel);
+  event.preventDefault();
+}
+
 function startDrag(event, win) {
-  if (window.innerWidth <= 820 || isTiling()) return;
+  if (window.innerWidth <= 820) return;
+  if (isTiling()) {
+    startTileDrag(event, win);
+    return;
+  }
   if (event.button !== 0 || win.classList.contains("is-maximized")) return;
   if (event.target.closest("button, a, input, select, .os-eq")) return;
   focusWindow(win);
@@ -634,6 +761,7 @@ function setupWindow(win) {
 windows.forEach(setupWindow);
 
 window.addEventListener("resize", () => {
+  if (tileDrag) return;
   if (state.windowLayout === "split") {
     applyWindowLayout();
     return;

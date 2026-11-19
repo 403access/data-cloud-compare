@@ -255,8 +255,9 @@
   display: none;
 }
 
-/* Split layout owns the geometry. Windows keep their chrome, but manual drag,
-   resize, and maximize give way to the shared workspace arrangement. */
+/* Split layout owns the geometry. Windows keep their chrome, and resize and
+   maximize give way to the shared workspace arrangement. A title bar can still
+   lift a window so it can be dropped onto another tile to swap places. */
 .os-window.is-tiled {
   min-width: 0;
   min-height: 0;
@@ -267,6 +268,38 @@
     height 200ms var(--ds-ease-out),
     border-color var(--ds-motion-fast) ease,
     box-shadow var(--ds-motion-fast) ease;
+}
+
+.os-window.is-tiled .os-titlebar { cursor: grab; }
+
+.os-window.is-tiled.is-tile-dragging {
+  z-index: 500 !important;
+  transition: none;
+  --os-rim: color-mix(in srgb, var(--ds-accent) 84%, #ffffff);
+  box-shadow:
+    0 48px 120px rgba(0, 8, 14, 0.68),
+    0 8px 26px rgba(0, 8, 14, 0.46),
+    0 0 0 1px color-mix(in srgb, var(--ds-accent) 32%, transparent),
+    0 0 64px var(--os-rim-glow);
+}
+
+.os-window.is-tiled.is-tile-dragging .os-titlebar { cursor: grabbing; }
+
+/* The tile that will take the dropped window. The overlay sits above the app
+   body so the target stays obvious even over dense content. */
+.os-window.is-tiled.is-drop-target {
+  --os-rim: color-mix(in srgb, var(--ds-accent) 82%, #ffffff);
+}
+
+.os-window.is-tiled.is-drop-target::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  z-index: 6;
+  border: 2px dashed color-mix(in srgb, var(--ds-accent) 78%, transparent);
+  border-radius: calc(var(--ds-radius-lg) - 4px);
+  background: color-mix(in srgb, var(--ds-accent) 7%, transparent);
+  pointer-events: none;
 }
 
 .os-window.is-tiled .os-resize-handle { display: none; }

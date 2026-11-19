@@ -67,7 +67,7 @@ os/
     shell/
       clock.js           time and date labels
       popovers.js        menu bar menus and tray panels
-      windows.js         drag, resize, focus, dock state, split/overlap layout
+      windows.js         drag, resize, focus, tile swap, dock state, split/overlap layout
       sidebar-resize.js  pointer and keyboard resizing for every app sidebar
       menu-bar-usage.js  CPU/RAM/storage meter preferences
       command-catalog.js command inventory and fuzzy file matching
@@ -134,6 +134,21 @@ app instead. **Shift+click** does the same on the same targets, and
   the command catalog marks app-launching commands with an `app` field so the
   command bar can route the gesture. `embed.css` removes the nested desktop
   chrome when an instance loads.
+
+## Window layout
+
+**Split** is the default workspace: every open app is tiled into a master and
+stack arrangement (a balanced grid once four or more apps are open), and
+**Overlap** keeps each app at its designed size and position.
+
+- The layout is saved under `explorer-os-window-layout` and can be changed from
+  Desktop & Dock in Settings.
+- In split layout a title bar can still drag its window. The tile follows the
+  pointer, the tile underneath is outlined as the drop target, and releasing
+  swaps the two windows' places. `Escape`, or releasing away from a tile,
+  returns the window to its slot.
+- Resize and maximize stay disabled while split layout owns the geometry;
+  moving back to Overlap restores each window where the user last left it.
 
 ## Key map
 
