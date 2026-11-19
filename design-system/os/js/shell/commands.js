@@ -24,7 +24,9 @@ import { openCommand } from "./command-bar.js";
 import { openSettings } from "../apps/settings.js";
 import { openCommandSettings, resetCommandSettings } from "./command-settings.js";
 import { closeMenus, closeTrays } from "./popovers.js";
-import { closeWindow, focusedWindow, openWindow } from "./windows.js";
+import {
+  appIdForCommand, closeWindow, focusedWindow, openWindow, openWindowInstance,
+} from "./windows.js";
 
 /* ------------------------------------------------------------ commands */
 
@@ -191,7 +193,29 @@ document.addEventListener("click", (event) => {
   const commandButton = event.target.closest("[data-cmd]");
   if (!commandButton) return;
   if (commandButton.tagName === "BUTTON") event.preventDefault();
+  if (event.shiftKey && commandButton.classList.contains("os-dock__item")) {
+    const app = appIdForCommand(commandButton.dataset.cmd);
+    if (app) {
+      openWindowInstance(app);
+      closeTrays();
+      closeMenus();
+      return;
+    }
+  }
   runCommand(commandButton.dataset.cmd);
+  closeTrays();
+  closeMenus();
+});
+
+/* Middle-click a dock tile to open a second instance of the same app. */
+document.addEventListener("auxclick", (event) => {
+  if (event.button !== 1) return;
+  const dockItem = event.target.closest(".os-dock__item[data-cmd]");
+  if (!dockItem) return;
+  const app = appIdForCommand(dockItem.dataset.cmd);
+  if (!app) return;
+  event.preventDefault();
+  openWindowInstance(app);
   closeTrays();
   closeMenus();
 });

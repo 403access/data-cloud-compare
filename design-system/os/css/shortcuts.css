@@ -4,7 +4,7 @@
   top: 90px;
   left: calc(50% - 262px);
   width: min(524px, calc(100vw - 32px));
-  height: min(540px, calc(100dvh - 160px));
+  height: min(620px, calc(100dvh - 160px));
 }
 .osx-shortcuts {
   flex: 1;
@@ -32,6 +32,26 @@
   border-bottom: 1px solid var(--ds-line);
   color: var(--ds-text-2);
   font-size: calc(10.5px * var(--os-font-scale, 1));
+}
+.osx-shortcut-row__action { display: flex; min-width: 0; flex-direction: column; gap: 2px; }
+.osx-shortcut-row__note {
+  color: var(--ds-text-3);
+  font-size: calc(8.5px * var(--os-font-scale, 1));
+  line-height: 1.35;
+}
+.osx-shortcut-row__bindings {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: none;
+}
+.osx-keys__or {
+  padding: 0 1px;
+  color: var(--ds-text-3);
+  font-size: calc(8.5px * var(--os-font-scale, 1));
+  font-weight: 600;
 }
 .osx-keys { display: inline-flex; align-items: center; gap: 3px; flex: none; }
 .osx-keys kbd,

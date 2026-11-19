@@ -310,7 +310,7 @@ export const BUILTIN_PROJECTS = [
     id: "project-shortcuts",
     name: "Keyboard shortcuts",
     app: "Keyboard shortcuts",
-    description: "The key map for the comparison, views, and global overlays.",
+    description: "The multi-binding key map for apps, comparison, views, and global overlays.",
     icon: "i-keyboard",
     accent: "#c3a8ff",
     builtin: true,

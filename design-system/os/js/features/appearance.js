@@ -14,9 +14,10 @@ import { renderAll } from "../compare/view.js";
 /* ------------------------------------------------------------- water */
 
 const canvas = document.getElementById("os-water");
+const embedded = new URLSearchParams(window.location.search).has("embed");
 const activeWater = () => state.water.effects && state.themeMode === "water";
 
-const surface = canvas
+const surface = !embedded && canvas
   ? new WaterSurface(canvas, {
       // Listen on the window, not just the desktop, so drips and ripples also
       // follow the cursor across windows, the menu bar, and the dock.

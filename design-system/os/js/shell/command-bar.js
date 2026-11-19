@@ -9,6 +9,7 @@ import {
 } from "../compare/view.js";
 import { buildCommandItems, commandIcon } from "./command-catalog.js";
 import { openCommandSettings } from "./command-settings.js";
+import { openWindowInstance } from "./windows.js";
 import { closeTrays } from "./popovers.js";
 
 const overlay = document.querySelector("[data-command-overlay]");
@@ -114,7 +115,7 @@ function setCommandIndex(index) {
     ?.scrollIntoView({ block: "nearest" });
 }
 
-function runCommandItem(item) {
+function runCommandItem(item, { instance = false } = {}) {
   if (!item) return;
   if (item.kind === "file") {
     closeCommand();
@@ -131,6 +132,10 @@ function runCommandItem(item) {
     return;
   }
   closeCommand();
+  if (instance && item.app) {
+    openWindowInstance(item.app);
+    return;
+  }
   item.run?.();
 }
 
@@ -196,7 +201,9 @@ commandInput?.addEventListener("keydown", (event) => {
     setCommandIndex(count - 1);
   } else if (event.key === "Enter") {
     event.preventDefault();
-    runCommandItem(state.command.items[state.command.index]);
+    runCommandItem(state.command.items[state.command.index], {
+      instance: event.shiftKey,
+    });
   } else if ((event.metaKey || event.ctrlKey) && event.key === ",") {
     event.preventDefault();
     event.stopPropagation();
@@ -221,7 +228,20 @@ commandResults?.addEventListener("click", (event) => {
   if (!item) return;
   const index = Number(item.dataset.commandIndex);
   state.command.index = index;
-  runCommandItem(state.command.items[index]);
+  runCommandItem(state.command.items[index], { instance: event.shiftKey });
+});
+
+/* Middle-click an app result to open another instance of that app. */
+commandResults?.addEventListener("auxclick", (event) => {
+  if (event.button !== 1) return;
+  const item = event.target.closest("[data-command-index]");
+  if (!item) return;
+  const index = Number(item.dataset.commandIndex);
+  const command = state.command.items[index];
+  if (!command?.app) return;
+  event.preventDefault();
+  state.command.index = index;
+  runCommandItem(command, { instance: true });
 });
 
 document.querySelector("[data-command-close]")?.addEventListener("click", closeCommand);

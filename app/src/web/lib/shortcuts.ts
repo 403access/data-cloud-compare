@@ -4,6 +4,7 @@ export type ShortcutId =
   | "command-palette"
   | "close-window"
   | "new-terminal"
+  | "open-instance"
   | "explorer"
   | "narrow-master"
   | "chat"
@@ -60,6 +61,13 @@ export const SHORTCUT_DEFS: ShortcutDef[] = [
   { id: "command-palette", label: "Command palette", group: "windows", defaults: ["Ctrl+Alt+Space"] },
   { id: "close-window", label: "Close window", group: "windows", defaults: ["Ctrl+Alt+Q"] },
   { id: "new-terminal", label: "New terminal", group: "windows", defaults: ["Ctrl+Alt+Return"] },
+  {
+    id: "open-instance",
+    label: "Open another instance",
+    group: "windows",
+    defaults: ["Middle click", "Shift+click"],
+    pointer: true,
+  },
 
   // Layout
   { id: "explorer", label: "Explorer", group: "layout", defaults: ["Ctrl+Alt+E"] },

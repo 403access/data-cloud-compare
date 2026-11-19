@@ -115,6 +115,7 @@ function addCommand(items, groups, group, title, opts = {}) {
     check: Boolean(opts.check),
     aside: opts.aside || "",
     inactive: Boolean(opts.inactive),
+    app: opts.app || "",
     run: opts.run || (() => {}),
   });
 }
@@ -279,6 +280,7 @@ function commandCatalog() {
     icon: "keyboard",
     subtitle: "Review the current key map",
     keywords: "shortcut cheat sheet keys bindings keyboard",
+    app: "shortcuts",
     run: () => openWindow("shortcuts"),
   });
   addCommand(items, groups, "View", state.sidePanel === "columns" ? "Close the columns sidebar" : "Open the columns sidebar", {
@@ -407,6 +409,7 @@ function commandCatalog() {
     icon: "explorer",
     subtitle: "Browse files and folders in the local index",
     keywords: "finder files folders browse local",
+    app: "explorer",
     run: () => openWindow("explorer"),
   });
   addCommand(items, groups, "System", "Open Data Cloud Compare", {
@@ -414,6 +417,7 @@ function commandCatalog() {
     icon: "compare",
     subtitle: "Compare the local index with the remote snapshot",
     keywords: "compare diff jottacloud google drive cloud snapshot",
+    app: "compare",
     run: () => openWindow("compare"),
   });
   addCommand(items, groups, "System", settingsOpen ? "Close settings" : "Open settings", {
@@ -421,6 +425,7 @@ function commandCatalog() {
     icon: "settings",
     subtitle: "Appearance, network, displays, privacy, and storage",
     keywords: "settings system preferences appearance network displays privacy security storage",
+    app: "settings",
     check: settingsOpen,
     run: () => {
       if (isOpen(settingsWindow)) closeWindow(settingsWindow);
@@ -441,6 +446,7 @@ function commandCatalog() {
     icon: "network",
     subtitle: networkState.wifi ? `Wi-Fi · ${networkState.connected}` : "Wi-Fi is off",
     keywords: "wifi wi-fi internet vpn network",
+    app: "network",
     run: () => openWindow("network"),
   });
   addCommand(items, groups, "System", "Open Devices", {
@@ -450,6 +456,7 @@ function commandCatalog() {
       ? `${connectedDeviceCount()} accessories · Bluetooth on`
       : "Bluetooth is off",
     keywords: "bluetooth wireless mouse keyboard accessories connect",
+    app: "devices",
     run: () => openDevices(),
   });
   addCommand(items, groups, "System", "Open Battery", {
@@ -457,6 +464,7 @@ function commandCatalog() {
     icon: "battery",
     subtitle: `${batteryState.level}% · ${batteryTime()}`,
     keywords: "power energy charge battery",
+    app: "battery",
     run: () => openWindow("battery"),
   });
   addCommand(items, groups, "System", "Open Audio", {
@@ -464,6 +472,7 @@ function commandCatalog() {
     icon: "audio",
     subtitle: audioSummary(),
     keywords: "audio sound output input microphone speakers headphones presets pipewire buffer",
+    app: "audio",
     run: () => openAudio(),
   });
   addCommand(items, groups, "System", "Open Calendar", {
@@ -471,6 +480,7 @@ function commandCatalog() {
     icon: "calendar",
     subtitle: calendarDayFormat.format(calendarAppSelected),
     keywords: "date time month agenda events schedule",
+    app: "calendar",
     run: () => openCalendarApp(),
   });
   addCommand(items, groups, "System", "Open Task Manager", {
@@ -478,6 +488,7 @@ function commandCatalog() {
     icon: "taskmanager",
     subtitle: `CPU ${Math.round(taskTotals().cpu)}% · Memory ${Math.round(taskTotals().memory)}% · ${STORAGE_FREE_GB} GB left`,
     keywords: "activity monitor processes cpu memory ram storage resources performance",
+    app: "taskmanager",
     run: () => openTaskManager(),
   });
   addCommand(items, groups, "System", "Open App Studio", {
@@ -485,6 +496,7 @@ function commandCatalog() {
     icon: "builder",
     subtitle: "GUI builder with a project for every system app",
     keywords: "builder gui design studio app project variables components",
+    app: "builder",
     run: () => openBuilder(),
   });
   addCommand(items, groups, "System", "Open command palette settings", {

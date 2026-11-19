@@ -55,6 +55,7 @@ os/
     builder.css          App Studio GUI builder
     inputs.css           borderless fields and wavy placeholder focus
     sidebar-resize.css   shared resizable app-sidebar handles
+    embed.css            single-app page used by second-instance iframes
   js/
     main.js
     boot-theme.js
@@ -74,6 +75,7 @@ os/
       command-settings.js command palette source and condition settings
       commands.js        data-cmd dispatcher
       shortcuts.js       global key map
+      keymap.js          Keyboard shortcuts sheet data and rendering
     compare/
       model.js           status, path, filter, sort, and counterpart selectors
       view.js            panes, status bar, side panels, selection actions
@@ -109,6 +111,39 @@ file search, whether inactive navigation commands are hidden, and which command
 groups appear. Preferences persist under `explorer-command-palette`; the gear in
 the command bar footer, **Open command palette settings** in the palette, and
 `⌘,` in the palette all jump to the tab.
+
+## Window instances
+
+Applications launch one window normally. **Middle-click** a dock tile, or a
+command palette result that opens an app, to launch a second instance of that
+app instead. **Shift+click** does the same on the same targets, and
+**Shift+Return** does it from the command bar keyboard selection.
+
+- The new window keeps the app's title bar and receives an instance badge
+  (`2`, `3`, and so on) so multiple windows of the same app stay identifiable.
+- The app body is a fresh embedded page (`?embed=<app>`), so each instance owns
+  its own app state: an Explorer instance can browse a different folder, and a
+  second Data Cloud Compare window has its own selection and side panel.
+- The shell still owns window chrome for every instance. Instances take part in
+  drag, resize, focus order, the split/overlap layout, and the dock's running
+  state. Closing an instance removes only that window.
+- Middle-click and Shift+click are ignored for non-app results such as
+  toggles, sorting, individual files, and the Search tile. Search and the
+  remaining single-surface overlays stay single-instance.
+- `windows.js` exposes `openWindowInstance(id)` and `appIdForCommand(cmd)`;
+  the command catalog marks app-launching commands with an `app` field so the
+  command bar can route the gesture. `embed.css` removes the nested desktop
+  chrome when an instance loads.
+
+## Key map
+
+The **Keyboard shortcuts** window is rendered from `shell/keymap.js`. An action
+stores an array of bindings, and each binding stores its key caps, so one
+action can list several alternatives. **Open another instance** demonstrates
+this with both pointer gestures (`Middle click` or `Shift+click`). Keyboard
+alternatives work with Ctrl in place of ⌘; pointer gestures are fixed in the
+demo. The same sheet is the visual reference for the production key mapping app
+in `app/src/web`, where chord bindings can be added, stored, and reset.
 
 ## Settings
 

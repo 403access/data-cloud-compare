@@ -13,6 +13,7 @@ const desktop = document.querySelector("#os-desktop");
 const windows = Array.from(document.querySelectorAll("[data-window]"));
 const activeApp = document.querySelector("[data-active-app]");
 let zCounter = 20;
+const instanceCounts = new Map();
 
 const MIN_WINDOW_WIDTH = 280;
 const MIN_WINDOW_HEIGHT = 180;
@@ -39,6 +40,38 @@ const dockMap = {
   "open-shortcuts": "shortcuts",
 };
 
+/* Every command that launches an application, not just the eight dock tiles.
+   Middle-click and Shift+click use this map to open a second instance. */
+const commandApp = {
+  ...dockMap,
+  "open-network": "network",
+  "open-devices": "devices",
+  "open-battery": "battery",
+  "open-audio": "audio",
+  "open-calendar": "calendar",
+  "open-taskmanager": "taskmanager",
+};
+
+function windowInstanceNumber(win) {
+  return Number(win.dataset.windowInstance || 0);
+}
+
+function windowKey(win) {
+  return `${win.dataset.window}:${windowInstanceNumber(win)}`;
+}
+
+export function appIdForCommand(command) {
+  return commandApp[command] || null;
+}
+
+export function windowsFor(id) {
+  return windows.filter((win) => win.dataset.window === id);
+}
+
+export function hasOpenInstance(id) {
+  return windowsFor(id).some(isOpen);
+}
+
 /* --------------------------------------------------------------- layout
    Split is the default: every open app shares the workspace in a master and
    stack arrangement. Overlap keeps each app at its designed size and
@@ -53,7 +86,7 @@ const BOX_PROPS = ["left", "top", "right", "bottom", "width", "height"];
 /* Inline geometry saved the moment the desktop enters split mode, so moving
    back to overlap restores each window exactly where the user left it. */
 const freeformGeometry = new Map();
-let tileOrder = windows.filter(isOpen).map((win) => win.dataset.window);
+let tileOrder = windows.filter(isOpen).map(windowKey);
 
 function isTiling() {
   return state.windowLayout === "split" && window.innerWidth > 820;
@@ -167,8 +200,8 @@ function tileWindows() {
   const open = windows
     .filter(isOpen)
     .sort((a, b) => {
-      const left = tileOrder.indexOf(a.dataset.window);
-      const right = tileOrder.indexOf(b.dataset.window);
+      const left = tileOrder.indexOf(windowKey(a));
+      const right = tileOrder.indexOf(windowKey(b));
       return (left === -1 ? Infinity : left) - (right === -1 ? Infinity : right);
     });
   if (!open.length) return;
@@ -215,7 +248,9 @@ export function setWindowLayout(layout) {
 }
 
 export function windowById(id) {
-  return windows.find((win) => win.dataset.window === id) || null;
+  return windows.find(
+    (win) => win.dataset.window === id && !windowInstanceNumber(win),
+  ) || null;
 }
 
 export function isOpen(win) {
@@ -226,10 +261,15 @@ export function syncDock() {
   document.querySelectorAll(".os-dock__item[data-cmd]").forEach((button) => {
     const id = dockMap[button.dataset.cmd];
     if (!id) return;
-    const open = isOpen(windowById(id));
+    const open = hasOpenInstance(id);
     button.classList.toggle("is-open", open);
     button.classList.toggle("is-running", open);
     button.setAttribute("aria-pressed", String(open));
+    button.dataset.instances = String(windowsFor(id).filter(isOpen).length);
+    const label = button.dataset.label;
+    if (label) {
+      button.title = `${label} — middle click or Shift+click for a new instance`;
+    }
   });
 }
 
@@ -251,10 +291,10 @@ function topmostWindow() {
     .sort((a, b) => (parseInt(b.style.zIndex || "0", 10) || 0) - (parseInt(a.style.zIndex || "0", 10) || 0))[0];
 }
 
-export function openWindow(id) {
-  const win = windowById(id);
-  if (!win) return;
-  if (!tileOrder.includes(id)) tileOrder.push(id);
+function revealWindow(win) {
+  if (!win) return null;
+  const key = windowKey(win);
+  if (!tileOrder.includes(key)) tileOrder.push(key);
   win.hidden = false;
   win.classList.remove("is-minimized");
   win.classList.add("is-open");
@@ -266,17 +306,107 @@ export function openWindow(id) {
     win.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
   }
   syncDock();
+  return win;
+}
+
+export function openWindow(id) {
+  return revealWindow(windowById(id));
+}
+
+/* A second instance is a fresh page in an iframe, framed by a copy of the
+   app's window chrome. The instance therefore has its own app state while the
+   shell keeps one window manager for drag, resize, focus, and tiling. */
+export function openWindowInstance(id) {
+  const primary = windowById(id);
+  if (!primary) return null;
+
+  const number = (instanceCounts.get(id) || 0) + 1;
+  instanceCounts.set(id, number);
+
+  const clone = primary.cloneNode(true);
+  clone.removeAttribute("id");
+  clone.querySelectorAll("[id]").forEach((node) => node.removeAttribute("id"));
+  clone.querySelectorAll(".os-resize-handle").forEach((handle) => handle.remove());
+  clone.querySelectorAll("[data-window-instance]").forEach((node) => {
+    node.removeAttribute("data-window-instance");
+  });
+
+  Array.from(clone.children).forEach((child) => {
+    if (!child.matches("[data-drag-handle]")) child.remove();
+  });
+
+  clone.dataset.windowInstance = String(number);
+  clone.dataset.title = `${primary.dataset.title || id} · ${number}`;
+  clone.setAttribute(
+    "aria-label",
+    `${primary.getAttribute("aria-label") || primary.dataset.title || id} · instance ${number}`,
+  );
+  clone.classList.remove(
+    "is-focused", "is-open", "is-minimized", "is-maximized",
+    "is-dragging", "is-resizing", "is-tiled", "has-side",
+  );
+  clone.hidden = false;
+
+  const title = clone.querySelector(".os-titlebar__title b");
+  if (title) {
+    const badge = document.createElement("span");
+    badge.className = "os-titlebar__instance";
+    badge.textContent = String(number);
+    badge.title = `Instance ${number}`;
+    title.after(badge);
+  }
+
+  const frame = document.createElement("iframe");
+  frame.className = "os-window__instance-frame";
+  frame.title = `${primary.dataset.title || id} instance ${number}`;
+  const url = new URL(window.location.href);
+  url.searchParams.set("embed", id);
+  url.searchParams.set("instance", String(number));
+  url.hash = "";
+  frame.src = url.toString();
+  clone.append(frame);
+
+  const desktopRect = desktop.getBoundingClientRect();
+  const primaryRect = primary.getBoundingClientRect();
+  const offset = 24 * number;
+  const hasBox = primaryRect.width > 0 && primaryRect.height > 0;
+  const width = hasBox ? primaryRect.width : Math.min(720, desktopRect.width - 32);
+  const height = hasBox ? primaryRect.height : Math.min(560, desktopRect.height - 32);
+  const left = hasBox
+    ? primaryRect.left - desktopRect.left + offset
+    : 48 + offset;
+  const top = hasBox
+    ? primaryRect.top - desktopRect.top + offset
+    : 48 + offset;
+  clone.style.left = `${Math.max(16, Math.min(left, desktopRect.width - width - 16))}px`;
+  clone.style.top = `${Math.max(16, Math.min(top, desktopRect.height - height - 16))}px`;
+  clone.style.right = "auto";
+  clone.style.bottom = "auto";
+  clone.style.width = `${width}px`;
+  clone.style.height = `${height}px`;
+
+  primary.after(clone);
+  windows.push(clone);
+  setupWindow(clone);
+  return revealWindow(clone);
 }
 
 export function closeWindow(win) {
   if (!win) return;
+  const key = windowKey(win);
+  const isInstance = windowInstanceNumber(win) > 0;
   const wasFocused = win.classList.contains("is-focused");
   const wasMaximized = win.classList.contains("is-maximized");
   restoreMaximized(win);
   if (wasMaximized && isTiling()) rememberFreeform(win, true);
   win.hidden = true;
   win.classList.remove("is-open", "is-focused", "is-minimized", "is-dragging", "is-resizing");
-  tileOrder = tileOrder.filter((id) => id !== win.dataset.window);
+  tileOrder = tileOrder.filter((item) => item !== key);
+  if (isInstance) {
+    const index = windows.indexOf(win);
+    if (index >= 0) windows.splice(index, 1);
+    win.remove();
+  }
   document.body.classList.remove("is-resizing-window");
   root.style.removeProperty("--os-resize-cursor");
   if (wasFocused) {
@@ -478,7 +608,7 @@ function startResize(event, win, direction) {
   event.preventDefault();
 }
 
-windows.forEach((win) => {
+function setupWindow(win) {
   win.addEventListener("pointerdown", () => focusWindow(win), true);
   addResizeHandles(win);
 
@@ -499,7 +629,9 @@ windows.forEach((win) => {
       else if (action === "maximize") maximizeWindow(win);
     });
   });
-});
+}
+
+windows.forEach(setupWindow);
 
 window.addEventListener("resize", () => {
   if (state.windowLayout === "split") {

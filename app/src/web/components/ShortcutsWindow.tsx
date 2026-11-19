@@ -171,11 +171,13 @@ export function ShortcutsWindow({ open, shortcuts, onClose, onChange, onReset }:
         setPreview(modifierPreview(event));
         return;
       }
-      commit(editing, [combo]);
+      const existing = shortcuts[editing] ?? [];
+      const next = existing.includes(combo) ? existing : [...existing, combo].slice(0, 4);
+      commit(editing, next);
     };
     document.addEventListener("keydown", handler, true);
     return () => document.removeEventListener("keydown", handler, true);
-  }, [commit, editing]);
+  }, [commit, editing, shortcuts]);
 
   function startEditing(id: ShortcutId) {
     setEditing(id);
@@ -228,8 +230,11 @@ export function ShortcutsWindow({ open, shortcuts, onClose, onChange, onReset }:
       return (
         <div className="shortcut-row" key={def.id}>
           <span className="shortcut-action">{def.label}</span>
-          <span className="shortcut-binding is-fixed" title="Pointer gesture · not rebindable">
-            <Combo combo={def.defaults[0]} />
+          <span
+            className="shortcut-binding is-fixed"
+            title="Pointer gesture · fixed bindings"
+          >
+            <ComboSet combos={def.defaults} />
           </span>
         </div>
       );
@@ -243,8 +248,8 @@ export function ShortcutsWindow({ open, shortcuts, onClose, onChange, onReset }:
           type="button"
           className={`shortcut-binding${isEditing ? " is-editing" : ""}`}
           data-shortcut-id={def.id}
-          title={`Change the shortcut for ${def.label}`}
-          aria-label={`Change shortcut for ${def.label}. Current: ${shortcutLabel(combos)}`}
+          title={`Add a binding for ${def.label}`}
+          aria-label={`Add a binding for ${def.label}. Current: ${shortcutLabel(combos)}`}
           aria-pressed={isEditing}
           onClick={() => startEditing(def.id)}
         >
@@ -370,7 +375,7 @@ export function ShortcutsWindow({ open, shortcuts, onClose, onChange, onReset }:
             Reset to simple defaults
           </button>
           <p>
-            Click a key to rebind · <kbd>Esc</kbd> cancel · <kbd>⌫</kbd> unbind
+            Click a key to add a binding · <kbd>Esc</kbd> cancel · <kbd>⌫</kbd> clear
           </p>
         </footer>
       </div>

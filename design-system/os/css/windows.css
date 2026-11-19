@@ -276,6 +276,37 @@
   pointer-events: none;
 }
 
+/* ----------------------------------------------------- window instances
+   A second instance keeps the app's title bar and points its body at a fresh
+   embedded page, so the new window owns its app state. */
+
+.os-window__instance-frame {
+  display: block;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  border: 0;
+  background: var(--ds-surface-solid);
+}
+
+.os-titlebar__instance {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 17px;
+  height: 17px;
+  margin-left: 6px;
+  padding: 0 5px;
+  border: 1px solid var(--ds-line);
+  border-radius: 999px;
+  background: var(--ds-sidebar);
+  color: var(--ds-text-3);
+  font-size: calc(9px * var(--os-font-scale, 1));
+  font-weight: 650;
+  line-height: 1;
+  vertical-align: 1px;
+}
+
 body.is-resizing-window,
 body.is-resizing-window * {
   user-select: none;

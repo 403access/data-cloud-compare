@@ -191,6 +191,13 @@ single-pane Explorer.
 - The Explorer window is one plain explorer UI instance: places sidebar,
   breadcrumbs, search, sortable columns, keyboard navigation, and a read-only
   local index.
+- Middle-click a dock tile or an app result in the command bar to open another
+  instance of that app; Shift+click and Shift+Return do the same. Each instance
+  keeps its own app state in an embedded page, receives an instance badge in the
+  title bar, and joins the same drag, resize, focus, and layout manager. The
+  Keyboard shortcuts sheet renders from a key map whose actions can list
+  multiple bindings, including the two pointer gestures for **Open another
+  instance**.
 - Settings is a searchable two-column window with tabs for General, Appearance,
   Displays, Desktop & Dock, Search & Commands, Accessibility, Network,
   Bluetooth, Sound, Battery, Notifications, Privacy & Security, and Storage.
@@ -308,7 +315,7 @@ design-system/
     css/           one stylesheet per surface or app
     js/main.js     module entry; imports features and starts the desktop
     js/core/       shared state, fixture data, helpers, toasts
-    js/shell/      windows, popovers, clock, command bar, shortcuts
+    js/shell/      windows, popovers, clock, command bar, shortcuts, keymap
     js/compare/    comparison model, view, interactions, verify
     js/features/   appearance and water settings
     js/apps/       explorer, calendar, network, devices, battery, music, sound, terminal, task manager

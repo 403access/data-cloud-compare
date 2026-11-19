@@ -6,6 +6,9 @@
 (function () {
   try {
     var root = document.documentElement;
+    if (new URLSearchParams(window.location.search).has("embed")) {
+      root.classList.add("os-embed");
+    }
     var prefs = JSON.parse(localStorage.getItem("dcc-design-prefs") || "null") || {};
     var water = JSON.parse(localStorage.getItem("explorer-water-settings") || "null") || {};
     var mode = localStorage.getItem("explorer-theme") || "water";
